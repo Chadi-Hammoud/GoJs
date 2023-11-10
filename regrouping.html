@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body>
-  <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
-  <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
+  <body>
+    <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
+    <div id="allSampleContent" class="p-4 w-full">
+      <script id="code">
+      let _data = [];
       function init() {
         myDiagram = new go.Diagram("myDiagramDiv", {
           mouseDrop: e => finishDrop(e, null),
@@ -73,11 +74,11 @@
                 var newBoardData = { key: go.UniqueId.toString(), isGroup: true, text: 'Board', horiz: false, parent: grp.data.key };
                 // Add the port to this new board
                 var portData = e.diagram.selection.first().data;
-                portData.parent = newBoardData.key;
-                // Add this new board to the original shelf
-                e.diagram.model.addNodeData(newBoardData);
-                e.diagram.model.addNodeData(portData);
-                ok = true;
+                // portData.parent = newBoardData.key;
+                // // Add this new board to the original shelf
+                // e.diagram.model.addNodeData(newBoardData);
+                // e.diagram.model.addNodeData(portData);
+                // ok = true;
               } else {
                 // Otherwise, add the selection as members of the Group
                 ok = grp.addMembers(grp.diagram.selection, true);
@@ -216,19 +217,49 @@
           { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port003.svg" },
         ]);
       }
+
+      function save() {
+      _data.push(myDiagram.model.toJson());  
+      myDiagram.isModified = false;
+      downloadData(_data);
+    }
+
+    function downloadData(dataArray){
+      let jsonData = JSON.stringify(dataArray, null, 2);
+          // Create a Blob with the JSON data
+          let blob = new Blob([jsonData], { type: "application/json" });
+          // Create a link element
+          let a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          // Set the file name
+          a.download = "data.json";
+          // Append the link to the body
+          document.body.appendChild(a);
+          // Trigger a click on the link to start the download
+          a.click();
+          // Remove the link from the DOM
+          document.body.removeChild(a);
+    }
+
+
       window.addEventListener('DOMContentLoaded', init);
     </script>
-    <div id="sample">
-      <div style="width: 100%; display: flex; justify-content: space-between">
-        <div id="myPaletteDiv"
-          style="width: 130px; margin-right: 2px; background-color:#00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
+      <div id="sample">
+        <div style="width: 100%; display: flex; justify-content: space-between">
+          <div id="myPaletteDiv"
+            style="width: 130px; margin-right: 2px; background-color:#00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
+          </div>
+          <div id="myDiagramDiv"
+            style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
+          </div>
         </div>
-        <div id="myDiagramDiv"
-          style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
+
+        <div id="buttons">
+          <button id="saveModel" onclick="save()">Save</button>
         </div>
+
       </div>
     </div>
-  </div>
-</body>
+  </body>
 
 </html>

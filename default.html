@@ -1,18 +1,22 @@
 
-  <!DOCTYPE html>
-  <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
   <body>
-  <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
-  <p>
-    This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
-    <a href="https://gojs.net/latest/samples/regrouping.html">regrouping.html</a>. It was automatically generated from a button on the sample page,
-    and does not contain the full HTML. It is intended as a starting point to adapt for your own usage.
-    For many samples, you may need to inspect the
-    <a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/regrouping.html">full source on Github</a>
-    and copy other files or scripts.
-  </p>
-  <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
+    <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
+    <p>
+      This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
+      <a href="https://gojs.net/latest/samples/regrouping.html">regrouping.html</a>.
+      It was automatically generated from a button on the sample page,
+      and does not contain the full HTML. It is intended as a starting point to
+      adapt for your own usage.
+      For many samples, you may need to inspect the
+      <a
+        href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/regrouping.html">full
+        source on Github</a>
+      and copy other files or scripts.
+    </p>
+    <div id="allSampleContent" class="p-4 w-full">
+      <script id="code">
     function init() {
 
       myDiagram = new go.Diagram("myDiagramDiv",
@@ -185,231 +189,84 @@
     window.addEventListener('DOMContentLoaded', init);
   </script>
 
-<div id="sample">
-  <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 130px; margin-right: 2px; background-color: rgb(39, 29, 29); border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);"><canvas tabindex="0" width="128" height="498" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 128px; height: 498px;"></canvas><div style="position: absolute; overflow: auto; width: 128px; height: 498px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 500px; background-color: rgb(39, 29, 29); border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);"><canvas tabindex="0" width="922" height="498" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 922px; height: 498px;"></canvas><div style="position: absolute; overflow: auto; width: 922px; height: 498px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
-  </div>
-  <p>
-    This sample allows the user to drag nodes, including groups, into and out of groups,
-    both from the Palette as well as from within the Diagram.
-    See the <a href="../intro/groups.html">Groups Intro page</a> for an explanation of GoJS Groups.
-  </p>
-  <p>
-    Highlighting to show feedback about potential addition to a group during a drag is implemented
-    using <a href="../api/symbols/GraphObject.html#mouseDragEnter" target="api">GraphObject.mouseDragEnter</a> and <a href="../api/symbols/GraphObject.html#mouseDragLeave" target="api">GraphObject.mouseDragLeave</a> event handlers.
-    Because <a href="../api/symbols/Group.html#computesBoundsAfterDrag" target="api">Group.computesBoundsAfterDrag</a> is true, the Group's <a href="../api/symbols/Placeholder.html" target="api">Placeholder</a>'s bounds are
-    not computed until the drop happens, so the group does not continuously expand as the user drags
-    a member of a group.
-  </p>
-  <p>
-    When a drop occurs on a Group or a regular Node, the <a href="../api/symbols/GraphObject.html#mouseDrop" target="api">GraphObject.mouseDrop</a> event handler
-    adds the selection (the dragged Nodes) to the Group as new members.
-    The <a href="../api/symbols/Diagram.html#mouseDrop" target="api">Diagram.mouseDrop</a> event handler changes the dragged selected Nodes to be top-level,
-    rather than members of whatever Groups they had been in.
-  </p>
-  <p>
-    The slider controls how many nested levels of Groups are expanded. <br>
-    Semantic zoom level: <input id="levelSlider" type="range" min="0" max="5" value="3">
-  </p>
-  <div id="buttons">
-    <button id="saveModel" onclick="save()">Save</button>
-    <button id="loadModel" onclick="load()">Load</button>
-    Diagram Model saved in JSON format:
-  </div>
-  <textarea id="mySavedModel" style="width:100%;height:300px">{ "class": "go.GraphLinksModel",
-  "nodeDataArray": [
-{"key":1, "isGroup":true, "text":"Main 1", "horiz":true},
-{"key":2, "isGroup":true, "text":"Main 2", "horiz":true},
-{"key":3, "isGroup":true, "text":"Group A", "group":1},
-{"key":4, "isGroup":true, "text":"Group B", "group":1},
-{"key":5, "isGroup":true, "text":"Group C", "group":2},
-{"key":6, "isGroup":true, "text":"Group D", "group":2},
-{"key":7, "isGroup":true, "text":"Group E", "group":6},
-{"text":"first A", "group":3, "key":-7},
-{"text":"second A", "group":3, "key":-8},
-{"text":"first B", "group":4, "key":-9},
-{"text":"second B", "group":4, "key":-10},
-{"text":"third B", "group":4, "key":-11},
-{"text":"first C", "group":5, "key":-12},
-{"text":"second C", "group":5, "key":-13},
-{"text":"first D", "group":6, "key":-14},
-{"text":"first E", "group":7, "key":-15}
- ],
-  "linkDataArray": [  ]}
-  </textarea>
-<p class="text-xs">GoJS version 2.3.11. Copyright 1998-2023 by Northwoods Software.</p></div>
-    <p><a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/regrouping.html" target="_blank">View this sample page's source on GitHub</a></p><pre class=" language-js">
-    <span class="token keyword">function</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-
-      myDiagram <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Diagram</span><span class="token punctuation">(</span><span class="token string">"myDiagramDiv"</span><span class="token punctuation">,</span>
-          <span class="token punctuation">{</span>
-            <span class="token comment">// when a drag-drop occurs in the Diagram's background, make it a top-level node</span>
-            <span class="token function-variable function">mouseDrop</span><span class="token operator">:</span> <span class="token parameter">e</span> <span class="token operator">=&gt;</span> <span class="token function">finishDrop</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-            layout<span class="token operator">:</span>  <span class="token comment">// Diagram has simple horizontal layout</span>
-              <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>GridLayout</span><span class="token punctuation">(</span>
-                <span class="token punctuation">{</span> wrappingWidth<span class="token operator">:</span> <span class="token number">Infinity</span><span class="token punctuation">,</span> alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>GridLayout<span class="token punctuation">.</span>Position<span class="token punctuation">,</span> cellSize<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Size</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-            <span class="token string">"commandHandler.archetypeGroupData"</span><span class="token operator">:</span> <span class="token punctuation">{</span> isGroup<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> text<span class="token operator">:</span> <span class="token string">"Group"</span><span class="token punctuation">,</span> horiz<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-            <span class="token string">"undoManager.isEnabled"</span><span class="token operator">:</span> <span class="token boolean">true</span>
-          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-      <span class="token comment">// The one template for Groups can be configured to be either layout out its members</span>
-      <span class="token comment">// horizontally or vertically, each with a different default color.</span>
-
-      <span class="token keyword">function</span> <span class="token function">makeLayout</span><span class="token punctuation">(</span><span class="token parameter">horiz</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">// a Binding conversion function</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>horiz<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>GridLayout</span><span class="token punctuation">(</span>
-            <span class="token punctuation">{</span>
-              wrappingWidth<span class="token operator">:</span> <span class="token number">Infinity</span><span class="token punctuation">,</span> alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>GridLayout<span class="token punctuation">.</span>Position<span class="token punctuation">,</span>
-              cellSize<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Size</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spacing<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Size</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
-            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-          <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>GridLayout</span><span class="token punctuation">(</span>
-            <span class="token punctuation">{</span>
-              wrappingColumn<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>GridLayout<span class="token punctuation">.</span>Position<span class="token punctuation">,</span>
-              cellSize<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Size</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spacing<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Size</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
-            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-      <span class="token punctuation">}</span>
-
-      <span class="token keyword">function</span> <span class="token function">defaultColor</span><span class="token punctuation">(</span><span class="token parameter">horiz</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">// a Binding conversion function</span>
-        <span class="token keyword">return</span> horiz <span class="token operator">?</span> <span class="token string">"rgba(255, 221, 51, 0.55)"</span> <span class="token operator">:</span> <span class="token string">"rgba(51,211,229, 0.5)"</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
-
-      <span class="token keyword">function</span> <span class="token function">defaultFont</span><span class="token punctuation">(</span><span class="token parameter">horiz</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">// a Binding conversion function</span>
-        <span class="token keyword">return</span> horiz <span class="token operator">?</span> <span class="token string">"bold 20px sans-serif"</span> <span class="token operator">:</span> <span class="token string">"bold 16px sans-serif"</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
-
-      <span class="token comment">// this function is used to highlight a Group that the selection may be dropped into</span>
-      <span class="token keyword">function</span> <span class="token function">highlightGroup</span><span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> grp<span class="token punctuation">,</span> show</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>grp<span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
-        e<span class="token punctuation">.</span>handled <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>show<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          <span class="token comment">// cannot depend on the grp.diagram.selection in the case of external drag-and-drops;</span>
-          <span class="token comment">// instead depend on the DraggingTool.draggedParts or .copiedParts</span>
-          <span class="token keyword">var</span> tool <span class="token operator">=</span> grp<span class="token punctuation">.</span>diagram<span class="token punctuation">.</span>toolManager<span class="token punctuation">.</span>draggingTool<span class="token punctuation">;</span>
-          <span class="token keyword">var</span> map <span class="token operator">=</span> tool<span class="token punctuation">.</span>draggedParts <span class="token operator">||</span> tool<span class="token punctuation">.</span>copiedParts<span class="token punctuation">;</span>  <span class="token comment">// this is a Map</span>
-          <span class="token comment">// now we can check to see if the Group will accept membership of the dragged Parts</span>
-          <span class="token keyword">if</span> <span class="token punctuation">(</span>grp<span class="token punctuation">.</span><span class="token function">canAddMembers</span><span class="token punctuation">(</span>map<span class="token punctuation">.</span><span class="token function">toKeySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            grp<span class="token punctuation">.</span>isHighlighted <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-            <span class="token keyword">return</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-        grp<span class="token punctuation">.</span>isHighlighted <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
-
-      <span class="token comment">// Upon a drop onto a Group, we try to add the selection as members of the Group.</span>
-      <span class="token comment">// Upon a drop onto the background, or onto a top-level Node, make selection top-level.</span>
-      <span class="token comment">// If this is OK, we're done; otherwise we cancel the operation to rollback everything.</span>
-      <span class="token keyword">function</span> <span class="token function">finishDrop</span><span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> grp</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">var</span> ok <span class="token operator">=</span> <span class="token punctuation">(</span>grp <span class="token operator">!==</span> <span class="token keyword">null</span>
-          <span class="token operator">?</span> grp<span class="token punctuation">.</span><span class="token function">addMembers</span><span class="token punctuation">(</span>grp<span class="token punctuation">.</span>diagram<span class="token punctuation">.</span>selection<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
-          <span class="token operator">:</span> e<span class="token punctuation">.</span>diagram<span class="token punctuation">.</span>commandHandler<span class="token punctuation">.</span><span class="token function">addTopLevelParts</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>diagram<span class="token punctuation">.</span>selection<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>ok<span class="token punctuation">)</span> e<span class="token punctuation">.</span>diagram<span class="token punctuation">.</span>currentTool<span class="token punctuation">.</span><span class="token function">doCancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
-
-      myDiagram<span class="token punctuation">.</span>groupTemplate <span class="token operator">=</span>
-        <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Group</span><span class="token punctuation">(</span><span class="token string">"Auto"</span><span class="token punctuation">,</span>
-          <span class="token punctuation">{</span>
-            background<span class="token operator">:</span> <span class="token string">"blue"</span><span class="token punctuation">,</span>
-            ungroupable<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-            <span class="token comment">// highlight when dragging into the Group</span>
-            <span class="token function-variable function">mouseDragEnter</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> grp<span class="token punctuation">,</span> prev</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">highlightGroup</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> grp<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-            <span class="token function-variable function">mouseDragLeave</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> grp<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">highlightGroup</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> grp<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-            computesBoundsAfterDrag<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-            computesBoundsIncludingLocation<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-            <span class="token comment">// when the selection is dropped into a Group, add the selected Parts into that Group;</span>
-            <span class="token comment">// if it fails, cancel the tool, rolling back any changes</span>
-            mouseDrop<span class="token operator">:</span> finishDrop<span class="token punctuation">,</span>
-            handlesDragDropForMembers<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>  <span class="token comment">// don't need to define handlers on member Nodes and Links</span>
-            <span class="token comment">// Groups containing Groups lay out their members horizontally</span>
-            layout<span class="token operator">:</span> <span class="token function">makeLayout</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
-          <span class="token punctuation">}</span><span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"layout"</span><span class="token punctuation">,</span> <span class="token string">"horiz"</span><span class="token punctuation">,</span> makeLayout<span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Binding</span><span class="token punctuation">(</span><span class="token string">"background"</span><span class="token punctuation">,</span> <span class="token string">"isHighlighted"</span><span class="token punctuation">,</span> <span class="token parameter">h</span> <span class="token operator">=&gt;</span> h <span class="token operator">?</span> <span class="token string">"rgba(255,0,0,0.2)"</span> <span class="token operator">:</span> <span class="token string">"transparent"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ofObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Shape</span><span class="token punctuation">(</span><span class="token string">"Rectangle"</span><span class="token punctuation">,</span>
-            <span class="token punctuation">{</span> fill<span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> stroke<span class="token operator">:</span> <span class="token function">defaultColor</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">,</span> fill<span class="token operator">:</span> <span class="token function">defaultColor</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">,</span> strokeWidth<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
-            <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"stroke"</span><span class="token punctuation">,</span> <span class="token string">"horiz"</span><span class="token punctuation">,</span> defaultColor<span class="token punctuation">)</span>
-            <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"fill"</span><span class="token punctuation">,</span> <span class="token string">"horiz"</span><span class="token punctuation">,</span> defaultColor<span class="token punctuation">)</span><span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>
-            <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Panel</span><span class="token punctuation">(</span><span class="token string">"Vertical"</span><span class="token punctuation">)</span>  <span class="token comment">// title above Placeholder</span>
-              <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Panel</span><span class="token punctuation">(</span><span class="token string">"Horizontal"</span><span class="token punctuation">,</span>  <span class="token comment">// button next to TextBlock</span>
-                <span class="token punctuation">{</span> stretch<span class="token operator">:</span> go<span class="token punctuation">.</span>GraphObject<span class="token punctuation">.</span>Horizontal<span class="token punctuation">,</span> background<span class="token operator">:</span> <span class="token function">defaultColor</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"background"</span><span class="token punctuation">,</span> <span class="token string">"horiz"</span><span class="token punctuation">,</span> defaultColor<span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>go<span class="token punctuation">.</span>GraphObject<span class="token punctuation">.</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token string">"SubGraphExpanderButton"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>Spot<span class="token punctuation">.</span>Right<span class="token punctuation">,</span> margin<span class="token operator">:</span> <span class="token number">5</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>TextBlock</span><span class="token punctuation">(</span>
-                  <span class="token punctuation">{</span>
-                    alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>Spot<span class="token punctuation">.</span>Left<span class="token punctuation">,</span>
-                    editable<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-                    margin<span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
-                    font<span class="token operator">:</span> <span class="token function">defaultFont</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-                    opacity<span class="token operator">:</span> <span class="token number">0.95</span><span class="token punctuation">,</span>  <span class="token comment">// allow some color to show through</span>
-                    stroke<span class="token operator">:</span> <span class="token string">"#404040"</span>
-                  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-                  <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"font"</span><span class="token punctuation">,</span> <span class="token string">"horiz"</span><span class="token punctuation">,</span> defaultFont<span class="token punctuation">)</span>
-                  <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"text"</span><span class="token punctuation">,</span> <span class="token string">"text"</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// `null` as the fourth argument makes this a two-way binding</span>
-              <span class="token punctuation">)</span>  <span class="token comment">// end Horizontal Panel</span>
-              <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Placeholder</span><span class="token punctuation">(</span><span class="token punctuation">{</span> padding<span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> alignment<span class="token operator">:</span> go<span class="token punctuation">.</span>Spot<span class="token punctuation">.</span>TopLeft <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-          <span class="token punctuation">)</span>  <span class="token comment">// end Vertical Panel</span>
-
-
-      myDiagram<span class="token punctuation">.</span>nodeTemplate <span class="token operator">=</span>
-        <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Node</span><span class="token punctuation">(</span><span class="token string">"Auto"</span><span class="token punctuation">,</span>
-          <span class="token punctuation">{</span> <span class="token comment">// dropping on a Node is the same as dropping on its containing Group, even if it's top-level</span>
-            <span class="token function-variable function">mouseDrop</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> node</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">finishDrop</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> node<span class="token punctuation">.</span>containingGroup<span class="token punctuation">)</span>
-          <span class="token punctuation">}</span><span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Shape</span><span class="token punctuation">(</span><span class="token string">"RoundedRectangle"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> fill<span class="token operator">:</span> <span class="token string">"rgba(172, 230, 0, 0.9)"</span><span class="token punctuation">,</span> stroke<span class="token operator">:</span> <span class="token string">"white"</span><span class="token punctuation">,</span> strokeWidth<span class="token operator">:</span> <span class="token number">0.5</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-          <span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>TextBlock</span><span class="token punctuation">(</span>
-            <span class="token punctuation">{</span>
-              margin<span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
-              editable<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-              font<span class="token operator">:</span> <span class="token string">"bold 13px sans-serif"</span><span class="token punctuation">,</span>
-              opacity<span class="token operator">:</span> <span class="token number">0.90</span>
-            <span class="token punctuation">}</span><span class="token punctuation">)</span>
-            <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"text"</span><span class="token punctuation">,</span> <span class="token string">"text"</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// `null` as the fourth argument makes this a two-way binding</span>
-
-      <span class="token comment">// initialize the Palette and its contents</span>
-      myPalette <span class="token operator">=</span>
-        <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>Palette</span><span class="token punctuation">(</span><span class="token string">"myPaletteDiv"</span><span class="token punctuation">,</span>
-          <span class="token punctuation">{</span>
-            nodeTemplateMap<span class="token operator">:</span> myDiagram<span class="token punctuation">.</span>nodeTemplateMap<span class="token punctuation">,</span>
-            groupTemplateMap<span class="token operator">:</span> myDiagram<span class="token punctuation">.</span>groupTemplateMap
-          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-      myPalette<span class="token punctuation">.</span>model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">go<span class="token punctuation">.</span>GraphLinksModel</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
-        <span class="token punctuation">{</span> text<span class="token operator">:</span> <span class="token string">"New Node"</span><span class="token punctuation">,</span> color<span class="token operator">:</span> <span class="token string">"#ACE600"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token punctuation">{</span> isGroup<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> text<span class="token operator">:</span> <span class="token string">"H Group"</span><span class="token punctuation">,</span> horiz<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token punctuation">{</span> isGroup<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> text<span class="token operator">:</span> <span class="token string">"V Group"</span><span class="token punctuation">,</span> horiz<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
-      <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-      <span class="token keyword">var</span> slider <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"levelSlider"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      slider<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'change'</span><span class="token punctuation">,</span> reexpand<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      slider<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> reexpand<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-      <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-
-    <span class="token keyword">function</span> <span class="token function">reexpand</span><span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      myDiagram<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token parameter">diag</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-        <span class="token keyword">var</span> level <span class="token operator">=</span> <span class="token function">parseInt</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"levelSlider"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        diag<span class="token punctuation">.</span><span class="token function">findTopLevelGroups</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">each</span><span class="token punctuation">(</span><span class="token parameter">g</span> <span class="token operator">=&gt;</span> <span class="token function">expandGroups</span><span class="token punctuation">(</span>g<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> level<span class="token punctuation">)</span><span class="token punctuation">)</span>
-      <span class="token punctuation">}</span> <span class="token punctuation">,</span><span class="token string">"reexpand"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">function</span> <span class="token function">expandGroups</span><span class="token punctuation">(</span><span class="token parameter">g<span class="token punctuation">,</span> i<span class="token punctuation">,</span> level</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>g <span class="token keyword">instanceof</span> <span class="token class-name">go<span class="token punctuation">.</span>Group</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
-      g<span class="token punctuation">.</span>isSubGraphExpanded <span class="token operator">=</span> i <span class="token operator">&lt;</span> level<span class="token punctuation">;</span>
-      g<span class="token punctuation">.</span>memberParts<span class="token punctuation">.</span><span class="token function">each</span><span class="token punctuation">(</span><span class="token parameter">m</span> <span class="token operator">=&gt;</span> <span class="token function">expandGroups</span><span class="token punctuation">(</span>m<span class="token punctuation">,</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> level<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    <span class="token comment">// save a model to and load a model from JSON text, displayed below the Diagram</span>
-    <span class="token keyword">function</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"mySavedModel"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value <span class="token operator">=</span> myDiagram<span class="token punctuation">.</span>model<span class="token punctuation">.</span><span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      myDiagram<span class="token punctuation">.</span>isModified <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">function</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      myDiagram<span class="token punctuation">.</span>model <span class="token operator">=</span> go<span class="token punctuation">.</span>Model<span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"mySavedModel"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'DOMContentLoaded'</span><span class="token punctuation">,</span> init<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  </pre></div>
-  </body>
+      <div id="sample">
+        <div style="width: 100%; display: flex; justify-content: space-between">
+          <div id="myPaletteDiv"
+            style="width: 130px; margin-right: 2px; background-color: rgb(39, 29, 29); border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);"><canvas
+              tabindex="0" width="128" height="498"
+              style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 128px; height: 498px;"></canvas><div
+              style="position: absolute; overflow: auto; width: 128px; height: 498px; z-index: 1;"><div
+                style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+          <div id="myDiagramDiv"
+            style="flex-grow: 1; height: 500px; background-color: rgb(39, 29, 29); border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);"><canvas
+              tabindex="0" width="922" height="498"
+              style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 922px; height: 498px;"></canvas><div
+              style="position: absolute; overflow: auto; width: 922px; height: 498px; z-index: 1;"><div
+                style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+        </div>
+        <p>
+          This sample allows the user to drag nodes, including groups, into and
+          out of groups,
+          both from the Palette as well as from within the Diagram.
+          See the <a href="../intro/groups.html">Groups Intro page</a> for an
+          explanation of GoJS Groups.
+        </p>
+        <p>
+          Highlighting to show feedback about potential addition to a group
+          during a drag is implemented
+          using <a href="../api/symbols/GraphObject.html#mouseDragEnter"
+            target="api">GraphObject.mouseDragEnter</a> and <a
+            href="../api/symbols/GraphObject.html#mouseDragLeave" target="api">GraphObject.mouseDragLeave</a>
+          event handlers.
+          Because <a href="../api/symbols/Group.html#computesBoundsAfterDrag"
+            target="api">Group.computesBoundsAfterDrag</a> is true, the Group's
+          <a href="../api/symbols/Placeholder.html" target="api">Placeholder</a>'s
+          bounds are
+          not computed until the drop happens, so the group does not
+          continuously expand as the user drags
+          a member of a group.
+        </p>
+        <p>
+          When a drop occurs on a Group or a regular Node, the <a
+            href="../api/symbols/GraphObject.html#mouseDrop" target="api">GraphObject.mouseDrop</a>
+          event handler
+          adds the selection (the dragged Nodes) to the Group as new members.
+          The <a href="../api/symbols/Diagram.html#mouseDrop" target="api">Diagram.mouseDrop</a>
+          event handler changes the dragged selected Nodes to be top-level,
+          rather than members of whatever Groups they had been in.
+        </p>
+        <p>
+          The slider controls how many nested levels of Groups are expanded. <br>
+          Semantic zoom level: <input id="levelSlider" type="range" min="0"
+            max="5" value="3">
+        </p>
+        <div id="buttons">
+          <button id="saveModel" onclick="save()">Save</button>
+          <button id="loadModel" onclick="load()">Load</button>
+          Diagram Model saved in JSON format:
+        </div>
+        <textarea id="mySavedModel" style="width:100%;height:300px">{ "class":
+          "go.GraphLinksModel",
+          "nodeDataArray": [
+          {"key":1, "isGroup":true, "text":"Main 1", "horiz":true},
+          {"key":2, "isGroup":true, "text":"Main 2", "horiz":true},
+          {"key":3, "isGroup":true, "text":"Group A", "group":1},
+          {"key":4, "isGroup":true, "text":"Group B", "group":1},
+          {"key":5, "isGroup":true, "text":"Group C", "group":2},
+          {"key":6, "isGroup":true, "text":"Group D", "group":2},
+          {"key":7, "isGroup":true, "text":"Group E", "group":6},
+          {"text":"first A", "group":3, "key":-7},
+          {"text":"second A", "group":3, "key":-8},
+          {"text":"first B", "group":4, "key":-9},
+          {"text":"second B", "group":4, "key":-10},
+          {"text":"third B", "group":4, "key":-11},
+          {"text":"first C", "group":5, "key":-12},
+          {"text":"second C", "group":5, "key":-13},
+          {"text":"first D", "group":6, "key":-14},
+          {"text":"first E", "group":7, "key":-15}
+          ],
+          "linkDataArray": [ ]}
+        </textarea>
+      </div>
+    </body>
   </html>
