@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <body>
-    <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-      <script id="code">
+<body>
+  <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
+  <div id="allSampleContent" class="p-4 w-full">
+    <script id="code">
       let _data = [];
       function init() {
         myDiagram = new go.Diagram("myDiagramDiv", {
@@ -18,9 +18,27 @@
           "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
           "undoManager.isEnabled": true,
           "allowReshape": true,
+          "clickCreatingTool.archetypeNodeData": { text: "new node" },
+          "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+
         });
 
+        // myDiagram.addDiagramListener("ObjectSingleClicked",
+        //   e => {
+        //     var part = e.subject.part;
+        //     if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.text);
+        //   });
 
+        // myDiagram.addDiagramListener("BackgroundDoubleClicked",
+        //   e => showMessage("Double-clicked at " + e.diagram.lastInput.documentPoint));
+
+        // myDiagram.addDiagramListener("ClipboardPasted",
+        //   e => showMessage("Pasted " + e.diagram.selection.count + " parts"));
+
+
+        function showMessage(s) {
+          console.log(s);
+        }
 
         // The one template for Groups can be configured to be either layout out its members
         // horizontally or vertically, each with a different default color.
@@ -96,9 +114,6 @@
 
 
 
-
-
-
         myDiagram.groupTemplate =
           new go.Group("Auto",
             {
@@ -124,15 +139,17 @@
                   tool.doActivate();            // activates the ResizingTool
                 }
               },
+              click: (e, obj) => showMessage("Group Clicked on " + obj.part.data.key)
             }
           )
             .bind("layout", "horiz", makeLayout)
-            .bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
+            //.bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
             .add(new go.Shape("Rectangle",
               { fill: null, stroke: defaultColor(false), fill: defaultColor(false), strokeWidth: 2 })
               .bind("stroke", "horiz", defaultColor)
-              .bind("fill", "horiz", defaultColor))
-
+              .bind("fill", "horiz", defaultColor)
+              .bind("width", "width")
+              .bind("height", "height"))
 
             .add(
               new go.Panel("Vertical")  // title above Placeholder
@@ -155,14 +172,6 @@
                 .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
             )  // end Vertical Panel
 
-        // myDiagram.click = function (e) {
-        //   var point = e.documentPoint;  // the point in document coordinates
-        //   var part = e.subject;  // the part that the mouse was over, if any
-        //   console.log("Mouse clicked at: " + point.toString());
-        //   if (part) {
-        //     console.log("Mouse was over: " + part.key);
-        //   }
-        // }
 
 
 
@@ -170,18 +179,33 @@
           new go.Node("Auto",
             { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
               mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
-              resizable: true, resizeObjectName: "SHAPE"
+              resizable: true, resizeObjectName: "SHAPE",
+              resized: (e, node) => {
+
+                // Update the width and height properties of the node data when the node is resized
+                var width = node.findObject("SHAPE").width;
+                var height = node.findObject("SHAPE").height;
+                node.width = width;
+                node.height = height;
+              },
+              click: (e, obj) => {
+                showMessage("Node Clicked :" + e),
+                  console.log(obj);
+              },
+              selectionChanged: part => {
+                var shape = part.elt(0);
+                shape.fill = part.isSelected ? "red" : "white";
+              }
             })
+
             .add(new go.Picture(
               {
-                width: 50,  // Set the width of the image here
-                height: 50,  // Set the height of the image here
                 margin: 0,
                 name: "SHAPE",
-                // maxSize: new go.Size(100.100),
-                // minSize: new go.Size(10,10),
-                // source: "./serial-port.svg"  // Set the path to your image here
-              }).bind("source", "source", null, null))
+              })
+              .bind("source", "source", null, null)
+              .bind("width", "width", null)
+              .bind("height", "height", null))
             .add(new go.TextBlock(
               {
                 margin: 7,
@@ -206,62 +230,63 @@
             });
 
         myPalette.model = new go.GraphLinksModel([
-          { isGroup: true, text: "Cabinet", horiz: true },
+          { isGroup: true, text: "Cabinet", horiz: false },
           { isGroup: true, text: "Shelf", horiz: false },
           { isGroup: true, text: "Board", horiz: true },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial-port.svg" },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial.svg" },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port001.svg" },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port001.svg" },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port002.svg" },
-          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port003.svg" },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial-port.svg", width: 100, height: 120 },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial.svg", width: 100, height: 120 },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port001.svg", width: 100, height: 120 },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port001.svg", width: 100, height: 120 },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port002.svg", width: 100, height: 120 },
+          { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port003.svg", width: 100, height: 120 },
         ]);
       }
 
       function save() {
-      _data.push(myDiagram.model.toJson());  
-      myDiagram.isModified = false;
-      downloadData(_data);
-    }
+        _data.push(myDiagram.model.toJson());
+        myDiagram.isModified = false;
+        downloadData(_data);
+      }
 
-    function downloadData(dataArray){
-      let jsonData = JSON.stringify(dataArray, null, 2);
-          // Create a Blob with the JSON data
-          let blob = new Blob([jsonData], { type: "application/json" });
-          // Create a link element
-          let a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          // Set the file name
-          a.download = "data.json";
-          // Append the link to the body
-          document.body.appendChild(a);
-          // Trigger a click on the link to start the download
-          a.click();
-          // Remove the link from the DOM
-          document.body.removeChild(a);
-    }
+      function downloadData(dataArray) {
+        let jsonData = JSON.stringify(dataArray, null, 2);
+        // Create a Blob with the JSON data
+        let blob = new Blob([jsonData], { type: "application/json" });
+        // Create a link element
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        // Set the file name
+        a.download = "data.json";
+        // Append the link to the body
+        document.body.appendChild(a);
+        // Trigger a click on the link to start the download
+        a.click();
+        // Remove the link from the DOM
+        document.body.removeChild(a);
+      }
 
 
       window.addEventListener('DOMContentLoaded', init);
     </script>
-      <div id="sample">
-        <div style="width: 100%; display: flex; justify-content: space-between">
-          <div id="myPaletteDiv"
-            style="width: 130px; margin-right: 2px; background-color:#00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
-          </div>
-          <div id="myDiagramDiv"
-            style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
-          </div>
+    <div id="sample">
+      <div style="width: 100%; display: flex; justify-content: space-between">
+        <div id="myPaletteDiv"
+          style="width: 130px; margin-right: 2px; background-color:#00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
         </div>
-
-        <div id="buttons">
-          <button id="saveModel" onclick="save()">Save</button>
-          <a href="./preview.html"><button id="previewPage">Preview</button>
-
-          </a> </div>
-
+        <div id="myDiagramDiv"
+          style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
+        </div>
       </div>
+
+      <div id="buttons">
+        <button id="saveModel" onclick="save()">Save</button>
+        <a href="./preview.html"><button id="previewPage">Preview</button>
+
+        </a>
+      </div>
+
     </div>
-  </body>
+  </div>
+</body>
 
 </html>
