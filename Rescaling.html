@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+  <meta name="description" content="A demonstration of the RescalingTool extension." />
+  <!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
+  <title>Rescaling GraphObjects using the RescalingTool</title>
+</head>
+
+<body>
+  <!-- * * * * * * * * * * * * * -->
+  <!-- Start of GoJS sample code -->
+
+  <!-- <script src="./node_modules/gojs/release/go.js"></script> -->
+  <div id="allSampleContent" class="p-4 w-full">
+    <!-- <script type="module" src="./node_modules\gojs\extensions\RescalingTool.js"></script> -->
+    <script id="code" type="module" src="./rescale001.mjs">
+      
+    </script>
+
+    <div id="sample">
+      <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
+      <p>
+        Selecting a node will show a rescaling handle that when dragged will modify the node's <a>GraphObject.scale</a>
+        property.
+      </p>
+      <p>
+        Just as the <a>ResizingTool</a> changes the <a>GraphObject.desiredSize</a> of an object,
+        and just as the <a>RotatingTool</a> changes the <a>GraphObject.angle</a> of an object,
+        the <a>RescalingTool</a> changes the <a>GraphObject.scale</a> of an object.
+      </p>
+      <p>
+        This extension tool is defined in its own file, as <a href="RescalingTool.js">RescalingTool.js</a>.
+      </p>
+    </div>
+  </div>
+  <!-- * * * * * * * * * * * * * -->
+  <!--  End of GoJS sample code  -->
+  </div>
+</body>
+
+</html>

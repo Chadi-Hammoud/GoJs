@@ -1,7 +1,7 @@
 /*
 *  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
-import * as go from './node_modules/gojs/release/go.js';
+// import * as go from './node_modules/gojs/release/go.js';
 // A custom Tool to change the scale of an object in a Part.
 /*
 * This is an extension and not part of the main GoJS library.
