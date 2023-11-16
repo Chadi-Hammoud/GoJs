@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <body>
-        <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
-        <div id="allSampleContent" class="p-4 w-full">
-            <script id="code">
+<body>
+  <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
+  <div id="allSampleContent" class="p-4 w-full">
+    <script id="code">
       let tempdata = "";
       let _data = [];
 
@@ -114,21 +114,25 @@
               mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, true),
               computesBoundsAfterDrag: true,
               computesBoundsIncludingLocation: true,
+              click: (e, obj) => {
+                showMessage("Node Clicked :" + obj.data.type),
+                  console.log(obj);
+              },
               // when the selection is dropped into a Group, add the selected Parts into that Group;
               // if it fails, cancel the tool, rolling back any changes
-            //   mouseDrop: finishDrop,
+              //   mouseDrop: finishDrop,
               handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
               // Groups containing Groups lay out their members horizontally
               layout: makeLayout(false),
-              mouseEnter: (e, node) => {
-                var adorn = node.findAdornment("Resizing");
-                if (adorn !== null) {
-                  var tool = previewDiagram.toolManager.resizingTool;
-                  tool.handle = adorn.elt(0); // 0 for top handle
-                  previewDiagram.currentTool = tool; // starts the ResizingTool
-                  tool.doActivate();            // activates the ResizingTool
-                }
-              },
+              // mouseEnter: (e, node) => {
+              //   var adorn = node.findAdornment("Resizing");
+              //   if (adorn !== null) {
+              //     var tool = previewDiagram.toolManager.resizingTool;
+              //     tool.handle = adorn.elt(0); // 0 for top handle
+              //     previewDiagram.currentTool = tool; // starts the ResizingTool
+              //     tool.doActivate();            // activates the ResizingTool
+              //   }
+              // },
             }
           )
             .bind("layout", "horiz", makeLayout)
@@ -161,17 +165,22 @@
             )  // end Vertical Panel
 
 
-            previewDiagram.nodeTemplate =
+        previewDiagram.nodeTemplate =
           new go.Node("Auto",
             { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-            //   mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
+              //   mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
+              click: (e, obj) => {
+                showMessage("Node Clicked :" + obj.data.type),
+                  console.log(obj);
+              },
             })
             .add(new go.Picture(
               {
-                width: 50,  // Set the width of the image here
-                height: 50,  // Set the height of the image here
                 margin: 0,
-              }).bind("source", "source", null, null))
+              })
+              .bind("source", "source", null, null))
+            .bind("width", "width", null, null)
+            .bind("height", "height", null, null)
             .add(new go.TextBlock(
               {
                 margin: 7,
@@ -181,50 +190,55 @@
                 innerHeight: 100,
                 innerWidth: 100,
               })
-            )}
-     
+            )
+      }
+
       function load() {
         const fileInput = document.getElementById('fileInput');
 
         if (fileInput.files.length > 0) {
-                const selectedFile = fileInput.files[0];
+          const selectedFile = fileInput.files[0];
 
-                const reader = new FileReader();
+          const reader = new FileReader();
 
-                reader.addEventListener('load', function (e) {
-                    const fileContent = e.target.result;
-                    const jsonData = JSON.parse(fileContent);
-                    previewDiagram.model = go.Model.fromJson(jsonData[0]);
-                    console.log('JSON data:', jsonData);
-                });
+          reader.addEventListener('load', function (e) {
+            const fileContent = e.target.result;
+            const jsonData = JSON.parse(fileContent);
+            previewDiagram.model = go.Model.fromJson(jsonData[0]);
+            console.log('JSON data:', jsonData);
+          });
 
-                reader.readAsText(selectedFile);
-            } else {
-                console.log('No file selected.');
-            }
+          reader.readAsText(selectedFile);
+        } else {
+          console.log('No file selected.');
         }
+      }
+
+      function showMessage(s) {
+        console.log(s);
+      }
 
 
-    window.addEventListener('DOMContentLoaded', init);
+      window.addEventListener('DOMContentLoaded', init);
     </script>
-            <div id="sample">
-                <div
-                    style="width: 100%; display: flex; justify-content: space-between">
-                    <div id="myDiagramDiv"
-                        style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
-                    </div>
-                </div>
-
-                <div id="buttons">
-                    <input type="file" id="fileInput" accept=".json" />
-                    <button id="loadModel" onclick="load()">Load</button>
-                    <a href="./regrouping.html"><button id="previewPage">Back to
-                            editable</button>
-
-                    </a> </div>
-
-            </div>
+    <div id="sample">
+      <div style="width: 100%; display: flex; justify-content: space-between">
+        <div id="myDiagramDiv"
+          style="flex-grow: 1; height: 500px; background-color: #00406c; border: 1px solid rgb(29, 96, 105); position: relative; cursor: auto;">
         </div>
-    </body>
+      </div>
+
+      <div id="buttons">
+        <input type="file" id="fileInput" accept=".json" />
+        <button id="loadModel" onclick="load()">Load</button>
+        <a href="./regrouping.html"><button id="previewPage">Back to
+            editable</button>
+
+        </a>
+      </div>
+
+    </div>
+  </div>
+</body>
 
 </html>

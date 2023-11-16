@@ -7,6 +7,52 @@ let _data = [];
 let myDiagram;
 let myPalette;
 
+// class MyRescalingTool extends RescalingTool {
+//     doResize(e) {
+//       var tool = e.tool;
+//       var diagram = tool.diagram;
+//       if (diagram === null) return;
+//       diagram.startTransaction("Rescaling");
+//       var shape = tool.adornedObject;
+//       if (shape !== null && shape.part !== null) {
+//         var scaleX = shape.scaleX * tool.newScaleX / tool.initialScaleX;
+//         var scaleY = shape.scaleY * tool.newScaleY / tool.initialScaleY;
+//         shape.part.scaleX = scaleX;
+//         shape.part.scaleY = scaleY;
+//       }
+//       diagram.commitTransaction("Rescaling");
+//     }
+//    }
+
+
+class MyRescalingTool extends RescalingTool {
+    doResize(e) {
+        var tool = e.tool;
+        var diagram = tool.diagram;
+        if (diagram === null) return;
+        diagram.startTransaction("Rescaling");
+        var shape = tool.adornedObject;
+        if (shape !== null && shape.part !== null) {
+            var scaleX = shape.scaleX * tool.newScaleX / tool.initialScaleX;
+            var scaleY = shape.scaleY * tool.newScaleY / tool.initialScaleY;
+
+            // Get the height of the group's title
+            var titleHeight = shape.part.findObject("SHAPE").height;
+
+            // Calculate the new height of the group
+            var newHeight = titleHeight + scaleY * shape.height;
+
+            // Set the new height of the group
+            shape.part.height = newHeight;
+
+            // shape.part.scaleX = scaleX;  
+            shape.part.scaleY = scaleY;
+        }
+        diagram.commitTransaction("Rescaling");
+    }
+}
+
+
 
 
 function init() {
@@ -26,11 +72,12 @@ function init() {
 
     });
 
-    myDiagram.addDiagramListener("ObjectSingleClicked",
-        e => {
-            var part = e.subject.part;
-            if (!(part instanceof go.Link)) showMessage(e);
-        });
+    // myDiagram.addDiagramListener("ObjectSingleClicked",
+    //     e => {
+    //         var part = e.subject.part;
+    //         if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.text);
+    //         showMessage("e: " + e);
+    //     });
 
     // myDiagram.addDiagramListener("BackgroundDoubleClicked",
     //   e => showMessage("Double-clicked at " + e.diagram.lastInput.documentPoint));
@@ -81,10 +128,10 @@ function init() {
                 tool.handle = adorn.elt(0); // 0 for top handle
                 myDiagram.currentTool = tool; // starts the ResizingTool
                 tool.doActivate();            // activates the ResizingTool
-            }
+            }   
             // now we can check to see if the Group will accept membership of the dragged Parts
             if (grp.canAddMembers(map.toKeySet())) {
-                grp.isHighlighted = true;
+                grp.isHighlighted = true;    
                 return;
             }
         }
@@ -95,33 +142,14 @@ function init() {
     function finishDrop(e, grp) {
         var ok;
         if (grp !== null) {
-            if (grp.data.text === 'Shelf') {
-                // Check if the dropped part is a port
-                if (e.diagram.selection.first().data.text === 'Port') {
-                    // Create a new board
-                    var newBoardData = { key: go.UniqueId.toString(), isGroup: true, text: 'Board', horiz: false, parent: grp.data.key };
-                    // Add the port to this new board
-                    var portData = e.diagram.selection.first().data;
-                    // portData.parent = newBoardData.key;
-                    // // Add this new board to the original shelf
-                    // e.diagram.model.addNodeData(newBoardData);
-                    // e.diagram.model.addNodeData(portData);
-                    // ok = true;
-                } else {
-                    // Otherwise, add the selection as members of the Group
-                    ok = grp.addMembers(grp.diagram.selection, true);
-                }
-            } else {
-                // Otherwise, add the selection as members of the Group
-                ok = grp.addMembers(grp.diagram.selection, true);
-            }
+            // Otherwise, add the selection as members of the Group
+            ok = grp.addMembers(grp.diagram.selection, true);
         } else {
             // If the target is not a group, make the selection top-level
             ok = e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true);
         }
         if (!ok) e.diagram.currentTool.doCancel();
     }
-
 
 
 
@@ -135,50 +163,36 @@ function init() {
                 mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, true),
                 computesBoundsAfterDrag: true,
                 computesBoundsIncludingLocation: true,
-                resizable: true,
-                // when the selection is dropped into a Group, add the selected Parts into that Group;
-                // if it fails, cancel the tool, rolling back any changes
                 mouseDrop: finishDrop,
-                handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-                // Groups containing Groups lay out their members horizontally
+                handlesDragDropForMembers: true,
                 layout: makeLayout(false),
-                // mouseEnter: (e, node) => {
-                //     var adorn = node.findAdornment("Resizing");
-                //     if (adorn !== null) {
-                //         var tool = myDiagram.toolManager.resizingTool;
-                //         tool.handle = adorn.elt(0); // 0 for top handle
-                //         myDiagram.currentTool = tool; // starts the ResizingTool
-                //         tool.doActivate();            // activates the ResizingTool
-                //     }
-                // },
-                click: (e, obj) => showMessage("Group Clicked on " + obj.part.data.key)
+                resizable: true, // make the Shape resizable
+                resizeObjectName: "SHAPE",
+                mouseEnter: (e, node) => {
+                    // var adorn = node.findAdornment("Resizing");
+                    // if (adorn !== null) {
+                    //     var tool = myDiagram.toolManager.resizingTool;
+                    //     tool.handle = adorn.elt(0); // 0 for top handle
+                    //     myDiagram.currentTool = tool; // starts the ResizingTool
+                    //     tool.doActivate();            // activates the ResizingTool
+                    // }
+                },
+                click: (e, obj) => showMessage(obj.part)
             }
         )
             .bind("layout", "horiz", makeLayout)
-            //.bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
-            .add(new go.Shape("Rectangle",
-                {
-                    fill: null,
-                    stroke: defaultColor(false),
-                    fill: defaultColor(false),
-                    strokeWidth: 2,
-                    resizable: true, // make the Shape resizable
-                    resizeObjectName: "SHAPE",
-                })
-                .bind("stroke", "horiz", defaultColor)
-                .bind("fill", "horiz", defaultColor)
-                .bind("width", "width", null, null)
-                .bind("height", "height", null, null))
-
+            // .bind(new go.Binding("background", "isHighlighted", h => h ? "#fff" : "transparent").ofObject())
+            .bind("width", "width", null, null)
             .add(
                 new go.Panel("Vertical")
                     .add(new go.Panel("Horizontal", // button next to TextBlock
                         {
                             stretch: GraphObject.Horizontal,
-                            background: defaultColor(false)
+                            background: defaultColor(false),
                         })
                         .bind("background", "horiz", defaultColor)
-                        .add(GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Left, margin: 5 }))
+                        .bind("width", "width", null, null)
+                        .add(GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Left, margin: 10 }))
                         .add(new go.TextBlock(
                             {
                                 alignment: go.Spot.Top,
@@ -188,13 +202,46 @@ function init() {
                                 opacity: 0.90,
                                 innerHeight: 100,
                                 innerWidth: 100,
-
                             })
+                            // .bind("width", "width", null, null)
+                            // .bind("height", "textHeight", e => txtHeight(e), null)
                             .bind("font", "horiz")
                             .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
-                    )  // end Horizontal Panel
+                    ) // end Horizontal Panel
                     .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
-            )  // end Vertical Panel
+            ) // end Vertical Panel
+            .add(new go.Shape("Rectangle",
+                {
+                    fill: null,
+                    stroke: defaultColor(false),
+                    fill: defaultColor(false),
+                    strokeWidth: 2,
+                    resizable: true, // make the Shape resizable
+                    resizeObjectName: "SHAPE",
+                    resized: (e, shape) => {
+                        var adorn = node.findAdornment("Resizing");
+                        if (adorn !== null) {
+                            var tool = myDiagram.toolManager.resizingTool;
+                            tool.handle = adorn.elt(0); // 0 for top handle
+                            myDiagram.currentTool = tool; // starts the ResizingTool
+                            tool.doActivate();            // activates the ResizingTool
+                        }
+                        var width = shape.width;
+                        var height = shape.height;
+                        shape.part.width = width;
+                        shape.part.height = height;
+                        shape.fill = "red"; // change the color of the Shape when the Group is resized
+                        console.log("Shape resized. New width: " + width + ", new height: " + height);
+                    }
+                })
+                .bind("stroke", "horiz", defaultColor)
+                .bind("fill", "horiz", defaultColor)
+                .bind("width", "width", null, null)
+                .bind("height", "height", null, null))
+
+
+
+
 
     // myDiagram.toolManager.mouseDownTools.add(new MyRescalingTool());
 
@@ -205,54 +252,47 @@ function init() {
         new go.Node("Auto",
             { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
                 mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
-                resizable: true, resizeObjectName: "NODE",
-
+                resizable: true, resizeObjectName: "SHAPE",
+                resized: (e, node) => {
+                    // // Update the width and height properties of the node data when the node is resized
+                    // var width = node.findObject("SHAPE").width;
+                    // var height = node.findObject("SHAPE").height;
+                    // node.width = width;
+                    // node.height = height;
+                },
                 click: (e, obj) => {
-                    showMessage("Node Clicked :" + obj.data.type),
+                    showMessage("Node Clicked :" + e),
                         console.log(obj);
                 },
                 selectionChanged: part => {
-                    var NODE = part.elt(0);
-                    NODE.fill = part.isSelected ? "red" : "white";
+                    var shape = part.elt(0);
+                    shape.fill = part.isSelected ? "red" : "white";
                 }
             })
 
             .add(new go.Picture(
                 {
                     margin: 0,
-                    name: "NODE",
-                    height: 100,
-                    width: 100,
-                    resized: (e, node) => {
-
-                        // Update the width and height properties of the node data when the node is resized
-                        var width = node.findObject("NODE").width;
-                        var height = node.findObject("NODE").height;
-                        node.width = width;
-                        node.height = height;
-                    },
+                    name: "SHAPE",
                 })
                 .bind("source", "source")
-                .bind("width", "width", e => {
-                    e.actualBounds.width;
-                    console.log(e)
-                }, null)
-                .bind("height", "height", e => e.actualBounds.height, null))
-    // .add(new go.TextBlock(
-    //     {
-    //         margin: 7,
-    //         editable: true,
-    //         font: "bold 13px sans-serif",
-    //         opacity: 0.90,
-    //         innerHeight: 100,
-    //         innerWidth: 100,
-    //         name: "NODE",
-    //         resized: (e, obj) => {
-    //             // Adjust the font size of the text
-    //             obj.font = "bold 13px sans-serif";
-    //         }
-    //     })
-    // )
+                .bind("width", "width", e => e.data.width, null)
+                .bind("height", "height", e => e.data.height, null))
+            .add(new go.TextBlock(
+                {
+                    margin: 7,
+                    editable: true,
+                    font: "bold 13px sans-serif",
+                    opacity: 0.90,
+                    innerHeight: 100,
+                    innerWidth: 100,
+                    name: "SHAPE",
+                    resized: (e, obj) => {
+                        // Adjust the font size of the text
+                        obj.font = "bold 13px sans-serif";
+                    }
+                })
+            )
 
 
 
@@ -265,9 +305,9 @@ function init() {
             });
 
     myPalette.model = new go.GraphLinksModel([
-        { isGroup: true, text: "Cabinet", horiz: false, width: 120, height: 100 },
-        { isGroup: true, text: "Shelf", horiz: false, width: 120, height: 100 },
-        { isGroup: true, text: "Board", horiz: true, width: 120, height: 100 },
+        { isGroup: true, text: "Cabinet", horiz: false, width: "", height: "" },
+        { isGroup: true, text: "Shelf", horiz: false },
+        { isGroup: true, text: "Board", horiz: true },
         { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial-port.svg", width: 100, height: 120 },
         { type: "Serial Port", text: "Port", color: "#fff", source: "./images/serial.svg", width: 100, height: 120 },
         { type: "Serial Port", text: "Port", color: "#fff", source: "./images/port001.svg", width: 100, height: 120 },
@@ -290,6 +330,8 @@ function txtHeight() {
 
 function save() {
     _data.push(myDiagram.model.toJson());
+    // _viewport = myDiagram.position;
+    // console.log(_viewport);
     myDiagram.isModified = false;
     downloadData(_data);
     _data = [];
