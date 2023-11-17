@@ -140,7 +140,8 @@
             .add(new go.Shape("Rectangle",
               { fill: null, stroke: defaultColor(false), fill: defaultColor(false), strokeWidth: 2 })
               .bind("stroke", "horiz", defaultColor)
-              .bind("fill", "horiz", defaultColor))
+              .bind("fill", "horiz", defaultColor).bind("width", "width", null, null)
+              .bind("height", "height", null, null))
 
 
             .add(
