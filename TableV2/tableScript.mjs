@@ -1,4 +1,6 @@
 import * as go from "../node_modules/gojs/release/go.mjs";
+import { GraphObject } from '../node_modules/gojs/release/go.mjs';
+
 import * as layout from "./TableLayout.js";
 
 
@@ -153,6 +155,8 @@ function init() {
             )
         ));
 
+
+
     myDiagram.nodeTemplateMap.add("Row Sider",  // for each row header
         $(go.Part, "Spot",
             {
@@ -249,6 +253,151 @@ function init() {
                 })
         );
 
+
+    myDiagram.groupTemplateMap.add("Row Sider",
+        $(go.Group, "Vertical",
+            {
+                //background: "#000",
+                ungroupable: true,
+                // highlight when dragging into the Group
+                mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+                mouseDragLeave: (e, grp, next) => {
+                    highlightGroup(e, grp, false);
+                    console.log(next)
+                },
+                computesBoundsAfterDrag: true,
+                computesBoundsIncludingLocation: true,
+                // when the selection is dropped into a Group, add the selected Parts into that Group;
+                // if it fails, cancel the tool, rolling back any changes
+                mouseDrop: finishDrop,
+                handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+                // Groups containing Groups lay out their members horizontally
+                layout: new go.ForceDirectedLayout(),//makeLayout(false),
+                click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
+                selectionObjectName: "PH",
+                locationObjectName: "PH",
+                resizable: true,
+                resizeObjectName: "PH"
+            },
+            // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            new go.Binding("layout", "horiz", makeLayout)
+        )
+            .bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
+
+            .add(
+                $(go.Panel, "Vertical")
+                    .add(new go.Panel("Horizontal", // button next to TextBlock
+                        {
+                            selectionObjectName: "GROUPE",
+                            stretch: go.GraphObject.Horizontal,
+                            background: defaultColor(false)
+                        })
+                        .bind("background", "horiz", defaultColor)
+                        .add(GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Left, margin: 5 }))
+                        .add(new go.TextBlock(
+                            {
+                                alignment: go.Spot.Top,
+                                // margin: 7,
+                                editable: true,
+                                font: "bold 13px sans-serif",
+                                opacity: 0.90,
+
+                            })
+                            .bind("font", "horiz")
+                            .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
+                        .bind("width", "width", null, null)))
+            // end Horizontal Panel
+            // .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+            .add(new go.Shape("Rectangle",
+                {
+                    fill: null,
+                    // stroke: defaultColor(false),
+                    // fill: defaultColor(false),
+                    // strokeWidth: 2,
+                    resizable: true, // make the Shape resizable
+                    resizeObjectName: "SHAPE",
+                })
+                .bind("background", "color")
+                .bind("stroke", "horiz", defaultColor)
+                // .bind("fill", "horiz", defaultColor)
+                .bind("width", "width", null, null) // bind the width property of the Shape to the width property of the data
+                .bind("height", "height", null, null)) // bind the height property of the Shape to the height property of the data
+
+    )
+
+    myDiagram.groupTemplateMap.add("Gamma",
+        $(go.Group, "Vertical",
+            {
+                //background: "#000",
+                ungroupable: true,
+                // highlight when dragging into the Group
+                mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+                mouseDragLeave: (e, grp, next) => {
+                    highlightGroup(e, grp, false);
+                    console.log(next)
+                },
+                computesBoundsAfterDrag: true,
+                computesBoundsIncludingLocation: true,
+                // when the selection is dropped into a Group, add the selected Parts into that Group;
+                // if it fails, cancel the tool, rolling back any changes
+                mouseDrop: finishDrop,
+                handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+                // Groups containing Groups lay out their members horizontally
+                layout: new go.ForceDirectedLayout(),//makeLayout(false),
+                click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
+                selectionObjectName: "PH",
+                locationObjectName: "PH",
+                resizable: true,
+                resizeObjectName: "PH"
+            },
+            // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            new go.Binding("layout", "horiz", makeLayout)
+        )
+            .bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
+
+            .add(
+                $(go.Panel, "Vertical")
+                    .add(new go.Panel("Horizontal", // button next to TextBlock
+                        {
+                            selectionObjectName: "GROUPE",
+                            stretch: go.GraphObject.Horizontal,
+                            background: defaultColor(false)
+                        })
+                        .bind("background", "horiz", defaultColor)
+                        .add(GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Left, margin: 5 }))
+                        .add(new go.TextBlock(
+                            {
+                                alignment: go.Spot.Top,
+                                // margin: 7,
+                                editable: true,
+                                font: "bold 13px sans-serif",
+                                opacity: 0.90,
+
+                            })
+                            .bind("font", "horiz")
+                            .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
+                        .bind("width", "width", null, null)))
+            // end Horizontal Panel
+            // .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+            .add(new go.Shape("Rectangle",
+                {
+                    fill: null,
+                    // stroke: defaultColor(false),
+                    // fill: defaultColor(false),
+                    // strokeWidth: 2,
+                    resizable: true, // make the Shape resizable
+                    resizeObjectName: "SHAPE",
+                })
+                .bind("background", "color")
+                .bind("stroke", "horiz", defaultColor)
+                // .bind("fill", "horiz", defaultColor)
+                .bind("width", "width", null, null) // bind the width property of the Shape to the width property of the data
+                .bind("height", "height", null, null)) // bind the height property of the Shape to the height property of the data
+
+    )
+
+
+
     myDiagram.model = new go.GraphLinksModel([
         // headers
         { key: "Header", text: "Cabinet 001", category: "Header" },
@@ -282,9 +431,9 @@ function init() {
                     // { key: "Alpha", color: "orange" },
                     // { key: "Beta", color: "tomato" },
                     // { key: "Gamma", color: "goldenrod" }
-                    { isGroup: true, text: "Cabinet", horiz: false },
-                    { isGroup: true, text: "Shelf", horiz: false },
-                    { isGroup: true, text: "Board", horiz: true },
+                    { category: "Gamma", isGroup: true, text: "Cabinet", horiz: false },
+                    { category: "Gamma", isGroup: true, text: "Shelf", horiz: false },
+                    { category: "Gamma", isGroup: true, text: "Board", horiz: true },
                     { type: "Serial Port", text: "Port", source: "../images/serial-port.svg", width: 100, height: 120 },
                     { type: "Serial Port", text: "Port", source: "../images/serial.svg", width: 100, height: 120 },
                     { type: "Serial Port", text: "Port", source: "../images/port001.svg", width: 100, height: 120 },
@@ -298,7 +447,7 @@ function init() {
     myPalette.nodeTemplate =
         new go.Node("Auto",
             { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-                // mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
+                mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
                 resizable: true,
                 resizeObjectName: "NODE",
                 click: (e, obj) => {
@@ -332,6 +481,81 @@ function init() {
                     console.log(e)
                 }, null)
                 .bind("height", "height", e => e.actualBounds.height, null))
+
+
+
+
+    myPalette.groupTemplate =
+        $(go.Group, "Vertical",
+            {
+                //background: "#000",
+                ungroupable: true,
+                // highlight when dragging into the Group
+                mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+                mouseDragLeave: (e, grp, next) => {
+                    highlightGroup(e, grp, false);
+                    console.log(next)
+                },
+                computesBoundsAfterDrag: true,
+                computesBoundsIncludingLocation: true,
+                // when the selection is dropped into a Group, add the selected Parts into that Group;
+                // if it fails, cancel the tool, rolling back any changes
+                // mouseDrop: finishDrop,
+                handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+                // Groups containing Groups lay out their members horizontally
+                layout: new go.GridLayout({
+                    wrappingWidth: Infinity,
+                    alignment: go.GridLayout.Position,
+                    cellSize: new go.Size(1, 1)
+                }),
+                click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
+            },
+            // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            new go.Binding("layout", "horiz", makeLayout)
+        )
+            .bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
+
+            .add(
+                $(go.Panel, "Vertical")
+                    .add(new go.Panel("Horizontal", // button next to TextBlock
+                        {
+                            selectionObjectName: "GROUPE",
+                            stretch: go.GraphObject.Horizontal,
+                            background: defaultColor(false)
+                        })
+                        .bind("background", "horiz", defaultColor)
+                        .add(GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Left, margin: 5 }))
+                        .add(new go.TextBlock(
+                            {
+                                alignment: go.Spot.Top,
+                                // margin: 7,
+                                editable: true,
+                                font: "bold 13px sans-serif",
+                                opacity: 0.90,
+
+                            })
+                            .bind("font", "horiz")
+                            .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
+                        .bind("width", "width", null, null)))
+            // end Horizontal Panel
+            // .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+            .add(new go.Shape("Rectangle",
+                {
+                    fill: null,
+                    // stroke: defaultColor(false),
+                    // fill: defaultColor(false),
+                    // strokeWidth: 2,
+                    resizable: true, // make the Shape resizable
+                    resizeObjectName: "SHAPE",
+                })
+                .bind("background", "color")
+                .bind("stroke", "horiz", defaultColor)
+                // .bind("fill", "horiz", defaultColor)
+                .bind("width", "width", null, null) // bind the width property of the Shape to the width property of the data
+                .bind("height", "height", null, null)) // bind the height property of the Shape to the height property of the data
+
+
+
 }
 window.addEventListener('DOMContentLoaded', init);
 
@@ -360,3 +584,62 @@ function downloadData(dataArray) {
     document.body.removeChild(a);
 }
 document.getElementById("saveModel").addEventListener("click", save);
+
+
+function makeLayout(horiz) {  // a Binding conversion function
+    if (horiz) {
+        return new go.GridLayout(
+            {
+                wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+                // cellSize: new go.Size(1, 1), spacing: new go.Size(10, 4)
+            });
+    } else {
+        return new go.GridLayout(
+            {
+                wrappingColumn: 1, alignment: go.GridLayout.Position,
+                cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+            });
+    }
+}
+
+function defaultColor(horiz) {  // a Binding conversion function
+    return horiz ? "#c7fcf6" : "rgba(51,211,229, 0.5)";
+}
+
+// this function is used to highlight a Group that the selection may be dropped into
+function highlightGroup(e, grp, show) {
+    if (!grp) return;
+    e.handled = true;
+    if (show) {
+        // cannot depend on the grp.diagram.selection in the case of external drag-and-drops;
+        // instead depend on the DraggingTool.draggedParts or .copiedParts
+        var tool = grp.diagram.toolManager.draggingTool;
+        var map = tool.draggedParts || tool.copiedParts;  // this is a Map
+        // now we can check to see if the Group will accept membership of the dragged Parts
+        if (grp.canAddMembers(map.toKeySet())) {
+            grp.isHighlighted = true;
+            return;
+        }
+    }
+    grp.isHighlighted = false;
+}
+
+
+function finishDrop(e, grp) {
+    var ok;
+    if (grp !== null) {
+        // Check if the target group is a Shelf group and the dropped part is a Cabinet
+        if (grp.data.text === 'Shelf' && e.diagram.selection.first().data.text === 'Cabinet') {
+            // If these conditions are met, cancel the operation
+            ok = false;
+            if (!ok) e.diagram.currentTool.doCancel();
+        } else {
+            // Otherwise, add the selection as members of the Group
+            ok = grp.addMembers(grp.diagram.selection, true);
+        }
+    } else {
+        // If the target is not a group, make the selection top-level
+        ok = e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true);
+    }
+    if (!ok) e.diagram.currentTool.doCancel();
+}
