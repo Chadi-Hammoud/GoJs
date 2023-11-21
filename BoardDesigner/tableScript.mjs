@@ -15,8 +15,9 @@ let boardHeight = 500;
 let row = 1;
 let col = 1;
 
-let rowDef = $(go.RowColumnDefinition, { row: row, height: boardHeight });
-let colDef = $(go.RowColumnDefinition, { column: col, width: boardWidth });
+let rowDef = $(go.RowColumnDefinition, { row: row, height: boardHeight, separatorStrokeWidth: 1, separatorStroke: "black" });
+let colDef = $(go.RowColumnDefinition, { column: col, width: boardWidth, separatorStrokeWidth: 1, separatorStroke: "black" });
+
 // define a custom ResizingTool to limit how far one can shrink a row or column
 class LaneResizingTool extends go.ResizingTool {
     computeMinSize() {
@@ -26,7 +27,7 @@ class LaneResizingTool extends go.ResizingTool {
         const lane = this.adornedObject.part; // might be row or column
         if (lane === null)
             return new go.Size();
-        const horiz = (lane.category === 'Column Header'); // or "Row Header"
+        const horiz = (lane.category === 'Board'); // or "Row Header"
         const margin = diagram.nodeTemplate.margin;
         let bounds = new go.Rect();
         diagram.findTopLevelGroups().each((g) => {
@@ -60,7 +61,7 @@ class LaneResizingTool extends go.ResizingTool {
         const lane = this.adornedObject.part;
         if (lane === null)
             return;
-        const horiz = (lane.category === 'Column Header');
+        const horiz = (lane.category === 'Board');
         const lay = diagram.layout; // the TableLayout
         if (horiz) {
             const col = lane.column;
@@ -77,8 +78,18 @@ class LaneResizingTool extends go.ResizingTool {
 }  // end LaneResizingTool class
 
 function init() {
+    // colDef.width = parseInt(prompt("width of each column"));
+    // colDef.column = parseInt(prompt("how many column do u need"));
+
+    // rowDef.height = parseInt(prompt("height of each row"));
+    // rowDef.row = parseInt(prompt("how many row do u need"));
+
+    // portCount = parseInt(prompt("how many ports do u need"));
+    portCount = 2;
+
+
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+
 
     myDiagram =
         new go.Diagram("myDiagramDiv",
@@ -86,7 +97,9 @@ function init() {
                 layout: $(layout.TableLayout,
                     rowDef,  // fixed size column headers
                     colDef,// fixed size row headers
+
                 ),
+
                 "SelectionMoved": e => e.diagram.layoutDiagram(true),
                 "resizingTool": new LaneResizingTool(),
                 // feedback that dropping in the background is not allowed
@@ -99,13 +112,13 @@ function init() {
 
 
 
-    myDiagram.nodeTemplateMap.add("Column Header",  // for each column header
+    myDiagram.nodeTemplateMap.add("Board",  // for each column header
         $(go.Part, "Spot",
             {
                 row: 1, rowSpan: 9999, column: 0,
                 minSize: new go.Size(500, 500),
                 stretch: go.GraphObject.Fill,
-                movable: false,
+                movable: true,
                 resizable: true,
                 width: 500,
                 resizeAdornmentTemplate:
@@ -130,7 +143,7 @@ function init() {
                     alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
                     stretch: go.GraphObject.Horizontal,
                     height: myDiagram.layout.getRowDefinition(1).height,
-                    width: myDiagram.layout.getColumnDefinition(2).width
+                    width: myDiagram.layout.getColumnDefinition(1).width
                 },
                 $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
                 $(go.TextBlock,
@@ -159,7 +172,7 @@ function init() {
         $(go.Group, "Auto",
             {
                 resizable: true,
-                resizeObjectName: "",
+                resizeObjectName: "SHAPE", // specify the object to be resized
                 layerName: "Background",
                 stretch: go.GraphObject.Fill,
                 selectable: false,
@@ -172,36 +185,47 @@ function init() {
 
                     var anynew = e.diagram.selection.any(p => p.containingGroup !== group);
                     // Don't allow headers/siders to be dropped
-                    var anyHeadersSiders = e.diagram.selection.any(p => p.category === "Column Header" || p.category === "Row Sider");
+                    var anyHeadersSiders = e.diagram.selection.any(p => p.category === "Board");
                     if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true) && i <= portCount) {
                         if (anynew) {
                             if (i != portCount) {
-                                e.diagram.layout.getRowDefinition(group.row).height = NaN;
-                                e.diagram.layout.getColumnDefinition(group.column).width = NaN;
+                                e.diagram.layout.getRowDefinition(group.row).height = 500;
+                                e.diagram.layout.getColumnDefinition(group.column).width;
                                 i++;
                             } else {
                                 e.diagram.currentTool.doCancel();
                             }
+
+                            console.log("anyHeadersSiders", anyHeadersSiders);
+                            console.log("group", group.addMembers(e.diagram.selection, true));
+                            console.log(e.diagram.layout.getRowDefinition(group.row).height);
+                            console.log(group);
+
+
 
 
                         }
                     } else {  // failure upon trying to add parts to this group
                         e.diagram.currentTool.doCancel();
                     }
-                }
+                },
+                click: (e, obj) => {
+                    console.log("Node Clicked :" , obj.data);
+                    // console.log(obj);
+                },
+
+   
+                
             },
             new go.Binding("row"),
             new go.Binding("column", "col"),
             // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
-            $(go.Shape,
+            $(go.Shape, "Rectangle", // name the object
                 {
                     fill: "transparent", stroke: "transparent",
                     strokeWidth: myDiagram.nodeTemplate.margin.left,
                     stretch: go.GraphObject.Fill,
-
-
                 },
-
                 new go.Binding("height", "height", null, null),
                 new go.Binding("fill", "color"),
                 new go.Binding("stroke", "isHighlighted", h => h ? "green" : "transparent").ofObject()),
@@ -213,12 +237,15 @@ function init() {
         );
 
 
+
     myDiagram.model = new go.GraphLinksModel([
 
 
-        { key: "EmpReq", row: 0, col: 1, isGroup: true, color: "gray", width: 500, height: 500 },
+        { key: "EmpReq", col: 1, isGroup: true, color: "gray", width: 500, height: 500 },
+
 
     ]);
+    console.log(myDiagram.model)
 
 
     myPalette =
@@ -272,7 +299,12 @@ function init() {
                     console.log(e)
                 }, null)
                 .bind("height", "height", e => e.actualBounds.height, null))
+
+    console.log("palette", myPalette);
+    console.log("diagram", myDiagram);
 }
+
+
 window.addEventListener('DOMContentLoaded', init);
 
 
@@ -304,25 +336,19 @@ document.getElementById("saveModel").addEventListener("click", save);
 
 
 
-document.getElementById('port-form').addEventListener('submit', function (event) {
-
-    event.preventDefault();
-
-    // Get the value from the input field
-    portCount = document.getElementById('port-input').value;
 
 
-});
 
 
-document.getElementById('ok').addEventListener('click', function (event) {
-    event.preventDefault();
-    console.log("Button clicked");
-    boardWidth = 100;
-    colDef.width = boardWidth;
-    rowDef.height = 600;
-    myDiagram.layout.invalidateLayout();
-    myDiagram.requestUpdate();  
-});
+
+
+
+
+
+
+
+
+
+
 
 
