@@ -102,11 +102,19 @@ function init() {
                     "_buttonFillOver": "skyblue"
                 },
                 $(go.TextBlock, "Change Color"),
-                { click: console.log("Clicked") }),
+                { click: () => console.log("Clicked") }),
             $("ContextMenuButton",
+                {
+                    "ButtonBorder.fill": "white",
+                    "_buttonFillOver": "skyblue"
+                },
                 $(go.TextBlock, "Add Row"),
                 { click: function (e, obj) { addRow(obj); } }),
             $("ContextMenuButton",
+                {
+                    "ButtonBorder.fill": "white",
+                    "_buttonFillOver": "skyblue"
+                },
                 $(go.TextBlock, "Add Column"),
                 { click: function (e, obj) { addColumn(obj); } })
         );
@@ -120,7 +128,11 @@ function init() {
                 stretch: go.GraphObject.Horizontal,
                 selectable: false, pickable: false
             },
-            $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+            $(go.Shape, {
+                contextMenu: contextMenu,
+                fill: "transparent",
+                strokeWidth: 0,
+            }),
             $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif" },
                 new go.Binding("text"))
         ));
@@ -128,6 +140,7 @@ function init() {
     myDiagram.nodeTemplateMap.add("Sider",  // an overall table header, on the left side
         $(go.Part, "Auto",
             {
+                contextMenu: contextMenu,
                 row: 1, rowSpan: 9999, column: 0,
                 stretch: go.GraphObject.Vertical,
                 selectable: false, pickable: false
@@ -181,8 +194,9 @@ function init() {
     myDiagram.nodeTemplateMap.add("Row Sider",  // for each row header
         $(go.Part, "Spot",
             {
+                contextMenu: contextMenu,
                 row: 2, column: 1, columnSpan: 9999,
-                minSize: new go.Size(NaN, 100),
+                minSize: new go.Size(100, 100),
                 stretch: go.GraphObject.Fill,
                 movable: false,
                 resizable: false,
@@ -231,10 +245,9 @@ function init() {
     myDiagram.groupTemplate =  // for cells
         $(go.Group, "Auto",
             {
-
-                layerName: "Background",
+                // layerName: "Background",
                 stretch: go.GraphObject.Fill,
-                selectable: false,
+                selectable: true,
                 computesBoundsAfterDrag: true,
                 computesBoundsIncludingLocation: false,  // set this property to false
                 handlesDragDropForMembers: true,
@@ -255,7 +268,11 @@ function init() {
                     } else {  // failure upon trying to add parts to this group
                         e.diagram.currentTool.doCancel();
                     }
-                }
+                },
+                click: (e, obj) => {
+                    console.log("Node Clicked :" + obj.data.key);
+                    console.log(obj);
+                },
             },
             new go.Binding("row"),
             new go.Binding("column", "col"),
@@ -279,6 +296,7 @@ function init() {
     myDiagram.groupTemplateMap.add("Row Sider",
         $(go.Group, "Vertical",
             {
+
                 //background: "#000",
                 ungroupable: true,
                 // highlight when dragging into the Group
@@ -310,6 +328,7 @@ function init() {
                 $(go.Panel, "Vertical")
                     .add(new go.Panel("Horizontal", // button next to TextBlock
                         {
+                            contextMenu: contextMenu,
                             selectionObjectName: "GROUPE",
                             stretch: go.GraphObject.Horizontal,
                             background: defaultColor(false)
@@ -350,8 +369,6 @@ function init() {
     myDiagram.groupTemplateMap.add("Gamma",
         $(go.Group, "Vertical",
             {
-                contextMenu: contextMenu,  // define a context menu for each node
-
                 //background: "#000",
                 ungroupable: true,
                 // highlight when dragging into the Group
@@ -410,7 +427,7 @@ function init() {
                 })
                 .bind("background", "color")
                 .bind("stroke", "horiz", defaultColor)
-                .bind("width", "width", null, null) // bind the width property of the Shape to the width property of the data
+                .bind("width", "width", v => v / 3, null) // bind the width property of the Shape to the width property of the data
                 .bind("height", "height", null, null)) // bind the height property of the Shape to the height property of the data
 
     )
@@ -430,7 +447,7 @@ function init() {
         { key: "Manager", text: "Shelf_002", row: 3, category: "Row Sider" },
         { key: "Administrator", text: "Shelf_003", row: 4, category: "Row Sider" },
         // cells, each a group assigned to a row and column
-        { key: "EmpReq", row: 2, col: 2, isGroup: true, color: "black" },
+        { key: "EmpReq", row: 2, col: 2, isGroup: true, color: "blue" },
         // { key: "EmpApp", row: 2, col: 3, isGroup: true, color: "lightgreen" },
         // { key: "ManReq", row: 3, col: 2, isGroup: true, color: "blue" },
         // { key: "ManApp", row: 3, col: 3, isGroup: true, color: "lightyellow" },
@@ -450,7 +467,7 @@ function init() {
                     // { key: "Alpha", color: "orange" },
                     // { key: "Beta", color: "tomato" },
                     // { key: "Gamma", color: "goldenrod" }
-                    { category: "Gamma", isGroup: true, text: "Cabinet", horiz: false },
+                    { category: "Gamma", isGroup: true, text: "Cabinet", horiz: false, row: 0, column: 0 },
                     { category: "Gamma", isGroup: true, text: "Shelf", horiz: false },
                     { category: "Gamma", isGroup: true, text: "Board", horiz: true },
                     { type: "Serial Port", text: "Port", source: "../images/serial-port.svg", width: 100, height: 120 },
@@ -532,7 +549,7 @@ function init() {
             // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             new go.Binding("layout", "horiz", makeLayout)
         )
-            .bind(new go.Binding("background", "isHighlighted", h => h ? "black" : "transparent").ofObject())
+            .bind(new go.Binding("background", "isHighlighted", h => h ? "red" : "transparent").ofObject())
 
             .add(
                 $(go.Panel, "Vertical")
@@ -610,7 +627,7 @@ function makeLayout(horiz) {  // a Binding conversion function
         return new go.GridLayout(
             {
                 wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-                // cellSize: new go.Size(1, 1), spacing: new go.Size(10, 4)
+                cellSize: new go.Size(1, 1), spacing: new go.Size(10, 4)
             });
     } else {
         return new go.GridLayout(
@@ -669,11 +686,22 @@ function addRow(obj) {
     var contextmenu = obj.part;
     // get the node data to which the context menu belongs
     var node = contextmenu.adornedPart;
+
     // increment the row property
-    node.data.row += 1;
-    // update the node data
-    myDiagram.model.updateTargetBindings(node.data);
+    var newRow = node.data.row + 1;
+
+    // add new row to the nodeDataArray
+    myDiagram.model.addNodeData({
+        key: `NewRow${newRow}`,
+        text: `Shelf_${newRow}`,
+        row: newRow,
+        category: "Row Sider"
+    });
+
+    // update the diagram layout
+    myDiagram.layoutDiagram(true);
 }
+
 
 function addColumn(obj) {
     // get the context menu that holds the button
@@ -684,4 +712,6 @@ function addColumn(obj) {
     node.data.column += 1;
     // update the node data
     myDiagram.model.updateTargetBindings(node.data);
+    // update the diagram layout
+    myDiagram.layoutDiagram(true);
 }
