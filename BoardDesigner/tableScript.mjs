@@ -10,9 +10,13 @@ let myPalette;
 let _data = [];
 let portCount = 0;
 let i = 0;
-let boardWidth;
-let boardHeight;
+let boardWidth = 500;
+let boardHeight = 500;
+let row = 1;
+let col = 1;
 
+let rowDef = $(go.RowColumnDefinition, { row: row, height: boardHeight });
+let colDef = $(go.RowColumnDefinition, { column: col, width: boardWidth });
 // define a custom ResizingTool to limit how far one can shrink a row or column
 class LaneResizingTool extends go.ResizingTool {
     computeMinSize() {
@@ -80,8 +84,8 @@ function init() {
         new go.Diagram("myDiagramDiv",
             {
                 layout: $(layout.TableLayout,
-                    $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
-                    $(go.RowColumnDefinition, { column: 1, width: 520 }) // fixed size row headers
+                    rowDef,  // fixed size column headers
+                    colDef,// fixed size row headers
                 ),
                 "SelectionMoved": e => e.diagram.layoutDiagram(true),
                 "resizingTool": new LaneResizingTool(),
@@ -93,7 +97,7 @@ function init() {
                 "undoManager.isEnabled": true
             });
 
-   
+
 
     myDiagram.nodeTemplateMap.add("Column Header",  // for each column header
         $(go.Part, "Spot",
@@ -117,10 +121,10 @@ function init() {
                     )
             },
             new go.Binding("column", "col"),
-          
-            $(go.Shape, { fill: null,  },
+
+            $(go.Shape, { fill: null, },
                 new go.Binding("fill", "color")),
-              
+
             $(go.Panel, "Auto",
                 { // this is positioned above the Shape, in row 1
                     alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
@@ -195,9 +199,9 @@ function init() {
                     strokeWidth: myDiagram.nodeTemplate.margin.left,
                     stretch: go.GraphObject.Fill,
 
-                    
+
                 },
-                
+
                 new go.Binding("height", "height", null, null),
                 new go.Binding("fill", "color"),
                 new go.Binding("stroke", "isHighlighted", h => h ? "green" : "transparent").ofObject()),
@@ -208,13 +212,13 @@ function init() {
                 })
         );
 
-       
-        myDiagram.model = new go.GraphLinksModel([
 
-           
-                { key: "EmpReq", row: 0, col: 1, isGroup: true, color: "gray", width: 500, height: 500 },
+    myDiagram.model = new go.GraphLinksModel([
 
-        ]);
+
+        { key: "EmpReq", row: 0, col: 1, isGroup: true, color: "gray", width: 500, height: 500 },
+
+    ]);
 
 
     myPalette =
@@ -311,15 +315,14 @@ document.getElementById('port-form').addEventListener('submit', function (event)
 });
 
 
-document.getElementById('board-size-form').addEventListener('submit', function (event) {
-
+document.getElementById('ok').addEventListener('click', function (event) {
     event.preventDefault();
-
-    // Get the value from the input field
-    boardWidth = document.getElementById('board-width').value;
-    boardHeight = document.getElementById('board-height').value;
-
-
-
+    console.log("Button clicked");
+    boardWidth = 100;
+    colDef.width = boardWidth;
+    rowDef.height = 600;
+    myDiagram.layout.invalidateLayout();
+    myDiagram.requestUpdate();  
 });
+
 
