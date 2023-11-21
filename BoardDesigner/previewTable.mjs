@@ -239,19 +239,7 @@ function load() {
         reader.addEventListener('load', function (e) {
             const fileContent = e.target.result;
             const jsonData = JSON.parse(fileContent);
-
-            // Set the model and layout the diagram
             myDiagram.model = go.Model.fromJson(jsonData[0]);
-            myDiagram.layoutDiagram(true);
-
-            // Restore the positions of nodes
-            jsonData[0].nodeDataArray.forEach(nodeData => {
-                const node = myDiagram.findNodeForKey(nodeData.key);
-                if (node) {
-                    node.location = go.Point.parse(nodeData.loc);
-                }
-            });
-
             console.log('JSON data:', jsonData);
         });
 
