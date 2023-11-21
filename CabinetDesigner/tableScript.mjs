@@ -9,7 +9,9 @@ import * as layout from "./TableLayout.js";
 var $ = go.GraphObject.make;
 let myDiagram;
 let myPalette;
+let contextMenu;
 let _data = [];
+
 
 
 // define a custom ResizingTool to limit how far one can shrink a row or column
@@ -92,6 +94,25 @@ function init() {
                 "undoManager.isEnabled": true
             });
 
+    contextMenu =
+        $("ContextMenu",  // that has one button
+            $("ContextMenuButton",
+                {
+                    "ButtonBorder.fill": "white",
+                    "_buttonFillOver": "skyblue"
+                },
+                $(go.TextBlock, "Change Color"),
+                { click: console.log("Clicked") }),
+            $("ContextMenuButton",
+                $(go.TextBlock, "Add Row"),
+                { click: function (e, obj) { addRow(obj); } }),
+            $("ContextMenuButton",
+                $(go.TextBlock, "Add Column"),
+                { click: function (e, obj) { addColumn(obj); } })
+        );
+
+
+
     myDiagram.nodeTemplateMap.add("Header",  // an overall table header, at the top
         $(go.Part, "Auto",
             {
@@ -123,7 +144,7 @@ function init() {
                 minSize: new go.Size(100, 100),
                 stretch: go.GraphObject.Fill,
                 movable: false,
-                resizable: true,
+                resizable: false,
                 resizeAdornmentTemplate:
                     $(go.Adornment, "Spot",
                         $(go.Placeholder),
@@ -164,7 +185,7 @@ function init() {
                 minSize: new go.Size(NaN, 100),
                 stretch: go.GraphObject.Fill,
                 movable: false,
-                resizable: true,
+                resizable: false,
                 resizeAdornmentTemplate:
                     $(go.Adornment, "Spot",
                         $(go.Placeholder),
@@ -210,12 +231,13 @@ function init() {
     myDiagram.groupTemplate =  // for cells
         $(go.Group, "Auto",
             {
+
                 layerName: "Background",
                 stretch: go.GraphObject.Fill,
                 selectable: false,
                 computesBoundsAfterDrag: true,
-                computesBoundsIncludingLocation: true,
-                handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+                computesBoundsIncludingLocation: false,  // set this property to false
+                handlesDragDropForMembers: true,
                 mouseDragEnter: (e, group, prev) => { group.isHighlighted = true; },
                 mouseDragLeave: (e, group, next) => { group.isHighlighted = false; },
                 mouseDrop: (e, group) => {
@@ -266,7 +288,7 @@ function init() {
                     console.log(next)
                 },
                 computesBoundsAfterDrag: true,
-                computesBoundsIncludingLocation: true,
+                computesBoundsIncludingLocation: false,
                 // when the selection is dropped into a Group, add the selected Parts into that Group;
                 // if it fails, cancel the tool, rolling back any changes
                 mouseDrop: finishDrop,
@@ -276,7 +298,7 @@ function init() {
                 click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
                 selectionObjectName: "PH",
                 locationObjectName: "PH",
-                resizable: true,
+                resizable: false,
                 resizeObjectName: "PH"
             },
             // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -314,7 +336,7 @@ function init() {
                     // stroke: defaultColor(false),
                     // fill: defaultColor(false),
                     // strokeWidth: 2,
-                    resizable: true, // make the Shape resizable
+                    resizable: false, // make the Shape resizable
                     resizeObjectName: "SHAPE",
                 })
                 .bind("background", "color")
@@ -328,6 +350,8 @@ function init() {
     myDiagram.groupTemplateMap.add("Gamma",
         $(go.Group, "Vertical",
             {
+                contextMenu: contextMenu,  // define a context menu for each node
+
                 //background: "#000",
                 ungroupable: true,
                 // highlight when dragging into the Group
@@ -337,7 +361,7 @@ function init() {
                     console.log(next)
                 },
                 computesBoundsAfterDrag: true,
-                computesBoundsIncludingLocation: true,
+                computesBoundsIncludingLocation: false,
                 // when the selection is dropped into a Group, add the selected Parts into that Group;
                 // if it fails, cancel the tool, rolling back any changes
                 mouseDrop: finishDrop,
@@ -347,7 +371,7 @@ function init() {
                 click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
                 selectionObjectName: "PH",
                 locationObjectName: "PH",
-                resizable: true,
+                resizable: false,
                 resizeObjectName: "PH"
             },
             // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -372,25 +396,20 @@ function init() {
                                 editable: true,
                                 font: "bold 13px sans-serif",
                                 opacity: 0.90,
-
                             })
                             .bind("font", "horiz")
                             .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
                         .bind("width", "width", null, null)))
             // end Horizontal Panel
-            // .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+            .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
             .add(new go.Shape("Rectangle",
                 {
                     fill: null,
-                    // stroke: defaultColor(false),
-                    // fill: defaultColor(false),
-                    // strokeWidth: 2,
-                    resizable: true, // make the Shape resizable
+                    resizable: false, // make the Shape resizable
                     resizeObjectName: "SHAPE",
                 })
                 .bind("background", "color")
                 .bind("stroke", "horiz", defaultColor)
-                // .bind("fill", "horiz", defaultColor)
                 .bind("width", "width", null, null) // bind the width property of the Shape to the width property of the data
                 .bind("height", "height", null, null)) // bind the height property of the Shape to the height property of the data
 
@@ -497,7 +516,7 @@ function init() {
                     console.log(next)
                 },
                 computesBoundsAfterDrag: true,
-                computesBoundsIncludingLocation: true,
+                computesBoundsIncludingLocation: false,
                 // when the selection is dropped into a Group, add the selected Parts into that Group;
                 // if it fails, cancel the tool, rolling back any changes
                 // mouseDrop: finishDrop,
@@ -545,7 +564,7 @@ function init() {
                     // stroke: defaultColor(false),
                     // fill: defaultColor(false),
                     // strokeWidth: 2,
-                    resizable: true, // make the Shape resizable
+                    resizable: false, // make the Shape resizable
                     resizeObjectName: "SHAPE",
                 })
                 .bind("background", "color")
@@ -642,4 +661,27 @@ function finishDrop(e, grp) {
         ok = e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true);
     }
     if (!ok) e.diagram.currentTool.doCancel();
+}
+
+
+function addRow(obj) {
+    // get the context menu that holds the button
+    var contextmenu = obj.part;
+    // get the node data to which the context menu belongs
+    var node = contextmenu.adornedPart;
+    // increment the row property
+    node.data.row += 1;
+    // update the node data
+    myDiagram.model.updateTargetBindings(node.data);
+}
+
+function addColumn(obj) {
+    // get the context menu that holds the button
+    var contextmenu = obj.part;
+    // get the node data to which the context menu belongs
+    var node = contextmenu.adornedPart;
+    // increment the column property
+    node.data.column += 1;
+    // update the node data
+    myDiagram.model.updateTargetBindings(node.data);
 }
