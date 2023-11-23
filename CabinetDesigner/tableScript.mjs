@@ -10,10 +10,17 @@ var $ = go.GraphObject.make;
 let myDiagram;
 let myPalette;
 let contextMenu;
+
 let _data = [];
+let portCount = 0;
+let i = 0;
+let cabinetWidth = 200;
+let cabinetHeight = 200;
+let row = 1;
+let col = 1;
 
-
-
+let rowDef = $(go.RowColumnDefinition, { row: row, height: cabinetHeight });
+let colDef = $(go.RowColumnDefinition, { column: col, width: cabinetWidth });
 // define a custom ResizingTool to limit how far one can shrink a row or column
 class LaneResizingTool extends go.ResizingTool {
     computeMinSize() {
@@ -81,17 +88,17 @@ function init() {
         new go.Diagram("myDiagramDiv",
             {
                 layout: $(layout.TableLayout,
-                    $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
-                    $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
+                    rowDef,  // fixed size column headers
+                    colDef,// fixed size row headers
                 ),
                 "SelectionMoved": e => e.diagram.layoutDiagram(true),
-                "resizingTool": new LaneResizingTool(),
+                //"resizingTool": new LaneResizingTool(),
                 // feedback that dropping in the background is not allowed
                 mouseDragOver: e => e.diagram.currentCursor = "not-allowed",
                 // when dropped in the background, not on a Node or a Group, cancel the drop
                 mouseDrop: e => e.diagram.currentTool.doCancel(),
                 "animationManager.isInitial": false,
-                "undoManager.isEnabled": true
+                "undoManager.isEnabled": true,
             });
 
     contextMenu =
@@ -140,54 +147,58 @@ function init() {
     myDiagram.nodeTemplateMap.add("Sider",  // an overall table header, on the left side
         $(go.Part, "Auto",
             {
+
                 contextMenu: contextMenu,
                 row: 1, rowSpan: 9999, column: 0,
-                stretch: go.GraphObject.Vertical,
-                selectable: false, pickable: false
+                minSize: new go.Size(NaN, 100),
+                stretch: go.GraphObject.Fill,
+                movable: false,
+                pickable: false,
+                resizable: false,
             },
             $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
             $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif", angle: 270 },
                 new go.Binding("text"))
         ));
 
-    myDiagram.nodeTemplateMap.add("Column Header",  // for each column header
-        $(go.Part, "Spot",
-            {
-                row: 1, rowSpan: 9999, column: 0,
-                minSize: new go.Size(100, 100),
-                stretch: go.GraphObject.Fill,
-                movable: false,
-                resizable: false,
-                resizeAdornmentTemplate:
-                    $(go.Adornment, "Spot",
-                        $(go.Placeholder),
-                        $(go.Shape,  // for changing the length of a lane
-                            {
-                                alignment: go.Spot.Right,
-                                desiredSize: new go.Size(7, 50),
-                                fill: "lightblue", stroke: "dodgerblue",
-                                cursor: "col-resize"
-                            })
-                    )
-            },
-            new go.Binding("column", "col"),
-            $(go.Shape, { fill: null },
-                new go.Binding("fill", "color")),
-            $(go.Panel, "Auto",
-                { // this is positioned above the Shape, in row 1
-                    alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
-                    stretch: go.GraphObject.Horizontal,
-                    height: myDiagram.layout.getRowDefinition(1).height
-                },
-                $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
-                $(go.TextBlock,
-                    {
-                        font: "bold 10pt sans-serif", isMultiline: false,
-                        wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
-                    },
-                    new go.Binding("text"))
-            )
-        ));
+    // myDiagram.nodeTemplateMap.add("Column Header",  // for each column header
+    //     $(go.Part, "Spot",
+    //         {
+    //             row: 1, rowSpan: 9999, column: 0,
+    //             minSize: new go.Size(100, 100),
+    //             stretch: go.GraphObject.Fill,
+    //             movable: false,
+    //             resizable: false,
+    //             resizeAdornmentTemplate:
+    //                 $(go.Adornment, "Spot",
+    //                     $(go.Placeholder),
+    //                     $(go.Shape,  // for changing the length of a lane
+    //                         {
+    //                             alignment: go.Spot.Right,
+    //                             desiredSize: new go.Size(7, 50),
+    //                             fill: "lightblue", stroke: "dodgerblue",
+    //                             cursor: "col-resize"
+    //                         })
+    //                 )
+    //         },
+    //         new go.Binding("column", "col"),
+    //         $(go.Shape, { fill: null },
+    //             new go.Binding("fill", "color")),
+    //         $(go.Panel, "Auto",
+    //             { // this is positioned above the Shape, in row 1
+    //                 alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom,
+    //                 stretch: go.GraphObject.Horizontal,
+    //                 height: myDiagram.layout.getRowDefinition(1).height
+    //             },
+    //             $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
+    //             $(go.TextBlock,
+    //                 {
+    //                     font: "bold 10pt sans-serif", isMultiline: false,
+    //                     wrap: go.TextBlock.None, overflow: go.TextBlock.OverflowEllipsis
+    //                 },
+    //                 new go.Binding("text"))
+    //         )
+    //     ));
 
 
 
@@ -443,11 +454,12 @@ function init() {
         // { key: "Approval", text: "Approval", col: 3, category: "Column Header" },
 
         //Shelves rows
-        { key: "Employee", text: "Shelf_001", row: 2, category: "Row Sider" },
-        { key: "Manager", text: "Shelf_002", row: 3, category: "Row Sider" },
-        { key: "Administrator", text: "Shelf_003", row: 4, category: "Row Sider" },
+        // { key: "Employee", text: "Shelf_001", row: 2, category: "Row Sider" },
+        // { key: "Manager", text: "Shelf_002", row: 3, category: "Row Sider" },
+        // { key: "Administrator", text: "Shelf_003", row: 4, category: "Row Sider" },
+
         // cells, each a group assigned to a row and column
-        { key: "EmpReq", row: 2, col: 2, isGroup: true, color: "blue" },
+        { key: "EmpReq", row: 1, col: 1, isGroup: true, color: "blue", width: 100, height: 100 },
         // { key: "EmpApp", row: 2, col: 3, isGroup: true, color: "lightgreen" },
         // { key: "ManReq", row: 3, col: 2, isGroup: true, color: "blue" },
         // { key: "ManApp", row: 3, col: 3, isGroup: true, color: "lightyellow" },
@@ -546,7 +558,6 @@ function init() {
                 }),
                 click: (e, obj) => console.log("Group Clicked on " + obj.part.data.key),
             },
-            // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             new go.Binding("layout", "horiz", makeLayout)
         )
             .bind(new go.Binding("background", "isHighlighted", h => h ? "red" : "transparent").ofObject())
@@ -574,13 +585,10 @@ function init() {
                             .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
                         .bind("width", "width", null, null)))
             // end Horizontal Panel
-            // .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+            .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
             .add(new go.Shape("Rectangle",
                 {
                     fill: null,
-                    // stroke: defaultColor(false),
-                    // fill: defaultColor(false),
-                    // strokeWidth: 2,
                     resizable: false, // make the Shape resizable
                     resizeObjectName: "SHAPE",
                 })
@@ -698,6 +706,8 @@ function addRow(obj) {
         category: "Row Sider"
     });
 
+
+    myDiagram.model.updateTargetBindings(node.data);
     // update the diagram layout
     myDiagram.layoutDiagram(true);
 }
