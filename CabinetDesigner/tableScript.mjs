@@ -1,10 +1,6 @@
 import * as go from "../node_modules/gojs/release/go.mjs";
 import { GraphObject } from '../node_modules/gojs/release/go.mjs';
-
 import * as layout from "./TableLayout.js";
-
-
-
 
 var $ = go.GraphObject.make;
 let myDiagram;
@@ -21,67 +17,8 @@ let col = 1;
 
 let rowDef = $(go.RowColumnDefinition, { row: row, height: cabinetHeight });
 let colDef = $(go.RowColumnDefinition, { column: col, width: cabinetWidth });
-// define a custom ResizingTool to limit how far one can shrink a row or column
-class LaneResizingTool extends go.ResizingTool {
-    computeMinSize() {
-        const diagram = this.diagram;
-        if (this.adornedObject === null)
-            return new go.Size();
-        const lane = this.adornedObject.part; // might be row or column
-        if (lane === null)
-            return new go.Size();
-        const horiz = (lane.category === 'Column Header'); // or "Row Header"
-        const margin = diagram.nodeTemplate.margin;
-        let bounds = new go.Rect();
-        diagram.findTopLevelGroups().each((g) => {
-            if (lane === null)
-                return;
-            if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
-                const b = diagram.computePartsBounds(g.memberParts);
-                if (b.isEmpty())
-                    return; // nothing in there?  ignore it
-                b.unionPoint(g.location); // keep any empty space on the left and top
-                b.addMargin(margin); // assume the same node margin applies to all nodes
-                if (bounds.isEmpty()) {
-                    bounds = b;
-                }
-                else {
-                    bounds.unionRect(b);
-                }
-            }
-        });
-        // limit the result by the standard value of computeMinSize
-        const msz = super.computeMinSize();
-        if (bounds.isEmpty())
-            return msz;
-        return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
-    }
-
-    resize(newr) {
-        const diagram = this.diagram;
-        if (this.adornedObject === null)
-            return;
-        const lane = this.adornedObject.part;
-        if (lane === null)
-            return;
-        const horiz = (lane.category === 'Column Header');
-        const lay = diagram.layout; // the TableLayout
-        if (horiz) {
-            const col = lane.column;
-            const coldef = lay.getColumnDefinition(col);
-            coldef.width = newr.width;
-        }
-        else {
-            const row = lane.row;
-            const rowdef = lay.getRowDefinition(row);
-            rowdef.height = newr.height;
-        }
-        lay.invalidateLayout();
-    }
-}  // end LaneResizingTool class
 
 function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
     var $ = go.GraphObject.make;
 
     myDiagram =
@@ -153,8 +90,8 @@ function init() {
                 minSize: new go.Size(NaN, 100),
                 stretch: go.GraphObject.Fill,
                 movable: false,
-                pickable: false,
-                resizable: false,
+                // pickable: false,
+                // resizable: false,
             },
             $(go.Shape, { fill: "transparent", strokeWidth: 0 }),
             $(go.TextBlock, { alignment: go.Spot.Center, font: "bold 12pt sans-serif", angle: 270 },
