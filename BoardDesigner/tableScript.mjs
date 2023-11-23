@@ -19,63 +19,63 @@ let rowDef = $(go.RowColumnDefinition, { row: row, height: boardHeight, separato
 let colDef = $(go.RowColumnDefinition, { column: col, width: boardWidth, separatorStrokeWidth: 1, separatorStroke: "black" });
 
 // define a custom ResizingTool to limit how far one can shrink a row or column
-class LaneResizingTool extends go.ResizingTool {
-    computeMinSize() {
-        const diagram = this.diagram;
-        if (this.adornedObject === null)
-            return new go.Size();
-        const lane = this.adornedObject.part; // might be row or column
-        if (lane === null)
-            return new go.Size();
-        const horiz = (lane.category === 'Board'); // or "Row Header"
-        const margin = diagram.nodeTemplate.margin;
-        let bounds = new go.Rect();
-        diagram.findTopLevelGroups().each((g) => {
-            if (lane === null)
-                return;
-            if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
-                const b = diagram.computePartsBounds(g.memberParts);
-                if (b.isEmpty())
-                    return; // nothing in there?  ignore it
-                b.unionPoint(g.location); // keep any empty space on the left and top
-                b.addMargin(margin); // assume the same node margin applies to all nodes
-                if (bounds.isEmpty()) {
-                    bounds = b;
-                }
-                else {
-                    bounds.unionRect(b);
-                }
-            }
-        });
-        // limit the result by the standard value of computeMinSize
-        const msz = super.computeMinSize();
-        if (bounds.isEmpty())
-            return msz;
-        return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
-    }
+// class LaneResizingTool extends go.ResizingTool {
+//     computeMinSize() {
+//         const diagram = this.diagram;
+//         if (this.adornedObject === null)
+//             return new go.Size();
+//         const lane = this.adornedObject.part; // might be row or column
+//         if (lane === null)
+//             return new go.Size();
+//         const horiz = (lane.category === 'Board'); // or "Row Header"
+//         const margin = diagram.nodeTemplate.margin;
+//         let bounds = new go.Rect();
+//         diagram.findTopLevelGroups().each((g) => {
+//             if (lane === null)
+//                 return;
+//             if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
+//                 const b = diagram.computePartsBounds(g.memberParts);
+//                 if (b.isEmpty())
+//                     return; // nothing in there?  ignore it
+//                 b.unionPoint(g.location); // keep any empty space on the left and top
+//                 b.addMargin(margin); // assume the same node margin applies to all nodes
+//                 if (bounds.isEmpty()) {
+//                     bounds = b;
+//                 }
+//                 else {
+//                     bounds.unionRect(b);
+//                 }
+//             }
+//         });
+//         // limit the result by the standard value of computeMinSize
+//         const msz = super.computeMinSize();
+//         if (bounds.isEmpty())
+//             return msz;
+//         return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
+//     }
 
-    resize(newr) {
-        const diagram = this.diagram;
-        if (this.adornedObject === null)
-            return;
-        const lane = this.adornedObject.part;
-        if (lane === null)
-            return;
-        const horiz = (lane.category === 'Board');
-        const lay = diagram.layout; // the TableLayout
-        if (horiz) {
-            const col = lane.column;
-            const coldef = lay.getColumnDefinition(col);
-            coldef.width = newr.width;
-        }
-        else {
-            const row = lane.row;
-            const rowdef = lay.getRowDefinition(row);
-            rowdef.height = newr.height;
-        }
-        lay.invalidateLayout();
-    }
-}  // end LaneResizingTool class
+//     resize(newr) {
+//         const diagram = this.diagram;
+//         if (this.adornedObject === null)
+//             return;
+//         const lane = this.adornedObject.part;
+//         if (lane === null)
+//             return;
+//         const horiz = (lane.category === 'Board');
+//         const lay = diagram.layout; // the TableLayout
+//         if (horiz) {
+//             const col = lane.column;
+//             const coldef = lay.getColumnDefinition(col);
+//             coldef.width = newr.width;
+//         }
+//         else {
+//             const row = lane.row;
+//             const rowdef = lay.getRowDefinition(row);
+//             rowdef.height = newr.height;
+//         }
+//         lay.invalidateLayout();
+//     }
+// }  // end LaneResizingTool class
 
 function init() {
     // colDef.width = parseInt(prompt("width of each column"));
@@ -101,13 +101,14 @@ function init() {
                 ),
 
                 "SelectionMoved": e => e.diagram.layoutDiagram(true),
-                "resizingTool": new LaneResizingTool(),
+                // "resizingTool": new LaneResizingTool(),
                 // feedback that dropping in the background is not allowed
                 mouseDragOver: e => e.diagram.currentCursor = "not-allowed",
                 // when dropped in the background, not on a Node or a Group, cancel the drop
                 mouseDrop: e => e.diagram.currentTool.doCancel(),
                 "animationManager.isInitial": false,
-                "undoManager.isEnabled": true
+                "undoManager.isEnabled": true,
+                
             });
 
 
@@ -208,28 +209,21 @@ function init() {
                     } else {  // failure upon trying to add parts to this group
                         e.diagram.currentTool.doCancel();
                     }
-                },
-                click: (e, obj) => {
-                    console.log("Node Clicked :" , obj.data);
-                    // console.log(obj);
-                },
-
-   
-                
+                }
             },
             new go.Binding("row"),
             new go.Binding("column", "col"),
             // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
             $(go.Shape, "Rectangle", // name the object
-                {
-                    fill: "transparent", stroke: "transparent",
-                    strokeWidth: myDiagram.nodeTemplate.margin.left,
-                    stretch: go.GraphObject.Fill,
-                },
-                new go.Binding("height", "height", null, null),
-                new go.Binding("fill", "color"),
-                new go.Binding("stroke", "isHighlighted", h => h ? "green" : "transparent").ofObject()),
-            $(go.Placeholder,
+            {
+                fill: "transparent", stroke: "transparent",
+                strokeWidth: myDiagram.nodeTemplate.margin.left,
+                stretch: go.GraphObject.Fill,
+            },
+            new go.Binding("height", "height", null, null),
+            new go.Binding("fill", "color"),
+            new go.Binding("stroke", "isHighlighted", h => h ? "green" : "transparent").ofObject()),
+         $(go.Placeholder,
                 { // leave a margin around the member nodes of the group which is the same as the member node margin
                     alignment: (m => new go.Spot(0, 0, m.top, m.left))(myDiagram.nodeTemplate.margin),
                     padding: (m => new go.Margin(0, m.right, m.bottom, 0))(myDiagram.nodeTemplate.margin)
@@ -240,12 +234,9 @@ function init() {
 
     myDiagram.model = new go.GraphLinksModel([
 
-
-        { key: "EmpReq", col: 1, isGroup: true, color: "gray", width: 500, height: 500 },
-
+        { key: "EmpReq", row: 1, col: 1, isGroup: true, color: "gray", width: 500, height: 500 ,category:"Board" },
 
     ]);
-    console.log(myDiagram.model)
 
 
     myPalette =
@@ -299,12 +290,7 @@ function init() {
                     console.log(e)
                 }, null)
                 .bind("height", "height", e => e.actualBounds.height, null))
-
-    console.log("palette", myPalette);
-    console.log("diagram", myDiagram);
 }
-
-
 window.addEventListener('DOMContentLoaded', init);
 
 
