@@ -12,65 +12,76 @@ function init() {
     initialContentAlignment: go.Spot.Center,
     allowDrop: true  // allow nodes to be dropped onto the main diagram
   });
+//  myDiagram.toolManager.resizingTool.computeReshape = function () { return false; }
 
-  palette = $(go.Palette, "myPaletteDiv", {
-    layout: $(go.GridLayout, {
-      cellSize: new go.Size(200, 20),
-      wrappingColumn: 1
-    }),
-    allowDragOut: true  // allow nodes to be dragged out of the palette
-  });
+ 
 
 
   myDiagram.groupTemplateMap.add("board",
-    $(go.Group, "vertical",{
+    $(go.Group, "vertical", {
+
+     // resizable: true,
+      resizeObjectName: "shape", // Specify the name of the object to resize
       
-      resizable :true ,
-    
-    } ,
-   
+      click: (e, obj) => {
+        console.log("Node Clicked :", obj.data);
+
+      },
+    },
+       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // This line ensures that the group's location is bound and can be moved
       $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle",
-          { fill: "beige" },
+        $(go.Shape, "RoundedRectangle", {
+          name: "shape",
+          fill: "gray",
+          width: 500, height: 500,
+        },
           new go.Binding("fill", "color"),
+          new go.Binding("width", "width"),
+          new go.Binding("height", "height"),
         ),
-        $(go.Placeholder,
-          { padding: 5 }
-        )
+        $(go.Placeholder, {
+          padding: 5
+        })
       ),
 
     ),
-
   );
+
 
   myDiagram.nodeTemplateMap.add("port",
     $(go.Node, "Spot",
-      $(go.Shape, "Rectangle",
-        { fill: "transparent", stroke: "transparent" }
-      ),
-      $(go.Picture, { height: 150, width: 80 },
+      {
+        resizable: true,
+        resizeObjectName: "PICTURE",
+
+        click: (e, obj) => {
+          console.log("Port Clicked :", obj.data);
+        },
+      },
+      $(go.Picture,
+        {
+          height: 150,
+          width: 80,
+          name: "PICTURE"
+        },
         new go.Binding("source"),
-        new go.Binding("height"),
-        new go.Binding("width"),
+        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
       ),
-    )
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // This line ensures that the group's location is bound and can be moved
+    ),
+  
   );
 
 
 
-  palette.nodeTemplateMap.add("port",
-    $(go.Node, "Spot",
-      $(go.Shape, "Rectangle",
-        { fill: "transparent", stroke: "transparent" }
-      ),
-      $(go.Picture, { height: 150, width: 80 },
-        new go.Binding("source"),
-        new go.Binding("height"),
-        new go.Binding("width"),
-      ),
-    )
-  );
 
+
+
+
+
+
+
+ 
 
   myDiagram.model = new go.GraphLinksModel(
     [
@@ -82,18 +93,10 @@ function init() {
   )
 
 
-  palette.model = new go.GraphLinksModel(
-    [
-      { key: "pic1", text: "Port", source: "../../images/port001.svg", category: "port" },
-      { key: "pic2", text: "Port", source: "../../images/port001.svg", category: "port" },
-      { key: "pic3", text: "Port", source: "../../images/port002.svg", category: "port" },
-      { key: "pic4", text: "Port", source: "../../images/port003.svg", category: "port" },
-
-    ]
-  )
 
 
-  
+
+
 
 }
 window.addEventListener('DOMContentLoaded', init);
