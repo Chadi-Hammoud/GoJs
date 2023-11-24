@@ -56,6 +56,7 @@ function init() {
                 loc: i * 10 + " " + i * 10,
                 size: "50 50",
                 tooltip: getRandomNumber(),
+                source: "./images/OPTPort.svg",
             };
             nodeDataArray.push(port);
         }
@@ -80,7 +81,7 @@ function init() {
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),  // changed "Position" to "location"
             $(go.Shape, "RoundedRectangle", {
                 name: "SHAPE",
-                fill: "red",
+                fill: "gray",
                 stroke: "black",
                 minSize: new go.Size(50, 50)
             },
@@ -88,9 +89,15 @@ function init() {
                 new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
             ),
 
-            $(go.TextBlock,
-                { margin: 5 },
-                new go.Binding("text", "key"))
+            // $(go.Picture, {
+            //     name: "SHAPE",
+            //     stroke: "black",
+            //     minSize: new go.Size(50, 50)
+            // },
+            //     new go.Binding("source", "source"),
+            //     new go.Binding("fill", "color"),
+            //     new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+            // ),
         );
 
     myDiagram.addDiagramListener("Modified", function (e) {
