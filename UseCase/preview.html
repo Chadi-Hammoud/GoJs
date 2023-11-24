@@ -1,0 +1,31 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Design Use case</title>
+    <script src="./mainPreview.mjs" type="module"></script>
+</head>
+
+<body>
+    <div style="width: 100%; display: flex; justify-content: space-between">
+        <div id="myDiagramDiv"
+            style="flex-grow: 1; height: 500px; background-color: #DAE4E4; border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
+            <canvas tabindex="0" width="922" height="498"
+                style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 922px; height: 498px;"></canvas>
+            <div style="position: absolute; overflow: auto; width: 922px; height: 498px; z-index: 1;">
+                <div style="position: absolute; width: 1px; height: 1px;"></div>
+            </div>
+        </div>
+    </div>
+    <div id="buttons">
+        <button id="saveModel">Save</button>
+        <a href="./index.html"><button id="previewPage">Physical Configuration</button>
+        </a>
+        <input type="file" id="fileInput" accept=".json" />
+        <button id="loadModel">Load</button>
+
+    </div>
+</body>
+
+</html>
