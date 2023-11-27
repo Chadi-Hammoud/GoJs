@@ -1,4 +1,4 @@
-
+// Import GoJS library
 import * as go from "../node_modules/gojs/release/go.mjs";
 
 let numPorts = prompt("How many ports do you need?");
@@ -12,96 +12,134 @@ function init() {
     var $ = go.GraphObject.make;
 
     // Create a new diagram
-    myDiagram =
-        new go.Diagram("myDiagramDiv",
-            {
-                // layout: $(go.GridLayout,
-                //     {
-                //         comparer: go.GridLayout.smartComparer,
-                //         wrappingWidth: Infinity,
-                //         alignment: go.GridLayout.Position,
-                //         //cellSize: new go.Size(1, 1)
-                //     },
-                // ),
+    myDiagram = new go.Diagram("myDiagramDiv", {
+        layout: $(go.GridLayout, {}),
+        "undoManager.isEnabled": true,
+        "grid.visible": false,
+        "toolManager.hoverDelay": 100,
+        "draggingTool.isGridSnapEnabled": false,
+        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
 
-
-                "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
-
-                "undoManager.isEnabled": true,
-                toolTip: $(go.Adornment, "Auto",
-                    $(go.Shape, { fill: "#CCFFCC" }),
-                    $(go.TextBlock, { margin: 4 },
-                        "This diagram lets you control the world.")
-                ),
-                "grid.visible": false,  // display a background grid for the whole diagram
-                "grid.gridCellSize": new go.Size(20, 20),
-                "toolManager.hoverDelay": 100,  // how quickly tooltips are shown
-                "draggingTool.isGridSnapEnabled": true,
-
-
-            });
+    });
+    myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
 
     // Convert the input to a number
     numPorts = parseInt(numPorts);
 
-    // Check if the input is a valid number
-    if (isNaN(numPorts)) {
+     // Check if the input is a valid number
+     if (isNaN(numPorts)) {
         alert("Invalid input. Please enter a number.");
     } else {
-
         // Create a node data object for each port
         for (let i = 1; i <= numPorts; i++) {
             let port = {
                 key: "Port " + i,
-                loc: i * 10 + " " + i * 10,
-                size: "50 50",
+                loc: i * portSpacing + " 50",
+                size: "120 120",
                 tooltip: getRandomNumber(),
                 source: "./images/OPTPort.svg",
+                width: 120,
+                height: 120
             };
             nodeDataArray.push(port);
         }
-
-
-
         // Set the diagram's model to the node data array
         myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+
+        // // Start the transaction
+        // myDiagram.startTransaction("Initial Layout");
+
+
+        // // Commit the transaction
+        // myDiagram.commitTransaction("Initial Layout");
     }
-
-
-
 
     // Define the node template
     myDiagram.nodeTemplate =
-        $(go.Node, "Auto",  // changed "Position" to "Auto"
+        $(go.Node, "Auto",
             {
                 resizable: true,
-                resizeObjectName: "SHAPE",
-                click: (e, obj) => { console.log(e, obj) }
-            },
-            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),  // changed "Position" to "location"
-            $(go.Shape, "RoundedRectangle", {
-                name: "SHAPE",
-                fill: "gray",
-                stroke: "black",
-                minSize: new go.Size(50, 50)
-            },
-                new go.Binding("fill", "color"),
-                new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-            ),
+                resizeObjectName: "PANEL", // Set resizeObjectName to the name of the panel
+                layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+                click: (e, obj) => {
+                    console.log(e, obj)
 
-            // $(go.Picture, {
-            //     name: "SHAPE",
-            //     stroke: "black",
-            //     minSize: new go.Size(50, 50)
-            // },
-            //     new go.Binding("source", "source"),
-            //     new go.Binding("fill", "color"),
-            //     new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-            // ),
-        );
+                },
+            },
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Panel, "Vertical",
+                new go.Binding("width", "width", null, null),
+                new go.Binding("height", "height", null, null),
+
+                {
+                    name: "PANEL", // Give the panel a name for referencing in resizeObjectName
+                    minSize: new go.Size(100, 100),
+                    maxSize: new go.Size(300, 300)
+
+                },
+                $(go.Panel, "Horizontal",
+
+                    { height: 20, stretch: go.GraphObject.Fill, },
+                    $(go.Shape, "Rectangle",
+                        new go.Binding("width", "width", v => v / 12, null),
+                        {
+                            fill: "black",
+                        }
+                    ),
+                    $(go.Panel, "Auto",
+
+                        $(go.Shape, "Rectangle",
+                            new go.Binding("width", "width", v => v * 0.83, null),
+
+                            {
+                                fill: "white",
+                                stretch: go.GraphObject.Fill, // Make the shape resizable
+
+                            }
+                        ),
+                        $(go.TextBlock, "",
+                            {
+                                margin: 5, // Add some margin to position the text inside the rectangle
+                                editable: true, // Make the text editable
+                                stroke: "black", // Set the text color to white
+                                alignment: go.Spot.Center, // Center the text within the shape
+                            },
+                            new go.Binding("text", "key").makeTwoWay() // Bind the text to the 'text' property of the node data
+                        )
+
+                    ),
+                    $(go.Shape, "Rectangle",
+                        new go.Binding("width", "width", v => v / 10, null),
+                        {
+                            fill: "black",
+
+
+                        }
+                    ),
+                ),
+                new go.Binding("width", "width").makeTwoWay(),
+
+                $(go.Picture, {
+                    name: "SHAPE",
+                    minSize: new go.Size(50, 50)
+                },
+                    new go.Binding("source", "source"),
+                    new go.Binding("fill", "color"),
+                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+                    new go.Binding("width", "width", null, null),
+                    new go.Binding("height", "height", null, null),
+
+
+                ),
+            ));
 
     myDiagram.addDiagramListener("Modified", function (e) {
+
         if (e && e.subject) {
+            // Start the transaction
+            myDiagram.startTransaction("Modified Layout");
+
+            myDiagram.layout = null; // Set layout to null for free editing mode
             e.subject.each(function (part) {
                 // Check if the modified part is a node
                 if (part instanceof go.Node) {
@@ -125,13 +163,13 @@ function init() {
                     }
                 }
             });
+
+            // Commit the transaction
+            myDiagram.commitTransaction("Modified Layout");
         }
     });
-
-
-
-
 }
+
 window.addEventListener('DOMContentLoaded', init);
 
 // Save the diagram's model as a JSON file
@@ -153,18 +191,12 @@ function downloadData(dataArray) {
     a.click();
     document.body.removeChild(a);
 }
-document.getElementById("saveModel").addEventListener("click", save);
 
+document.getElementById("saveModel").addEventListener("click", save);
 
 function getRandomNumber() {
     var randomNumber = Math.random();
     var roundedNumber = Math.round(randomNumber);
     return roundedNumber;
 }
-
-
-
-
-
-//
 //In this code, we initialize a GoJS diagram with a specified number of ports. Each port is represented as a node in the diagram. The diagram's model is set to the node data array. The node template is defined to create a resizable node with a rounded rectangle shape and a label. The save function converts the diagram's model to JSON and downloads it as a file..</s>

@@ -11,25 +11,18 @@ function init() {
 
     // Create a new diagram
     myDiagram = new go.Diagram("myDiagramDiv", {
-        // layout: $(go.GridLayout, {
-        //     comparer: go.GridLayout.smartComparer,
-        //     wrappingWidth: Infinity,
-        //     alignment: go.GridLayout.Position,
-        //     cellSize: new go.Size(1, 1)
-        // }),
         "undoManager.isEnabled": false,
         "grid.visible": false,
         "toolManager.hoverDelay": 100,
-        // allowInsert: false,
-        // allowDelete: false,
-        // allowCopy: false,
-        // allowGroup: false,
-        // allowSelect: false,
-        // allowZoom: false,
-        // allowResize: false,
-        // allowRotate: false,
-        // allowClipboard: false,
+        click: null 
     });
+    myDiagram.startTransaction("Initial Layout");
+    myDiagram.isReadOnly = true;
+
+    myDiagram.toolManager.panningTool.isEnabled = false;
+    myDiagram.toolManager.mouseWheelBehavior = go.ToolManager.WheelZoom;
+
+
 
 
     // Define the node template
@@ -40,18 +33,79 @@ function init() {
                 $(go.TextBlock, { margin: 4 },
                     new go.Binding("text", "key", v => (v == 1) ? "it is number 1" : "" + v))
             ),
-        },
-            new go.Binding("position", "loc", go.Point.parse),
 
-            $(go.Shape, "RoundedRectangle", {
-                name: "SHAPE",
-                fill: "gray",
-                stroke: "black",
-            },
-                new go.Binding("fill", "color"),
-                new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-            ),
+            // click: (e, obj) => {
+            //     console.log(e, obj)
+
+            // },
+            click: null 
+        },
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Panel, "Vertical",
+                new go.Binding("width", "width", null, null),
+                new go.Binding("height", "height", null, null),
+
+                {
+                    name: "PANEL", // Give the panel a name for referencing in resizeObjectName
+                    minSize: new go.Size(100, 100),
+                    maxSize: new go.Size(300, 300)
+
+                },
+                $(go.Panel, "Horizontal",
+
+                    { height: 20, stretch: go.GraphObject.Fill, },
+                    $(go.Shape, "Rectangle",
+                        new go.Binding("width", "width", v => v / 12, null),
+                        {
+                            fill: "black",
+                        }
+                    ),
+
+                    $(go.Panel, "Auto",
+                        $(go.Shape, "Rectangle",
+                            new go.Binding("width", "width", v => v * 0.83, null),
+
+                            {
+                                fill: "white",
+                                stretch: go.GraphObject.Fill, // Make the shape resizable
+
+                            }
+                        ),
+                        $(go.TextBlock, "",
+                            {
+                                margin: 5, // Add some margin to position the text inside the rectangle
+                                editable: true, // Make the text editable
+                                stroke: "black", // Set the text color to white
+                                alignment: go.Spot.Center, // Center the text within the shape
+                            },
+                            new go.Binding("text", "key").makeTwoWay() // Bind the text to the 'text' property of the node data
+                        )),
+                    $(go.Shape, "Rectangle",
+                        new go.Binding("width", "width", v => v / 10, null),
+                        {
+                            fill: "black",
+
+
+                        }
+                    ),
+
+
+                ),
+                new go.Binding("width", "width").makeTwoWay(),
+
+                $(go.Picture, {
+                    name: "SHAPE",
+                    minSize: new go.Size(50, 50)
+                },
+                    new go.Binding("source", "source"),
+                    new go.Binding("fill", "color"),
+                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+                )
+            )
+            // new go.Binding("position", "loc", go.Point.parse),
+
         );
+    myDiagram.commitTransaction("Initial Layout");
 }
 window.addEventListener('DOMContentLoaded', init);
 
