@@ -8,6 +8,7 @@ function init() {
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
 
+
   let $ = go.GraphObject.make;
 
   myDiagram = new go.Diagram("myDiagramDiv",
@@ -214,15 +215,40 @@ function init() {
   myDiagram.model = new go.GraphLinksModel();
   // myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "shelf" }) ;
   // Add nodes dynamically based on the user input
-let k = 0;
+let shelfNumber = 0;
 
 
   for (let i = 1; i <= borderCount; i++) {
     
     // myDiagram.model.addNodeData({ key: `port${i}`, group: "boardGroup", category: "board", width: 120, height: 120  });
-    myDiagram.model.addNodeData({ key: `port${i}`, category: "board", width: 120, height: 120, text: `${startIndex}:${k}` });
+    myDiagram.model.addNodeData({ key: `port${i}`, category: "board", width: 120, height: 120, text: `${startIndex}:${shelfNumber}` });
     startIndex++;
   }
+
+  function openPopup() {
+    // Specify the URL and other options for the popup window
+    var popupOptions = 'width=400,height=300,scrollbars=yes';
+
+    // Open a new browser window with the specified URL and options
+    var popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
+    
+
+    // Focus on the new window (optional)
+    if (popupWindow) {
+      popupWindow.focus();
+      
+    }
+  }
+
+  let openPopupButton = document.createElement('button');
+  openPopupButton.textContent = 'Open Popup';
+  openPopupButton.addEventListener('click', openPopup);
+  document.body.appendChild(openPopupButton);
+  document.body.appendChild(openPopupButton);
+
+  
+
+
 
 
 
