@@ -227,7 +227,7 @@ let shelfNumber = 0;
 
   function openPopup() {
     // Specify the URL and other options for the popup window
-    var popupOptions = 'width=400,height=300,scrollbars=yes';
+    var popupOptions = 'width=600,height=800,scrollbars=yes';
 
     // Open a new browser window with the specified URL and options
     var popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
