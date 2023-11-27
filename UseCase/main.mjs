@@ -34,10 +34,11 @@ function init() {
         for (let i = 1; i <= numPorts; i++) {
             let port = {
                 key: "Port " + i,
+                text: i+": Port Caption ",
                 loc: i * portSpacing + " 50",
-                size: "120 120",
+                // size: "120 120",
                 tooltip: getRandomNumber(),
-                source: "./images/OPTPort.svg",
+                source: "./images/port.svg",
                 width: 120,
                 height: 120
             };
@@ -45,13 +46,6 @@ function init() {
         }
         // Set the diagram's model to the node data array
         myDiagram.model = new go.GraphLinksModel(nodeDataArray);
-
-        // // Start the transaction
-        // myDiagram.startTransaction("Initial Layout");
-
-
-        // // Commit the transaction
-        // myDiagram.commitTransaction("Initial Layout");
     }
 
     // Define the node template
@@ -73,8 +67,8 @@ function init() {
 
                 {
                     name: "PANEL", // Give the panel a name for referencing in resizeObjectName
-                    minSize: new go.Size(100, 100),
-                    maxSize: new go.Size(300, 300)
+                    // minSize: new go.Size(100, 100),
+                    // maxSize: new go.Size(300, 300)
 
                 },
                 $(go.Panel, "Horizontal",
@@ -104,7 +98,7 @@ function init() {
                                 stroke: "black", // Set the text color to white
                                 alignment: go.Spot.Center, // Center the text within the shape
                             },
-                            new go.Binding("text", "key").makeTwoWay() // Bind the text to the 'text' property of the node data
+                            new go.Binding("text", "text").makeTwoWay() // Bind the text to the 'text' property of the node data
                         )
 
                     ),
@@ -120,7 +114,8 @@ function init() {
                 new go.Binding("width", "width").makeTwoWay(),
 
                 $(go.Picture, {
-                    name: "SHAPE",
+                    background: "white",
+                    name: "PANEL",
                     minSize: new go.Size(50, 50)
                 },
                     new go.Binding("source", "source"),
