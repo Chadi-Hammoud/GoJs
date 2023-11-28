@@ -4,14 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Board Design Use case</title>
-  <script src="./main.mjs" type="module"></script>
+
 </head>
 
 <body>
+  <script>
+    var popup1;
+    // Function to open two popup windows
+    function openPopups() {
+      let fixedTop = 0;
+      var popupUrl1 = './popupForm.html';
+      popup1 = window.open(popupUrl1, 'PopupWindow1', 'width=400,height=600top=' + fixedTop);
+
+      popup1.moveTo(500, 200);
+    }
+
+    // Call the openPopups function when the page loads
+    window.onload = openPopups;
+    // window.addEventListener('click', openPopups);
+  </script>
+  <script src="../js/main.mjs" type="module"></script>
   <div style="width: 100%; display: flex; justify-content: space-between">
     <div id="myDiagramDiv"
       style="flex-grow: 1; height: 500px; background-color: #DAE4E4; border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
-      <canvas tabindex="0" width="922" height="498"
+      <canvas tabindex="0" width="500" height="700"
         style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 922px; height: 498px;"></canvas>
       <div style="position: absolute; overflow: auto; width: 922px; height: 498px; z-index: 1;">
         <div style="position: absolute; width: 1px; height: 1px;"></div>

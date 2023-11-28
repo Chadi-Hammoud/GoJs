@@ -1,15 +1,33 @@
 // Import GoJS library
-import * as go from "gojs";
-import * as popUp from "./popUp.mjs"
+import * as go from "../../node_modules/gojs/release/go.mjs";
+// import {getNumPortsString} from "./_data.js";
 
 let numPorts = prompt("How many ports do you need?");
+// let numPorts
 let myDiagram;
 let nodeDataArray = [];
-let _data = [];
+let _data;
 let portSpacing = 20;
+let selectedNode;
+let componentLayoutWindow;
+
+
+
+
 
 // Initialize the diagram
 function init() {
+
+
+    window.addEventListener('message', function (event) {
+        var data = event.data;
+        console.log('Received data from the popup:', data);
+        adjustNodeCoordinates(data);
+    });
+
+    // Convert the input to a number
+    numPorts = parseInt(numPorts);
+
     var $ = go.GraphObject.make;
 
     // Create a new diagram
@@ -22,24 +40,22 @@ function init() {
         "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
 
     });
-    myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
+    //myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
 
-    // Convert the input to a number
-    numPorts = parseInt(numPorts);
 
-     // Check if the input is a valid number
-     if (isNaN(numPorts)) {
+    // Check if the input is a valid number
+    if (isNaN(numPorts)) {
         alert("Invalid input. Please enter a number.");
     } else {
         // Create a node data object for each port
         for (let i = 1; i <= numPorts; i++) {
             let port = {
                 key: "Port " + i,
-                text: i+": Port Caption ",
+                text: i + ": Port Caption ",
                 loc: i * portSpacing + " 50",
                 // size: "120 120",
                 tooltip: getRandomNumber(),
-                source: "./images/port.svg",
+                source: "../images/port.svg",
                 width: 120,
                 height: 120
             };
@@ -57,26 +73,35 @@ function init() {
                 resizeObjectName: "PANEL", // Set resizeObjectName to the name of the panel
                 layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
                 click: (e, obj) => {
+                    selectedNode = obj.part.data;
+                    sendDataToPanel(selectedNode);
                     console.log(e, obj)
-
                 },
+                mouseDrop: (e, node) => {
+                    sendDataToPanel(node.part.data);
+                    console.log(node.part.data)
+                },
+
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-            $(go.Panel, "Vertical",
+// new go.Binding("height", "height", null, null),
+            // new go.Binding("width", "width", null, null),
+                        $(go.Panel, "Vertical",
                 new go.Binding("width", "width", null, null),
-                new go.Binding("height", "height", null, null),
+                 new go.Binding("height", "height", null, null),
 
                 {
                     name: "PANEL", // Give the panel a name for referencing in resizeObjectName
-                    // minSize: new go.Size(100, 100),
+                   // minSize: new go.Size(100, 100),
                     // maxSize: new go.Size(300, 300)
 
                 },
                 $(go.Panel, "Horizontal",
 
+
                     { height: 20, stretch: go.GraphObject.Fill, },
                     $(go.Shape, "Rectangle",
-                        new go.Binding("width", "width", v => v / 12, null),
+                        new go.Binding("width", "width", v => v / 12),
                         {
                             fill: "black",
                         }
@@ -84,7 +109,7 @@ function init() {
                     $(go.Panel, "Auto",
 
                         $(go.Shape, "Rectangle",
-                            new go.Binding("width", "width", v => v * 0.83, null),
+                            new go.Binding("width", "width", v => v * 0.83),
 
                             {
                                 fill: "white",
@@ -104,7 +129,7 @@ function init() {
 
                     ),
                     $(go.Shape, "Rectangle",
-                        new go.Binding("width", "width", v => v / 10, null),
+                        new go.Binding("width", "width", v => v / 10),
                         {
                             fill: "black",
 
@@ -117,11 +142,11 @@ function init() {
                 $(go.Picture, {
                     background: "white",
                     name: "PANEL",
-                    minSize: new go.Size(50, 50)
+                    //minSize: new go.Size(50, 50)
                 },
                     new go.Binding("source", "source"),
                     new go.Binding("fill", "color"),
-                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+                    //new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
                     new go.Binding("width", "width", null, null),
                     new go.Binding("height", "height", null, null),
 
@@ -195,4 +220,52 @@ function getRandomNumber() {
     var roundedNumber = Math.round(randomNumber);
     return roundedNumber;
 }
+
+function adjustNodeCoordinates(data) {
+    if (selectedNode) {
+        // Modify the X and Y coordinates of the selected node
+        selectedNode.loc = data.XCoord + " " + data.YCoord;
+        selectedNode.width = data.width;
+        selectedNode.height = data.height;
+
+        // Update the diagram to reflect the changes
+        myDiagram.model.updateTargetBindings(selectedNode);
+    }
+}
+
+function sendDataToPanel(dataToSend) {
+    if (popup1) {
+        popup1.postMessage(dataToSend, '*');
+    } else {
+        console.log("No window available to send data");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //In this code, we initialize a GoJS diagram with a specified number of ports. Each port is represented as a node in the diagram. The diagram's model is set to the node data array. The node template is defined to create a resizable node with a rounded rectangle shape and a label. The save function converts the diagram's model to JSON and downloads it as a file..</s>

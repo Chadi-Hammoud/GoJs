@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Web Page</title>
+</head>
+
+<body>
+  <!-- <form>
+    <label>Port count</label>
+    <input type="number" name="PortCounts" placeholder="Ports number" />
+    <input type="submit" value="Create Board" />
+
+  </form> -->
+  <!-- Your page content goes here -->
+  <button onclick="openPopups()">Put Port On Board</button>
+  <script>
+    // Function to open two popup windows
+    function openPopups() {
+      var popupUrl1 = './popupForm.html';
+      var popupUrl2 = './index.html';
+
+      // Open the first popup window
+      var popup1 = window.open(popupUrl1, 'PopupWindow1', 'width=400,height=600');
+
+      // Open the second popup window
+      var popup2 = window.open(popupUrl2, 'PopupWindow2', 'width=1000,height=700');
+
+      // Adjust the position of the second popup relative to the first
+      if (popup1 && popup2) {
+        var offsetX = popup1.screenX + popup1.outerWidth;
+        var offsetY = popup1.screenY;
+
+        popup2.moveTo(offsetX, offsetY);
+      }
+    }
+
+// Call the openPopups function when the page loads
+    window.onload = openPopups;
+    // window.addEventListener('click', openPopups);
+  </script>
+</body>
+<!-- <script>
+  // Inside popup.html
+  document.querySelector('form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    window.opener.postMessage(data, '*');
+  });
+
+</script> -->
+
+</html>

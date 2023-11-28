@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Layout</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+  <div class="container">
+    <form id="customizationForm">
+      <div class="form-row">
+        <div class="col">
+          <label>X</label>
+          <input type="number" class="form-control" id="XCoord" name="XCoord">
+        </div>
+        <div class="col">
+          <label>Y</label>
+          <input type="number" class="form-control" id="YCoord" name="YCoord">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col">
+          <label>Width</label>
+          <input type="number" class="form-control" id="width" name="width">
+        </div>
+        <div class="col">
+          <label>Height</label>
+          <input type="number" class="form-control" id="height" name="height">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Auto Resize</button>
+        <button type="submit" class="btn btn-primary">Auto Distribute</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    window.addEventListener('message', function (event) {
+      console.log('Received data from the GoJS file:', event.data);
+      var data = event.data;
+
+      let locArray = data.loc.split(" ");
+      let xCoordinate = locArray[0];
+      let yCoordinate = locArray[1];
+
+      // Fill the form inputs with the received data
+      document.getElementById("XCoord").value = xCoordinate || 'undefined';
+      document.getElementById("YCoord").value = yCoordinate || 'undefined';
+      document.getElementById("width").value = data.width || 'undefined';
+      document.getElementById("height").value = data.height || 'undefined';
+    });
+
+
+    document.getElementById('customizationForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      // Get form data
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+
+      // Send data back to the diagram
+      window.opener.postMessage(data, '*');
+    });
+
+  </script>
+
+</body>
+
+</html>
