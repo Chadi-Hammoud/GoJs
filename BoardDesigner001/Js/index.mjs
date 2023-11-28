@@ -151,16 +151,17 @@ function init() {
               {
                 fill: "white",
                 stretch: go.GraphObject.Fill, // Make the shape resizable
-                
+
               }
             ),
 
             $(go.TextBlock, "",
               {
                 //text: "0:0",
+                name: "boardTextblock",
                 margin: 3, // Add some margin to position the text inside the rectangle
                 //editable: true, // Make the text editable
-               
+
                 alignment: go.Spot.Left, // Center the text within the shape
               },
               new go.Binding("text", "text").makeTwoWay() // Bind the text to the 'text' property of the node data
@@ -215,28 +216,29 @@ function init() {
   myDiagram.model = new go.GraphLinksModel();
   // myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "shelf" }) ;
   // Add nodes dynamically based on the user input
-let shelfNumber = 0;
+  let shelfNumber = 0;
 
 
   for (let i = 1; i <= borderCount; i++) {
-    
+
     // myDiagram.model.addNodeData({ key: `port${i}`, group: "boardGroup", category: "board", width: 120, height: 120  });
     myDiagram.model.addNodeData({ key: `port${i}`, category: "board", width: 120, height: 120, text: `${startIndex}:${shelfNumber}` });
     startIndex++;
   }
 
+  let popupWindow
   function openPopup() {
     // Specify the URL and other options for the popup window
     var popupOptions = 'width=600,height=800,scrollbars=yes';
 
     // Open a new browser window with the specified URL and options
-    var popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
-    
+    popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
+
 
     // Focus on the new window (optional)
     if (popupWindow) {
       popupWindow.focus();
-      
+
     }
   }
 
@@ -244,12 +246,97 @@ let shelfNumber = 0;
   openPopupButton.textContent = 'Open Popup';
   openPopupButton.addEventListener('click', openPopup);
   document.body.appendChild(openPopupButton);
-  document.body.appendChild(openPopupButton);
 
-  
+  let slotIndex;
+  let indexOnSlot;
+  let X;
+  let Y;
+  let width;
+  let height;
+  window.addEventListener('message', function (event) {
+    // Optional: Check the origin of the data!
+    // if (event.origin !== "http://example.com:8080")
+    //     return;
+
+    // The data sent from the popup
+    const data = event.data;
+    slotIndex = parseInt(data.slotIndex);
+    indexOnSlot = parseInt(data.indexOnSlot);
+    X = parseFloat(data.X, 10);
+    Y = parseFloat(data.Y, 10);
+    width = parseInt(data.width);
+    height = parseInt(data.height);
+
+    console.log("received message");
+    // Use the data
+    console.log(data);
+    updateProperties();
+  }, false);
 
 
 
+  function updateProperties() {
+    // Start a transaction
+    myDiagram.startTransaction('update properties');
+
+    let nodeText = slotIndex + ":" + indexOnSlot;
+
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+        var textBlock = node.findObject('boardTextblock');
+
+        if (nodeText === textBlock.text) {
+            // Node location is a Point object, you can modify it like this:
+            node.location = new go.Point(X, Y); // replace X and Y with the actual values
+            var innerPanel = node.findObject("PANEL");
+
+            // Update the size of the inner panel
+            myDiagram.model.setDataProperty(innerPanel, "width", width);  // Adjust as needed
+            myDiagram.model.setDataProperty(innerPanel, "height", height);  // Assuming the inner panel should have the same height as the node
+
+            // Update the text block size if needed
+            textBlock.width = innerPanel.width;
+            node.updateTargetBindings();
+        }
+    });
+
+    // Commit the transaction
+    myDiagram.commitTransaction('update properties');
+}
+
+
+  // function printNodeTexts() {
+  //   myDiagram.startTransaction('printNodeTexts');
+  //   // Iterate over all nodes in the diagram
+  //   myDiagram.nodes.each(function (node) {
+  //     // Find the TextBlock in the node
+  //     // var textBlock = node.findObject('boardTextblock'); // Replace 'TEXTBLOCK' with the actual name of your TextBlock, if you have assigned one
+  //     // if (textBlock) {
+  //     //   // Print the text
+  //     //   console.log(textBlock.text);
+  //     // }
+
+
+
+  //     myDiagram.commitTransaction('printNodeTexts');
+  //   });
+  // }
+  // printNodeTexts();
+
+
+  // function printNodeShapes() {
+  //   myDiagram.startTransaction('printNodeShape');
+  //   // Iterate over all nodes in the diagram
+  //   myDiagram.nodes.each(function (node) {
+
+
+  //     var shape = node.findObject(node.findMainElement().panel.itemArray[0].name);
+  //     console.log(shape);
+
+  //     myDiagram.commitTransaction('printNodeShapes');
+  //   });
+  // }
+  // printNodeShapes();
 
 
 
