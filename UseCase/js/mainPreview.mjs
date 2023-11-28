@@ -1,5 +1,5 @@
 
-import * as go from "../node_modules/gojs/release/go.mjs";
+import * as go from "gojs";
 
 let myDiagram;
 let nodeDataArray = [];

@@ -1,5 +1,6 @@
 // Import GoJS library
-import * as go from "../node_modules/gojs/release/go.mjs";
+import * as go from "gojs";
+import * as popUp from "./popUp.mjs"
 
 let numPorts = prompt("How many ports do you need?");
 let myDiagram;

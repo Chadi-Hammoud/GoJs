@@ -1,5 +1,5 @@
-import * as go from "./node_modules/gojs/release/go.mjs";
-import { GraphObject , Diagram} from './node_modules/gojs/release/go.mjs';
+import * as go from "gojs";
+import { GraphObject , Diagram} from 'gojs';
 import {RescalingTool} from "./RescalingTool.js";
 
 // import  * as RescalingTool  from './node_modules/gojs/extensions/RescalingTool.js';

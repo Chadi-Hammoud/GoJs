@@ -1,4 +1,4 @@
-import * as go from "./node_modules/gojs/release/go.js";
+import * as go from "gojs";
 var myDiagram =
  new go.Diagram("myDiagramDiv",
    { "undoManager.isEnabled": true }); // enable undo & redo
