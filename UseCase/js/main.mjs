@@ -9,21 +9,27 @@ let nodeDataArray = [];
 let _data;
 let portSpacing = 20;
 let selectedNode;
-let componentLayoutWindow;
 
 
 
+window.addEventListener('message', function (event) {
+    var data = event.data;
+    console.log('Received data from the popup:', data);
+    if (data.type == "autoResize") {
 
+        autoResize(data);
+
+    } else {
+        adjustNodeCoordinates(data);
+    }
+
+});
 
 // Initialize the diagram
 function init() {
 
 
-    window.addEventListener('message', function (event) {
-        var data = event.data;
-        console.log('Received data from the popup:', data);
-        adjustNodeCoordinates(data);
-    });
+
 
     // Convert the input to a number
     numPorts = parseInt(numPorts);
@@ -231,6 +237,29 @@ function adjustNodeCoordinates(data) {
         // Update the diagram to reflect the changes
         myDiagram.model.updateTargetBindings(selectedNode);
     }
+}
+
+
+function autoResize(data) {
+    myDiagram.nodes.each(function (node) {
+
+        // Start a transaction
+        myDiagram.startTransaction('update properties');
+
+        var key = node.key;
+        var nodeData = myDiagram.model.findNodeDataForKey(key);
+
+
+        myDiagram.model.setDataProperty(nodeData, "width", data.width)
+
+        myDiagram.model.setDataProperty(nodeData, "height", data.height);
+
+        // nodeData.location = new go.Point(X, Y);
+        node.updateTargetBindings();
+        // Commit the transaction
+        myDiagram.commitTransaction('update properties');
+
+    });
 }
 
 function sendDataToPanel(dataToSend) {

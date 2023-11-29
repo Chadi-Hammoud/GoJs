@@ -8,6 +8,20 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <style>
+    #popupForm {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+  </style>
 </head>
 
 
@@ -37,12 +51,37 @@
       </div>
 
       <div class="form-group">
-        <button type="submit" class="btn btn-primary">Auto Resize</button>
-        <button type="submit" class="btn btn-primary">Auto Distribute</button>
+        <!-- <button type="button" class="btn btn-primary" onclick="openPopup()">Auto Resize</button>
+        <button class="btn btn-primary">Auto Distribute</button> -->
         <button type="submit" class="btn btn-primary">Apply</button>
       </div>
     </form>
+    <div class="form-group">
+      <button type="button" class="btn btn-primary" onclick="openPopup()">Auto Resize</button>
+      <button class="btn btn-primary">Auto Distribute</button>
+    </div>
   </div>
+
+  <div id="popupForm">
+    <form id="autoResizeForm">
+      <label>Auto Resize</label>
+      <div class="form-row">
+        <div class="col">
+          <label>Width</label>
+          <input type="number" class="form-control" id="resizedWidth" name="width" required>
+        </div>
+        <div class="col">
+          <label>Height</label>
+          <input type="number" class="form-control" id="resizedHeight" name="height" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" onclick="performAutoResize()">Apply</button>
+      <button type="button" class="btn btn-secondary" onclick="closePopup()">Cancel</button>
+    </form>
+  </div>
+
+
+
 
   <script>
     let _data = {};
@@ -59,13 +98,13 @@
       document.getElementById("YCoord").value = yCoordinate || 'undefined';
       document.getElementById("width").value = _data.width || 'undefined';
       document.getElementById("height").value = _data.height || 'undefined';
+      document.getElementById("resizedWidth").value = _data.height || 'undefined';
+      document.getElementById("resizedHeight").value = _data.height || 'undefined';
     });
 
 
     document.getElementById('customizationForm').addEventListener('submit', function (event) {
       event.preventDefault();
-
-      // Get form data
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
       data.selectedNodeID = _data.key
@@ -73,6 +112,41 @@
       // Send data back to the diagram
       window.opener.postMessage(data, '*');
     });
+
+
+    document.getElementById('autoResizeForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      let toBeSended = [];
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+      toBeSended.width = parseInt(data.width);
+      toBeSended.height = parseInt(data.height);
+      toBeSended.type = "autoResize"
+      window.opener.postMessage(toBeSended, '*');
+    });
+
+
+
+    function openPopup() {
+      document.getElementById("popupForm").style.display = "block";
+      document.getElementById("autoResizeWidth").value = _data.width || '';
+      document.getElementById("autoResizeHeight").value = _data.height || '';
+    }
+
+    function closePopup() {
+      document.getElementById("popupForm").style.display = "none";
+    }
+
+    function performAutoResize() {
+      const autoResizeWidth = document.getElementById("autoResizeWidth").value;
+      const autoResizeHeight = document.getElementById("autoResizeHeight").value;
+
+      // Perform auto-resize logic here
+
+      // Close the popup after performing auto-resize
+      closePopup();
+    }
+
 
   </script>
 
