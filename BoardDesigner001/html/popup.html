@@ -9,15 +9,45 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script type="module">
-   
+
 
   </script>
+
+  <style>
+    #form1,
+    #form2 {
+
+
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    #form2 {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+
+    }
+  </style>
 </head>
 
 
 <body>
-  <div id = "" class="container">
-    <form>
+  <div id="" class="container">
+    <form id="form0">
       <div class="form-group">
         <legend>
           <fieldset>
@@ -71,6 +101,8 @@
         <div class="col">
           <label>Height</label>
           <input type="number" class="form-control" id="height" name="height" step="0.00000000000000001">
+
+
         </div>
       </div>
 
@@ -79,16 +111,18 @@
         <button type="button" class="btn btn-primary" id="auto-distribute">Auto Distribute</button>
         <button type="submit" class="btn btn-primary">Apply</button>
       </div>
-      
+
     </form>
 
-    
+
+
+
   </div>
 
-  <div id= "size" class="container" style="display:none">
+  <div id="size" class="container" style="display:none">
     <form name="form1" id="form1">
       <div class="form-group row">
-        <label  class="col-sm-2 col-form-label">Size</label>
+        <label class="col-sm-2 col-form-label">Size</label>
         <div class="col-sm-10">
           <hr>
         </div>
@@ -111,8 +145,45 @@
 
       <div class="form-group row">
         <div class="col-sm-10 offset-sm-2">
-          <button type="submit" id="submit" class="btn btn-primary">Apply</button>
+          <button type="submit"  class="btn btn-primary">Apply</button>
           <button id="close" class="btn btn-primary">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="container">
+
+    <div class="form-group">
+
+      <button id="addSlot" class="btn btn-primary">add Slot</button>
+    </div>
+
+  </div>
+
+
+  <div id="slot" class="container" style="display:none">
+    <form name="form2" id="form2">
+
+
+      <div class="form-col">
+        <div class="form-group row">
+          <label for="slotIndex" class="col-sm-2 col-form-label">choose slot index</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="addSlotIndex" name="addSlotIndex" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="indexOnSlot" class="col-sm-2 col-form-label">choose index on slot</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="addIndexOnSlot" name="addIndexOnSlot" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+          <button type="submit"  class="btn btn-primary">Ok</button>
         </div>
       </div>
     </form>
@@ -123,12 +194,13 @@
 
 <script type="module">
 
-// import {getMyDiagram} from "../Js/data.js"
+  // import {getMyDiagram} from "../Js/data.js"
   // Inside popup.html
-  document.querySelector('form').addEventListener('submit', function (event) {
+  document.querySelector('#form0').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+    data.formId = 'form0';
     window.opener.postMessage(data, '*');
   });
 
@@ -136,6 +208,15 @@
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+    data.formId = 'form1';
+    window.opener.postMessage(data, '*');
+  });
+
+  document.querySelector('#form2').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    data.formId = 'form2';
     window.opener.postMessage(data, '*');
   });
 
@@ -154,37 +235,41 @@
     document.getElementById('width').value = data.width;
     document.getElementById('height').value = data.height;
 
-
-
   }, false);
 
 
 
-  let autoResizePopup = null; // declare the variable outside the function
+  // let autoResizePopup = null; // declare the variable outside the function
 
-  function openAutoResizePopup() {
-    // Specify the URL and other options for the popup window
-    var popupOptions = 'width=600,height=220,scrollbars=no';
+  // function openAutoResizePopup() {
+  //   // Specify the URL and other options for the popup window
+  //   var popupOptions = 'width=600,height=220,scrollbars=no';
 
-    // Check if the popup already exists and is not closed
-    if (autoResizePopup && !autoResizePopup.closed) {
-      // If it is, just focus on it
-      autoResizePopup.focus();
-    } else {
-      // If not, open a new popup window with the specified URL and options
-      autoResizePopup = window.open('autoResize.html', 'AutoResizePopup', popupOptions);
-    }
+  //   // Check if the popup already exists and is not closed
+  //   if (autoResizePopup && !autoResizePopup.closed) {
+  //     // If it is, just focus on it
+  //     autoResizePopup.focus();
+  //   } else {
+  //     // If not, open a new popup window with the specified URL and options
+  //     autoResizePopup = window.open('autoResize.html', 'AutoResizePopup', popupOptions);
+  //   }
+  // }
+
+  function showNodeSize() {
+    document.getElementById("size").style.display = "block"
   }
 
-function showNodeSize(){
+  function hideNodeSize() {
+    document.getElementById("size").style.display = "none"
+  }
 
-document.getElementById("size").style.display = "block"
-}
+  function showAddSlotFrame() {
+    document.getElementById("slot").style.display = "block"
+  }
 
-function hideNodeSize(){
-
-document.getElementById("size").style.display = "none"
-}
+  function hideAddSlotFrame() {
+    document.getElementById("slot").style.display = "none"
+  }
 
 
   let autoResize = document.getElementById("auto-resize");
@@ -192,6 +277,9 @@ document.getElementById("size").style.display = "none"
 
   let close = document.getElementById("close");
   close.addEventListener("click", hideNodeSize);
+
+  let addSlot = document.getElementById("addSlot");
+  addSlot.addEventListener("click", showAddSlotFrame)
 
 
   // let width;

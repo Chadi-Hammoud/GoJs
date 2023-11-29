@@ -28,7 +28,7 @@ function init() {
   // myDiagram.toolManager.resizingTool.computeReshape = function () { return false; }
 
 
- 
+
   function makeLayout(horiz) {
     if (horiz) {
       return new go.GridLayout(
@@ -258,6 +258,11 @@ function init() {
 
   let width1;
   let height1;
+
+  let addSlotIndex;
+  let addIndexOnSlot;
+
+
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
     // if (event.origin !== "http://example.com:8080")
@@ -265,23 +270,37 @@ function init() {
 
     // The data sent from the popup
     if (event.source.name === "Popup") {
-
       const data = event.data;
-      slotIndex = parseInt(data.slotIndex);
-      indexOnSlot = parseInt(data.indexOnSlot);
-      X = parseFloat(data.X, 10);
-      Y = parseFloat(data.Y, 10);
-      width = parseFloat(data.width, 10);
-      height = parseFloat(data.height, 10);
+      if (data.formId == 'form0') {
 
-      console.log("received message");
-      // Use the data
-      console.log(data);
-      //updateProperties();
+        slotIndex = parseInt(data.slotIndex);
+        indexOnSlot = parseInt(data.indexOnSlot);
+        X = parseFloat(data.X, 10);
+        Y = parseFloat(data.Y, 10);
+        width = parseFloat(data.width, 10);
+        height = parseFloat(data.height, 10);
 
-      width1 = parseFloat(data.width1, 10);
-      height1 = parseFloat(data.height1, 10);
-      UpdateAllNodesSize();
+        console.log("received message");
+        // Use the data
+        console.log(data);
+        updateProperties();
+
+      } else if (data.formId == 'form1') {
+
+        //if form1
+        width1 = parseFloat(data.width1, 10);
+        height1 = parseFloat(data.height1, 10);
+        UpdateAllNodesSize();
+      } else if (data.formId == 'form2') {
+        addSlotIndex = parseInt(data.addSlotIndex);
+        addIndexOnSlot = parseInt(data.addIndexOnSlot);
+        checkIndex();
+      }
+
+
+
+
+
     }
 
     console.log(event.source.name);
@@ -336,6 +355,26 @@ function init() {
 
     });
 
+
+  }
+
+  function checkIndex() {
+
+    let nodeText = addSlotIndex + ":" + addIndexOnSlot;
+
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+      var textBlock = node.findObject('boardTextblock');
+
+      if (nodeText !== textBlock.text) {
+        // Start a transaction
+        myDiagram.startTransaction('checkIndex');
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
+        startIndex++;
+        // Commit the transaction
+        myDiagram.commitTransaction('checkIndex');
+      }
+    });
 
   }
 
@@ -412,7 +451,7 @@ function init() {
 
 
 
- // setMyDiagram(myDiagram);
+  // setMyDiagram(myDiagram);
 }
 
 
