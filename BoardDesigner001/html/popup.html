@@ -8,11 +8,15 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script type="module">
+   
+
+  </script>
 </head>
 
 
 <body>
-  <div class="container">
+  <div id = "" class="container">
     <form>
       <div class="form-group">
         <legend>
@@ -40,40 +44,76 @@
 
       <div class="form-group">
         <label>Choose slot index:</label>
-        <input type="number" class="form-control" name="slotIndex">
+        <input type="number" class="form-control" id="slotIndex" name="slotIndex">
       </div>
 
       <div class="form-group">
         <label>Choose index on slot:</label>
-        <input type="number" class="form-control" name="indexOnSlot">
+        <input type="number" class="form-control" id="indexOnSlot" name="indexOnSlot">
       </div>
 
       <div class="form-row">
         <div class="col">
           <label>X</label>
-          <input type="number" class="form-control" name="X" step="0.00000000001">
+          <input type="number" class="form-control" id="X" name="X" step="0.00000000000000001">
         </div>
         <div class="col">
           <label>Y</label>
-          <input type="number" class="form-control" name="Y" step="0.00000000001">
+          <input type="number" class="form-control" id="Y" name="Y" step="0.00000000000000001">
         </div>
       </div>
 
       <div class="form-row">
         <div class="col">
           <label>Width</label>
-          <input type="number" class="form-control" name="width" step="0.00000000001">
+          <input type="number" class="form-control" id="width" name="width" step="0.00000000000000001">
         </div>
         <div class="col">
           <label>Height</label>
-          <input type="number" class="form-control" name="height" step="0.00000000001">
+          <input type="number" class="form-control" id="height" name="height" step="0.00000000000000001">
         </div>
       </div>
 
       <div class="form-group">
-        <button type="button" class="btn btn-primary">Auto Resize</button>
-        <button type="button" class="btn btn-primary">Auto Distribute</button>
+        <button type="button" class="btn btn-primary" id="auto-resize">Auto Resize</button>
+        <button type="button" class="btn btn-primary" id="auto-distribute">Auto Distribute</button>
         <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+      
+    </form>
+
+    
+  </div>
+
+  <div id= "size" class="container" style="display:none">
+    <form name="form1" id="form1">
+      <div class="form-group row">
+        <label  class="col-sm-2 col-form-label">Size</label>
+        <div class="col-sm-10">
+          <hr>
+        </div>
+      </div>
+
+      <div class="form-col">
+        <div class="form-group row">
+          <label for="width" class="col-sm-2 col-form-label">Width</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="height" class="col-sm-2 col-form-label">Height</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="height1" name="height1" step="0.00000000000000001" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+          <button type="submit" id="submit" class="btn btn-primary">Apply</button>
+          <button id="close" class="btn btn-primary">Close</button>
+        </div>
       </div>
     </form>
   </div>
@@ -81,7 +121,9 @@
 
 </body>
 
-<script>
+<script type="module">
+
+// import {getMyDiagram} from "../Js/data.js"
   // Inside popup.html
   document.querySelector('form').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -89,6 +131,107 @@
     const data = Object.fromEntries(formData);
     window.opener.postMessage(data, '*');
   });
+
+  document.querySelector('#form1').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    window.opener.postMessage(data, '*');
+  });
+
+
+  window.addEventListener('message', function (event) {
+    // The data sent from the main window
+    const data = event.data;
+    console.log(data);
+
+    // Use the data
+    // For example, to populate an input with the width:
+    document.getElementById('slotIndex').value = data.slotIndex;
+    document.getElementById('indexOnSlot').value = data.indexOnSlot;
+    document.getElementById('X').value = data.X;
+    document.getElementById('Y').value = data.Y;
+    document.getElementById('width').value = data.width;
+    document.getElementById('height').value = data.height;
+
+
+
+  }, false);
+
+
+
+  let autoResizePopup = null; // declare the variable outside the function
+
+  function openAutoResizePopup() {
+    // Specify the URL and other options for the popup window
+    var popupOptions = 'width=600,height=220,scrollbars=no';
+
+    // Check if the popup already exists and is not closed
+    if (autoResizePopup && !autoResizePopup.closed) {
+      // If it is, just focus on it
+      autoResizePopup.focus();
+    } else {
+      // If not, open a new popup window with the specified URL and options
+      autoResizePopup = window.open('autoResize.html', 'AutoResizePopup', popupOptions);
+    }
+  }
+
+function showNodeSize(){
+
+document.getElementById("size").style.display = "block"
+}
+
+function hideNodeSize(){
+
+document.getElementById("size").style.display = "none"
+}
+
+
+  let autoResize = document.getElementById("auto-resize");
+  autoResize.addEventListener("click", showNodeSize);
+
+  let close = document.getElementById("close");
+  close.addEventListener("click", hideNodeSize);
+
+
+  // let width;
+  // let height;
+  // window.addEventListener('message', function (event) {
+  //   // Optional: Check the origin of the data!
+  //   // if (event.origin !== "http://example.com:8080")
+  //   //     return;
+
+  //   // The data sent from the popup
+  //   if (event.source.name === "AutoResizePopup") {
+  //     UpdateAllNodesSize();
+  //   }
+
+
+
+  // }, false);
+
+  // let myDiagram = getMyDiagram();
+
+  // function UpdateAllNodesSize() {
+  //   // Iterate over all nodes
+  //   myDiagram.nodes.each(function (node) {
+  //     // Start a transaction
+  //     myDiagram.startTransaction('update size');
+
+  //     var key = node.key;
+  //     var data = myDiagram.model.findNodeDataForKey(key);
+
+  //     myDiagram.model.setDataProperty(data, "width", width);
+  //     myDiagram.model.setDataProperty(data, "height", height);
+  //     node.updateTargetBindings();
+  //     // Commit the transaction
+  //     myDiagram.commitTransaction('update size');
+
+  //   });
+
+
+  // }
+
 
 </script>
 

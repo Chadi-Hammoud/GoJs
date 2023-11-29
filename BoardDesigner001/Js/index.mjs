@@ -1,5 +1,6 @@
 
 import * as go from "../../node_modules/gojs/release/go.mjs";
+//import {setMyDiagram} from "./data.js";
 
 let myDiagram;
 
@@ -7,6 +8,8 @@ function init() {
 
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
+  let popupWindow;
+
 
 
   let $ = go.GraphObject.make;
@@ -24,6 +27,8 @@ function init() {
     });
   // myDiagram.toolManager.resizingTool.computeReshape = function () { return false; }
 
+
+ 
   function makeLayout(horiz) {
     if (horiz) {
       return new go.GridLayout(
@@ -137,7 +142,7 @@ function init() {
 
           { height: 20, stretch: go.GraphObject.Fill, },
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v / 12, null),
+            new go.Binding("width", "width", v => v / 12),
             {
               fill: "black",
             }
@@ -146,7 +151,7 @@ function init() {
           $(go.Panel, "Auto",
 
             $(go.Shape, "Rectangle",
-              new go.Binding("width", "width", v => v * 0.83, null),
+              new go.Binding("width", "width", v => v * 0.83),
 
               {
                 fill: "white",
@@ -169,11 +174,9 @@ function init() {
           ),
 
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v / 10, null),
+            new go.Binding("width", "width", v => v / 10),
             {
               fill: "black",
-
-
             }
           ),
 
@@ -216,29 +219,28 @@ function init() {
   myDiagram.model = new go.GraphLinksModel();
   // myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "shelf" }) ;
   // Add nodes dynamically based on the user input
-  let shelfNumber = 0;
+  let indexSlot = 0;
 
 
   for (let i = 1; i <= borderCount; i++) {
 
-    // myDiagram.model.addNodeData({ key: `port${i}`, group: "boardGroup", category: "board", width: 120, height: 120  });
-    myDiagram.model.addNodeData({ key: `port${i}`, category: "board", width: 120, height: 120, text: `${startIndex}:${shelfNumber}` });
+    // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120  });
+    myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${startIndex}:${indexSlot}` });
     startIndex++;
   }
 
-  let popupWindow
+
   function openPopup() {
     // Specify the URL and other options for the popup window
     var popupOptions = 'width=600,height=800,scrollbars=yes';
 
-    // Open a new browser window with the specified URL and options
-    popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
-
-
-    // Focus on the new window (optional)
-    if (popupWindow) {
+    // Check if the popup already exists and is not closed
+    if (popupWindow && !popupWindow.closed) {
+      // If it is, just focus on it
       popupWindow.focus();
-
+    } else {
+      // If not, open a new popup window with the specified URL and options
+      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
     }
   }
 
@@ -253,56 +255,126 @@ function init() {
   let Y;
   let width;
   let height;
+
+  let width1;
+  let height1;
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
     // if (event.origin !== "http://example.com:8080")
     //     return;
 
     // The data sent from the popup
-    const data = event.data;
-    slotIndex = parseInt(data.slotIndex);
-    indexOnSlot = parseInt(data.indexOnSlot);
-    X = parseFloat(data.X, 10);
-    Y = parseFloat(data.Y, 10);
-    width = parseInt(data.width);
-    height = parseInt(data.height);
+    if (event.source.name === "Popup") {
 
-    console.log("received message");
-    // Use the data
-    console.log(data);
-    updateProperties();
+      const data = event.data;
+      slotIndex = parseInt(data.slotIndex);
+      indexOnSlot = parseInt(data.indexOnSlot);
+      X = parseFloat(data.X, 10);
+      Y = parseFloat(data.Y, 10);
+      width = parseFloat(data.width, 10);
+      height = parseFloat(data.height, 10);
+
+      console.log("received message");
+      // Use the data
+      console.log(data);
+      //updateProperties();
+
+      width1 = parseFloat(data.width1, 10);
+      height1 = parseFloat(data.height1, 10);
+      UpdateAllNodesSize();
+    }
+
+    console.log(event.source.name);
+
   }, false);
 
 
 
   function updateProperties() {
-    // Start a transaction
-    myDiagram.startTransaction('update properties');
+
 
     let nodeText = slotIndex + ":" + indexOnSlot;
 
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
-        var textBlock = node.findObject('boardTextblock');
+      var textBlock = node.findObject('boardTextblock');
 
-        if (nodeText === textBlock.text) {
-            // Node location is a Point object, you can modify it like this:
-            node.location = new go.Point(X, Y); // replace X and Y with the actual values
-            var innerPanel = node.findObject("PANEL");
+      if (nodeText === textBlock.text) {
+        // Start a transaction
+        myDiagram.startTransaction('update properties');
 
-            // Update the size of the inner panel
-            myDiagram.model.setDataProperty(innerPanel, "width", width);  // Adjust as needed
-            myDiagram.model.setDataProperty(innerPanel, "height", height);  // Assuming the inner panel should have the same height as the node
+        var key = node.key;
+        var data = myDiagram.model.findNodeDataForKey(key);
 
-            // Update the text block size if needed
-            textBlock.width = innerPanel.width;
-            node.updateTargetBindings();
-        }
+        myDiagram.model.setDataProperty(data, "width", width);
+        myDiagram.model.setDataProperty(data, "height", height);
+        node.location = new go.Point(X, Y);
+        node.updateTargetBindings();
+        // Commit the transaction
+        myDiagram.commitTransaction('update properties');
+      }
     });
 
-    // Commit the transaction
-    myDiagram.commitTransaction('update properties');
-}
+
+  }
+
+
+  function UpdateAllNodesSize() {
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+      // Start a transaction
+      myDiagram.startTransaction('update size');
+
+      var key = node.key;
+      var data = myDiagram.model.findNodeDataForKey(key);
+
+      myDiagram.model.setDataProperty(data, "width", width1);
+      myDiagram.model.setDataProperty(data, "height", height1);
+      node.updateTargetBindings();
+      // Commit the transaction
+      myDiagram.commitTransaction('update size');
+
+    });
+
+
+  }
+
+  // Add a listener for the SelectionChanged event
+  myDiagram.addDiagramListener("ChangedSelection", function (e) {
+    // Get the selected node
+    var node = e.subject.first();
+
+    // If a node is selected
+    if (node instanceof go.Node) {
+      // Get the node's location, width, and height
+      //var key = node.data.key;
+      var text = node.data.text;
+      let parts = text.split(':');
+      let slotIndex = parts[0];
+      let indexOnSlot = parts[1];
+
+      var loc = node.location;
+      var width = node.data.width;
+      var height = node.data.height;
+      var x = loc.x;
+      var y = loc.y;
+
+      var data = {
+        slotIndex: slotIndex,
+        indexOnSlot: indexOnSlot,
+        X: x,
+        Y: y,
+        width: width,
+        height: height
+      };
+
+      // Send the location, width, and height to the popup window
+      popupWindow.postMessage(data, "*");
+      console.log(data);
+
+    }
+  });
+
 
 
   // function printNodeTexts() {
@@ -340,14 +412,8 @@ function init() {
 
 
 
-
+ // setMyDiagram(myDiagram);
 }
 
 
 window.addEventListener('DOMContentLoaded', init);
-//
-//In this code, we have created a custom figure for the shape of the node. The figure is a rectangle with a custom head and body. The head has a height of 20px, and the body has a height of `h - 20px`. The fill of the head is white, and the fill of the body is gray.
-//
-//The node template is defined with the custom shape. The width and height of the node are set to 120 and 100 respectively. The fill of the shape is set to a linear gradient brush with a white head and a gray body.
-//
-//The model is initialized with a single node of category "board". The width of the node is set to 2000, and the size is set to a new go.Size object with a width of 200 and a height of 100.
