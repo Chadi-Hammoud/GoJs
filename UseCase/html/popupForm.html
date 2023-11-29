@@ -45,19 +45,20 @@
   </div>
 
   <script>
+    let _data = {};
     window.addEventListener('message', function (event) {
       console.log('Received data from the GoJS file:', event.data);
-      var data = event.data;
+      _data = event.data;
 
-      let locArray = data.loc.split(" ");
+      let locArray = _data.loc.split(" ");
       let xCoordinate = locArray[0];
       let yCoordinate = locArray[1];
 
       // Fill the form inputs with the received data
       document.getElementById("XCoord").value = xCoordinate || 'undefined';
       document.getElementById("YCoord").value = yCoordinate || 'undefined';
-      document.getElementById("width").value = data.width || 'undefined';
-      document.getElementById("height").value = data.height || 'undefined';
+      document.getElementById("width").value = _data.width || 'undefined';
+      document.getElementById("height").value = _data.height || 'undefined';
     });
 
 
@@ -67,6 +68,7 @@
       // Get form data
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
+      data.selectedNodeID = _data.key
 
       // Send data back to the diagram
       window.opener.postMessage(data, '*');

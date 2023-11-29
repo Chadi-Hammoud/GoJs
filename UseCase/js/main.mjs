@@ -38,8 +38,8 @@ function init() {
         "toolManager.hoverDelay": 100,
         "draggingTool.isGridSnapEnabled": false,
         "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
-
     });
+
     //myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
 
 
@@ -81,24 +81,17 @@ function init() {
                     sendDataToPanel(node.part.data);
                     console.log(node.part.data)
                 },
-
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-// new go.Binding("height", "height", null, null),
-            // new go.Binding("width", "width", null, null),
-                        $(go.Panel, "Vertical",
+            new go.Binding("width", "width", null, null),
+            new go.Binding("height", "height", null, null),
+            $(go.Panel, "Vertical",
                 new go.Binding("width", "width", null, null),
-                 new go.Binding("height", "height", null, null),
-
+                new go.Binding("height", "height", null, null),
                 {
                     name: "PANEL", // Give the panel a name for referencing in resizeObjectName
-                   // minSize: new go.Size(100, 100),
-                    // maxSize: new go.Size(300, 300)
-
                 },
                 $(go.Panel, "Horizontal",
-
-
                     { height: 20, stretch: go.GraphObject.Fill, },
                     $(go.Shape, "Rectangle",
                         new go.Binding("width", "width", v => v / 12),
@@ -107,14 +100,11 @@ function init() {
                         }
                     ),
                     $(go.Panel, "Auto",
-
                         $(go.Shape, "Rectangle",
                             new go.Binding("width", "width", v => v * 0.83),
-
                             {
                                 fill: "white",
                                 stretch: go.GraphObject.Fill, // Make the shape resizable
-
                             }
                         ),
                         $(go.TextBlock, "",
@@ -126,33 +116,29 @@ function init() {
                             },
                             new go.Binding("text", "text").makeTwoWay() // Bind the text to the 'text' property of the node data
                         )
-
                     ),
                     $(go.Shape, "Rectangle",
                         new go.Binding("width", "width", v => v / 10),
                         {
                             fill: "black",
-
-
                         }
                     ),
                 ),
-                new go.Binding("width", "width").makeTwoWay(),
-
                 $(go.Picture, {
                     background: "white",
                     name: "PANEL",
-                    //minSize: new go.Size(50, 50)
+                    stretch: go.GraphObject.Fill, // Make the picture fill its parent panel
                 },
                     new go.Binding("source", "source"),
                     new go.Binding("fill", "color"),
-                    //new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-                    new go.Binding("width", "width", null, null),
-                    new go.Binding("height", "height", null, null),
+                    new go.Binding("width", "width").makeTwoWay(),
+                    new go.Binding("height", "height").makeTwoWay(),
+                )
 
 
-                ),
-            ));
+            )
+        );
+
 
     myDiagram.addDiagramListener("Modified", function (e) {
 
@@ -222,11 +208,25 @@ function getRandomNumber() {
 }
 
 function adjustNodeCoordinates(data) {
-    if (selectedNode) {
+    console.log(data)
+
+    var nodeData = myDiagram.model.findNodeDataForKey(data.selectedNodeID);
+    if (nodeData) {
+        myDiagram.model.startTransaction("editNode");
+        // myDiagram.model.setDataProperty(nodeData, "width", data.width);
+        // myDiagram.model.setDataProperty(nodeData, "loc", data.loc);
+        // myDiagram.model.setDataProperty(nodeData, "height", data.height);
+
         // Modify the X and Y coordinates of the selected node
         selectedNode.loc = data.XCoord + " " + data.YCoord;
-        selectedNode.width = data.width;
-        selectedNode.height = data.height;
+        selectedNode.width = parseInt(data.width);
+        selectedNode.height = parseInt(data.height);
+        console.log(selectedNode)
+
+        myDiagram.model.commitTransaction("editNode");
+
+        // Update all parts to re-render the diagram
+        // myDiagram.updateAllParts();
 
         // Update the diagram to reflect the changes
         myDiagram.model.updateTargetBindings(selectedNode);
