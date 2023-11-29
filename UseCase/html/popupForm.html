@@ -80,6 +80,25 @@
     </form>
   </div>
 
+  <div id="popupForm">
+    <form id="autoDistributeForm">
+
+      <label>Auto Resize</label>
+      <div class="form-row">
+        <div class="col">
+          <label>Width</label>
+          <input type="number" class="form-control" id="resizedWidth" name="width" required>
+        </div>
+        <div class="col">
+          <label>Height</label>
+          <input type="number" class="form-control" id="resizedHeight" name="height" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" onclick="performAutoResize()">Apply</button>
+      <button type="button" class="btn btn-secondary" onclick="closePopup()">Cancel</button>
+    </form>
+  </div>
+
 
 
 
@@ -108,6 +127,7 @@
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
       data.selectedNodeID = _data.key
+      data.type = "adjustNodeCoordinates"
 
       // Send data back to the diagram
       window.opener.postMessage(data, '*');
@@ -123,14 +143,15 @@
       toBeSended.height = parseInt(data.height);
       toBeSended.type = "autoResize"
       window.opener.postMessage(toBeSended, '*');
+      closePopup();
     });
 
 
 
     function openPopup() {
       document.getElementById("popupForm").style.display = "block";
-      document.getElementById("autoResizeWidth").value = _data.width || '';
-      document.getElementById("autoResizeHeight").value = _data.height || '';
+      document.getElementById("resizedWidth").value = _data.width || '';
+      document.getElementById("resizedHeight").value = _data.height || '';
     }
 
     function closePopup() {
@@ -138,12 +159,9 @@
     }
 
     function performAutoResize() {
-      const autoResizeWidth = document.getElementById("autoResizeWidth").value;
-      const autoResizeHeight = document.getElementById("autoResizeHeight").value;
+      const autoResizeWidth = document.getElementById("resizedWidth").value;
+      const autoResizeHeight = document.getElementById("resizedHeight").value;
 
-      // Perform auto-resize logic here
-
-      // Close the popup after performing auto-resize
       closePopup();
     }
 

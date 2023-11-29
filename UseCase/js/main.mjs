@@ -1,6 +1,5 @@
 // Import GoJS library
 import * as go from "../../node_modules/gojs/release/go.mjs";
-// import {getNumPortsString} from "./_data.js";
 
 let numPorts = prompt("How many ports do you need?");
 // let numPorts
@@ -15,14 +14,21 @@ let selectedNode;
 window.addEventListener('message', function (event) {
     var data = event.data;
     console.log('Received data from the popup:', data);
-    if (data.type == "autoResize") {
+    switch (data.type) {
+        case "autoResize":
+            autoResize(data);
+            break;
+        case "adjustNodeCoordinates":
+            adjustNodeCoordinates(data);
+            break;
+        case "":
+            break;
 
-        autoResize(data);
+        default:
+            alert(`Unknown message type ${data.type}`);
 
-    } else {
-        adjustNodeCoordinates(data);
+
     }
-
 });
 
 // Initialize the diagram
@@ -230,11 +236,6 @@ function adjustNodeCoordinates(data) {
         console.log(selectedNode)
 
         myDiagram.model.commitTransaction("editNode");
-
-        // Update all parts to re-render the diagram
-        // myDiagram.updateAllParts();
-
-        // Update the diagram to reflect the changes
         myDiagram.model.updateTargetBindings(selectedNode);
     }
 }
