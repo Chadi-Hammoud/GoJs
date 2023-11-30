@@ -3,13 +3,30 @@ import * as go from "../../node_modules/gojs/release/go.mjs";
 //import {setMyDiagram} from "./data.js";
 
 let myDiagram;
+let popupWindow;
 
 function init() {
 
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
-  let popupWindow;
+  let isVertical = prompt("is vertical?, v ");
+ 
 
+  function openPopup() {
+    // Specify the URL and other options for the popup window
+    var popupOptions = 'width=600,height=800,scrollbars=yes';
+
+    // Check if the popup already exists and is not closed
+    if (popupWindow && !popupWindow.closed) {
+      // If it is, just focus on it
+      popupWindow.focus();
+    } else {
+      // If not, open a new popup window with the specified URL and options
+      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
+    }
+  }
+
+  openPopup();
 
 
   let $ = go.GraphObject.make;
@@ -18,9 +35,7 @@ function init() {
     {
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
-      layout: // Diagram has simple horizontal layout
-        new go.GridLayout(
-          { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
+      layout: makeLayout(isVertical === 'v'),
       "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
       "undoManager.isEnabled": true,
       //"fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
@@ -29,19 +44,18 @@ function init() {
 
 
 
-  function makeLayout(horiz) {
-    if (horiz) {
-      return new go.GridLayout(
-        {
-          wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-          cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-        });
+  function makeLayout(isVertical) {
+    if (isVertical) {
+      return $(go.GridLayout, {
+        wrappingColumn: Infinity, alignment: go.GridLayout.Position,
+        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+      });
     } else {
-      return new go.GridLayout(
-        {
-          wrappingColumn: Infinity, alignment: go.GridLayout.Position,
-          cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-        });
+      return $(go.GridLayout, {
+        wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+        wrappingColumn: 1,
+        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+      });
     }
   }
 
@@ -223,31 +237,25 @@ function init() {
 
 
   for (let i = 1; i <= borderCount; i++) {
+    if (isVertical === 'v') {
 
-    // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120  });
-    myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${startIndex}:${indexSlot}` });
+      // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120  });
+      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
+
+    }else{
+       myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
+    
+    }
     startIndex++;
   }
 
 
-  function openPopup() {
-    // Specify the URL and other options for the popup window
-    var popupOptions = 'width=600,height=800,scrollbars=yes';
 
-    // Check if the popup already exists and is not closed
-    if (popupWindow && !popupWindow.closed) {
-      // If it is, just focus on it
-      popupWindow.focus();
-    } else {
-      // If not, open a new popup window with the specified URL and options
-      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
-    }
-  }
 
-  let openPopupButton = document.createElement('button');
-  openPopupButton.textContent = 'Open Popup';
-  openPopupButton.addEventListener('click', openPopup);
-  document.body.appendChild(openPopupButton);
+  // let openPopupButton = document.createElement('button');
+  // openPopupButton.textContent = 'Open Popup';
+  // openPopupButton.addEventListener('click', openPopup);
+  // document.body.appendChild(openPopupButton);
 
   let slotIndex;
   let indexOnSlot;
@@ -296,10 +304,6 @@ function init() {
         addIndexOnSlot = parseInt(data.addIndexOnSlot);
         checkIndex();
       }
-
-
-
-
 
     }
 
@@ -359,24 +363,30 @@ function init() {
   }
 
   function checkIndex() {
-
     let nodeText = addSlotIndex + ":" + addIndexOnSlot;
-
+    let nodeExists = false;
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
       var textBlock = node.findObject('boardTextblock');
-
-      if (nodeText !== textBlock.text) {
-        // Start a transaction
-        myDiagram.startTransaction('checkIndex');
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
-        startIndex++;
-        // Commit the transaction
-        myDiagram.commitTransaction('checkIndex');
+      if (nodeText === textBlock.text) {
+        // A node with the same text exists
+        nodeExists = true;
       }
     });
 
+    if (!nodeExists) {
+      // Start a transaction
+      myDiagram.startTransaction('checkIndex');
+
+      // Add a new node
+      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
+      startIndex++;
+
+      // Commit the transaction
+      myDiagram.commitTransaction('checkIndex');
+    }
   }
+
 
   // Add a listener for the SelectionChanged event
   myDiagram.addDiagramListener("ChangedSelection", function (e) {
@@ -456,3 +466,4 @@ function init() {
 
 
 window.addEventListener('DOMContentLoaded', init);
+

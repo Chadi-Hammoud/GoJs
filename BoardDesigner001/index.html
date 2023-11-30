@@ -2,29 +2,46 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
-    <meta name="description" content="Use the TableLayout extension to arrange nodes in a tabular or grid-like form." />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+  <meta name="description" content="Use the TableLayout extension to arrange nodes in a tabular or grid-like form." />
+<!-- <script>
 
+ let popupWindow;
+    function openPopup() {
+    // Specify the URL and other options for the popup window
+    var popupOptions = 'width=600,height=800,scrollbars=yes';
+
+    // Check if the popup already exists and is not closed
+    if (popupWindow && !popupWindow.closed) {
+      // If it is, just focus on it
+      popupWindow.focus();
+    } else {
+      // If not, open a new popup window with the specified URL and options
+      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
+    }
+  }
+  
+</script> -->
 
 </head>
 
 <body>
 
-    <script id="code" type="module" src="./Js/index.mjs"></script>
-    <div id="sample">
-        <div style="width: 100%; display: flex; justify-content: space-between">
-       
-          <div id="myDiagramDiv" style="background-color: #e0e0e0; flex-grow: 1; height: 600px; border: solid 1px black">
-          </div>
-        </div>
-        <div id="buttons">
-          <button id="saveModel">Save</button>
-          <a href="./previewTable.html"><button id="previewPage">Preview</button>
-    
-          </a>
-        </div>
+  <script id="code" type="module" src="./Js/index.mjs"></script>
+  <div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+
+      <div id="myDiagramDiv" style="background-color: #e0e0e0; flex-grow: 1; height: 600px; border: solid 1px black">
       </div>
+    </div>
+    <!-- <div id="buttons">
+      <button id="saveModel">Save</button>
+      <a href="./previewTable.html"><button id="previewPage">Preview</button>
+
+      </a>
+    </div> -->
+  </div>
 
 
 

@@ -41,6 +41,39 @@
       z-index: 1000;
 
     }
+
+    #autoDistributePopupForm {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+      width: 75%;
+      height: 100%;
+      overflow-y: auto;
+      /* Allow vertical scrolling */
+      /* initially hidden */
+    }
+
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      /* semi-transparent black overlay */
+      display: none;
+      /* initially hidden */
+      z-index: 999;
+      /* make it appear above other content */
+    }
   </style>
 </head>
 
@@ -108,7 +141,7 @@
 
       <div class="form-group">
         <button type="button" class="btn btn-primary" id="auto-resize">Auto Resize</button>
-        <button type="button" class="btn btn-primary" id="auto-distribute">Auto Distribute</button>
+        <button id="autoDist" type="button" class="btn btn-primary">Auto Distribute</button>
         <button type="submit" class="btn btn-primary">Apply</button>
       </div>
 
@@ -145,7 +178,7 @@
 
       <div class="form-group row">
         <div class="col-sm-10 offset-sm-2">
-          <button type="submit"  class="btn btn-primary">Apply</button>
+          <button type="submit" class="btn btn-primary">Apply</button>
           <button id="close" class="btn btn-primary">Close</button>
         </div>
       </div>
@@ -179,17 +212,102 @@
             <input type="number" class="form-control" id="addIndexOnSlot" name="addIndexOnSlot" required>
           </div>
         </div>
-      </div>
 
-      <div class="form-group row">
-        <div class="col-sm-10 offset-sm-2">
-          <button type="submit"  class="btn btn-primary">Ok</button>
+        <div id="added" class="form-group row" style="display:none">
+          <div style="color:red">Added</div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Ok</button>
+            <button type="reset" class="btn btn-primary">cancel</button>
+          </div>
         </div>
       </div>
+
+
+  </div>
+  <div id="autoDistributePopupForm" style="display:none">
+    <form id="form3" class="mt-4">
+      <!-- Margins Section -->
+      <div>
+        <h4>Margins</h4>
+        <hr>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Left">Left</label>
+        <input type="number" class="form-control" id="margin_Left" name="margin_Left" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Right">Right</label>
+        <input type="number" class="form-control" id="margin_Right" name="margin_Right" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Top">Top</label>
+        <input type="number" class="form-control" id="margin_Top" name="margin_Top" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Bottom">Bottom</label>
+        <input type="number" class="form-control" id="margin_Bottom" name="margin_Bottom" value=30 required>
+      </div>
+
+      <!-- Spacing Section -->
+      <div>
+        <h4>Spacing</h4>
+        <hr>
+      </div>
+      <div class="form-group">
+        <label for="horizontal">Horizontal</label>
+        <input type="number" class="form-control" id="horizontal" name="horizontal" value=10 required>
+      </div>
+
+      <div class="form-group">
+        <label for="vertical">Vertical</label>
+        <input type="number" class="form-control" id="vertical" name="vertical" value=10 required>
+      </div>
+
+      <!-- Distribution Section -->
+      <div>
+        <h4>Distribution</h4>
+        <hr>
+      </div>
+      <div class="form-group">
+        <label for="rowsCount">Rows</label>
+        <input type="number" class="form-control" id="rowsCount" name="rowsCount" value=2 required>
+      </div>
+
+      <div class="form-group">
+        <label for="startPoint">Start Point</label>
+        <select class="form-control" id="startPoint" name="startPoint">
+          <option value="top-left">Top-Left</option>
+          <option value="top-right">Top-Right</option>
+          <option value="bottom-left">Bottom-Left</option>
+          <option value="bottom-right">Bottom-Right</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="direction">Direction</label>
+        <select class="form-control" id="direction" name="direction">
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-success">Apply</button>
+      <button id="closeAutoDist" type="button" class="btn btn-danger close">Close</button>
     </form>
   </div>
 
 
+  </form>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
 </body>
 
 <script type="module">
@@ -218,8 +336,21 @@
     const data = Object.fromEntries(formData);
     data.formId = 'form2';
     window.opener.postMessage(data, '*');
+
+    const form2Col = document.getElementById('added');
+    form2Col.style.display = "block";
   });
 
+
+  document.querySelector('#form2').addEventListener('reset', function (event) {
+    event.preventDefault();
+    document.getElementById("slot").style.display = "none";
+    document.getElementById("addSlotIndex").value = "";
+    document.getElementById("addIndexOnSlot").value = "";
+    const form2Col = document.getElementById('added');
+    form2Col.style.display = "none";
+
+  });
 
   window.addEventListener('message', function (event) {
     // The data sent from the main window
@@ -239,22 +370,6 @@
 
 
 
-  // let autoResizePopup = null; // declare the variable outside the function
-
-  // function openAutoResizePopup() {
-  //   // Specify the URL and other options for the popup window
-  //   var popupOptions = 'width=600,height=220,scrollbars=no';
-
-  //   // Check if the popup already exists and is not closed
-  //   if (autoResizePopup && !autoResizePopup.closed) {
-  //     // If it is, just focus on it
-  //     autoResizePopup.focus();
-  //   } else {
-  //     // If not, open a new popup window with the specified URL and options
-  //     autoResizePopup = window.open('autoResize.html', 'AutoResizePopup', popupOptions);
-  //   }
-  // }
-
   function showNodeSize() {
     document.getElementById("size").style.display = "block"
   }
@@ -271,6 +386,17 @@
     document.getElementById("slot").style.display = "none"
   }
 
+  function showAutoDist() {
+    document.getElementById("autoDistributePopupForm").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+  }
+
+  function hideAutoDist() {
+    document.getElementById("autoDistributePopupForm").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+  }
+
+
 
   let autoResize = document.getElementById("auto-resize");
   autoResize.addEventListener("click", showNodeSize);
@@ -280,6 +406,12 @@
 
   let addSlot = document.getElementById("addSlot");
   addSlot.addEventListener("click", showAddSlotFrame)
+
+  let autoDist = document.getElementById("autoDist");
+  autoDist.addEventListener("click", showAutoDist)
+
+  let closeAutoDist = document.getElementById("closeAutoDist");
+  closeAutoDist.addEventListener("click", hideAutoDist)
 
 
   // let width;
