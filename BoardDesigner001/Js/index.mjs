@@ -10,7 +10,7 @@ function init() {
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
- 
+
 
   function openPopup() {
     // Specify the URL and other options for the popup window
@@ -74,7 +74,7 @@ function init() {
   //   new go.Group("Auto",
   //     {
   //       layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-  //       background: "gray",
+  //       background: "e0e0e0",
   //       //ungroupable: true,
   //       resizable: false,
 
@@ -148,6 +148,10 @@ function init() {
       $(go.Panel, "Vertical",
         new go.Binding("width", "width", null, null),
         new go.Binding("height", "height", null, null),
+        new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
+        new go.Binding("marginTop", "marginTop").makeTwoWay(),
+        new go.Binding("marginRight", "marginRight").makeTwoWay(),
+        new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
 
         {
           name: "PANEL", // Give the panel a name for referencing in resizeObjectName
@@ -239,12 +243,12 @@ function init() {
   for (let i = 1; i <= borderCount; i++) {
     if (isVertical === 'v') {
 
-      // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120  });
+      // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120 , text: `${startIndex}:${indexSlot}` });
       myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
 
-    }else{
-       myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
-    
+    } else {
+      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
+
     }
     startIndex++;
   }
@@ -270,6 +274,15 @@ function init() {
   let addSlotIndex;
   let addIndexOnSlot;
 
+  let marginTop;
+  let marginLeft;
+  let marginRight;
+  let marginBottom;
+
+
+  let horizontal;
+  let vertical;
+  let rowsCount
 
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
@@ -303,6 +316,18 @@ function init() {
         addSlotIndex = parseInt(data.addSlotIndex);
         addIndexOnSlot = parseInt(data.addIndexOnSlot);
         checkIndex();
+      } else if (data.formId == 'form3') {
+        marginTop = parseInt(data.marginTop);
+        marginRight = parseInt(data.marginRight);
+        marginBottom = parseInt(data.marginBottom);
+        marginLeft = parseInt(data.marginLeft);
+
+        horizontal = parseInt(data.horizontal);
+        vertical = parseInt(data.vertical);
+        rowsCount = parseint(data.rowsCount);
+
+        makeMargin();
+
       }
 
     }
@@ -386,6 +411,27 @@ function init() {
       myDiagram.commitTransaction('checkIndex');
     }
   }
+
+  function makeMargin() {
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+      // Start a transaction
+      myDiagram.startTransaction('update margin');
+
+      var key = node.key;
+      var data = myDiagram.model.findNodeDataForKey(key);
+
+      myDiagram.model.setDataProperty(data, "marginLeft", marginLeft);
+      myDiagram.model.setDataProperty(data, "marginTop", marginTop);
+      myDiagram.model.setDataProperty(data, "marginRight", marginRight);
+      myDiagram.model.setDataProperty(data, "marginBottom", marginBottom);
+      node.updateTargetBindings();
+
+      // Commit the transaction
+      myDiagram.commitTransaction('update margin');
+    });
+  }
+
 
 
   // Add a listener for the SelectionChanged event

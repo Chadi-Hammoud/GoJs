@@ -223,11 +223,12 @@
           </div>
         </div>
       </div>
+      </form>
 
 
   </div>
   <div id="autoDistributePopupForm" style="display:none">
-    <form id="form3" class="mt-4">
+    <form name ="form3" id="form3">
       <!-- Margins Section -->
       <div>
         <h4>Margins</h4>
@@ -235,23 +236,23 @@
       </div>
 
       <div class="form-group">
-        <label for="margin_Left">Left</label>
-        <input type="number" class="form-control" id="margin_Left" name="margin_Left" value=30 required>
+        <label for="marginLeft">Left</label>
+        <input type="number" class="form-control" id="marginLeft" name="marginLeft" value=30 >
       </div>
 
       <div class="form-group">
-        <label for="margin_Right">Right</label>
-        <input type="number" class="form-control" id="margin_Right" name="margin_Right" value=30 required>
+        <label for="marginRight">Right</label>
+        <input type="number" class="form-control" id="marginRight" name="marginRight" value=30 >
       </div>
 
       <div class="form-group">
-        <label for="margin_Top">Top</label>
-        <input type="number" class="form-control" id="margin_Top" name="margin_Top" value=30 required>
+        <label for="marginTop">Top</label>
+        <input type="number" class="form-control" id="marginTop" name="marginTop" value=30 >
       </div>
 
       <div class="form-group">
-        <label for="margin_Bottom">Bottom</label>
-        <input type="number" class="form-control" id="margin_Bottom" name="margin_Bottom" value=30 required>
+        <label for="marginBottom">Bottom</label>
+        <input type="number" class="form-control" id="marginBottom" name="marginBottom" value=30 >
       </div>
 
       <!-- Spacing Section -->
@@ -261,12 +262,12 @@
       </div>
       <div class="form-group">
         <label for="horizontal">Horizontal</label>
-        <input type="number" class="form-control" id="horizontal" name="horizontal" value=10 required>
+        <input type="number" class="form-control" id="horizontal" name="horizontal" value=10 >
       </div>
 
       <div class="form-group">
         <label for="vertical">Vertical</label>
-        <input type="number" class="form-control" id="vertical" name="vertical" value=10 required>
+        <input type="number" class="form-control" id="vertical" name="vertical" value=10 >
       </div>
 
       <!-- Distribution Section -->
@@ -276,7 +277,7 @@
       </div>
       <div class="form-group">
         <label for="rowsCount">Rows</label>
-        <input type="number" class="form-control" id="rowsCount" name="rowsCount" value=2 required>
+        <input type="number" class="form-control" id="rowsCount" name="rowsCount" value=2 >
       </div>
 
       <div class="form-group">
@@ -298,13 +299,11 @@
       </div>
 
       <!-- Buttons -->
-      <button type="submit" class="btn btn-success">Apply</button>
+      <input type="submit" class="btn btn-success" value="Apply">
       <button id="closeAutoDist" type="button" class="btn btn-danger close">Close</button>
     </form>
   </div>
 
-
-  </form>
   </div>
 
   <div class="overlay" id="overlay"></div>
@@ -312,8 +311,7 @@
 
 <script type="module">
 
-  // import {getMyDiagram} from "../Js/data.js"
-  // Inside popup.html
+  
   document.querySelector('#form0').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -350,6 +348,14 @@
     const form2Col = document.getElementById('added');
     form2Col.style.display = "none";
 
+  });
+
+  document.querySelector('#form3').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    data.formId = 'form3';
+    window.opener.postMessage(data, '*');
   });
 
   window.addEventListener('message', function (event) {
