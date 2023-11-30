@@ -13,6 +13,8 @@ let selectedNode;
 
 window.addEventListener('message', function (event) {
     var data = event.data;
+
+    
     console.log('Received data from the popup:', data);
     switch (data.type) {
         case "autoResize":
@@ -21,12 +23,12 @@ window.addEventListener('message', function (event) {
         case "adjustNodeCoordinates":
             adjustNodeCoordinates(data);
             break;
-        case "":
+        case "autoDistribute":
+            autoDistribute(data)
             break;
 
         default:
             alert(`Unknown message type ${data.type}`);
-
 
     }
 });
@@ -220,8 +222,6 @@ function getRandomNumber() {
 }
 
 function adjustNodeCoordinates(data) {
-    console.log(data)
-
     var nodeData = myDiagram.model.findNodeDataForKey(data.selectedNodeID);
     if (nodeData) {
         myDiagram.model.startTransaction("editNode");
@@ -233,7 +233,6 @@ function adjustNodeCoordinates(data) {
         selectedNode.loc = data.XCoord + " " + data.YCoord;
         selectedNode.width = parseInt(data.width);
         selectedNode.height = parseInt(data.height);
-        console.log(selectedNode)
 
         myDiagram.model.commitTransaction("editNode");
         myDiagram.model.updateTargetBindings(selectedNode);
@@ -241,7 +240,7 @@ function adjustNodeCoordinates(data) {
 }
 
 
-function autoResize(data) {
+function autoResize(_receivedData) {
     myDiagram.nodes.each(function (node) {
 
         // Start a transaction
@@ -251,9 +250,9 @@ function autoResize(data) {
         var nodeData = myDiagram.model.findNodeDataForKey(key);
 
 
-        myDiagram.model.setDataProperty(nodeData, "width", data.width)
+        myDiagram.model.setDataProperty(nodeData, "width", _receivedData.width)
 
-        myDiagram.model.setDataProperty(nodeData, "height", data.height);
+        myDiagram.model.setDataProperty(nodeData, "height", _receivedData.height);
 
         // nodeData.location = new go.Point(X, Y);
         node.updateTargetBindings();
@@ -263,12 +262,21 @@ function autoResize(data) {
     });
 }
 
+function autoDistribute(_receivedData){
+    console.log(_receivedData);
+
+}
+
 function sendDataToPanel(dataToSend) {
     if (popup1) {
         popup1.postMessage(dataToSend, '*');
     } else {
         console.log("No window available to send data");
     }
+}
+
+function receiveDataFromPopUps(_receivedData){
+    console.log(_receivedData)
 }
 
 

@@ -10,11 +10,12 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <style>
     #popupForm {
+      width: 600px;
       display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: relative;
+      top: 15%;
+      left: 25%;
+      /* transform: translate(-50%, -50%); */
       padding: 20px;
       background-color: #fff;
       border: 1px solid #ddd;
@@ -57,8 +58,8 @@
       </div>
     </form>
     <div class="form-group">
-      <button type="button" class="btn btn-primary" onclick="openPopup()">Auto Resize</button>
-      <button class="btn btn-primary">Auto Distribute</button>
+      <button class="btn btn-primary" onclick="openAutoResizePopup()">Auto Resize</button>
+      <button class="btn btn-primary" onclick="openAutoDistributionPopup()">Auto Distribute</button>
     </div>
   </div>
 
@@ -75,31 +76,10 @@
           <input type="number" class="form-control" id="resizedHeight" name="height" required>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" onclick="performAutoResize()">Apply</button>
+      <button type="submit" class="btn btn-primary">Apply</button>
       <button type="button" class="btn btn-secondary" onclick="closePopup()">Cancel</button>
     </form>
   </div>
-
-  <div id="popupForm">
-    <form id="autoDistributeForm">
-
-      <label>Auto Resize</label>
-      <div class="form-row">
-        <div class="col">
-          <label>Width</label>
-          <input type="number" class="form-control" id="resizedWidth" name="width" required>
-        </div>
-        <div class="col">
-          <label>Height</label>
-          <input type="number" class="form-control" id="resizedHeight" name="height" required>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary" onclick="performAutoResize()">Apply</button>
-      <button type="button" class="btn btn-secondary" onclick="closePopup()">Cancel</button>
-    </form>
-  </div>
-
-
 
 
   <script>
@@ -108,17 +88,22 @@
       console.log('Received data from the GoJS file:', event.data);
       _data = event.data;
 
-      let locArray = _data.loc.split(" ");
-      let xCoordinate = locArray[0];
-      let yCoordinate = locArray[1];
+      if (_data.type == "autoDistribute") {
+        return
+      } else {
 
-      // Fill the form inputs with the received data
-      document.getElementById("XCoord").value = xCoordinate || 'undefined';
-      document.getElementById("YCoord").value = yCoordinate || 'undefined';
-      document.getElementById("width").value = _data.width || 'undefined';
-      document.getElementById("height").value = _data.height || 'undefined';
-      document.getElementById("resizedWidth").value = _data.height || 'undefined';
-      document.getElementById("resizedHeight").value = _data.height || 'undefined';
+        let locArray = _data.loc.split(" ");
+        let xCoordinate = locArray[0];
+        let yCoordinate = locArray[1];
+
+        // Fill the form inputs with the received data
+        document.getElementById("XCoord").value = xCoordinate || 'undefined';
+        document.getElementById("YCoord").value = yCoordinate || 'undefined';
+        document.getElementById("width").value = _data.width || 'undefined';
+        document.getElementById("height").value = _data.height || 'undefined';
+        document.getElementById("resizedWidth").value = _data.height || 'undefined';
+        document.getElementById("resizedHeight").value = _data.height || 'undefined';
+      }
     });
 
 
@@ -136,6 +121,7 @@
 
     document.getElementById('autoResizeForm').addEventListener('submit', function (event) {
       event.preventDefault();
+      closePopup();
       let toBeSended = [];
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
@@ -143,28 +129,35 @@
       toBeSended.height = parseInt(data.height);
       toBeSended.type = "autoResize"
       window.opener.postMessage(toBeSended, '*');
-      closePopup();
     });
 
 
 
-    function openPopup() {
+    function openAutoResizePopup() {
       document.getElementById("popupForm").style.display = "block";
       document.getElementById("resizedWidth").value = _data.width || '';
       document.getElementById("resizedHeight").value = _data.height || '';
     }
 
+    function openAutoDistributionPopup() {
+      var AutoDistributionPopupUrl = './autoDistributePopUpWindow.html';
+
+
+      // Open the first popup window
+      var AutoDistributionPopup = window.open(AutoDistributionPopupUrl, 'PopuAutoDistributionPopupUrl', 'width=400,height=600');
+
+      AutoDistributionPopup.moveTo(500, 250);
+    }
+
+
+
     function closePopup() {
       document.getElementById("popupForm").style.display = "none";
     }
 
-    function performAutoResize() {
-      const autoResizeWidth = document.getElementById("resizedWidth").value;
-      const autoResizeHeight = document.getElementById("resizedHeight").value;
-
-      closePopup();
-    }
-
+//     function sendDataToPanel(dataToSend) {
+  
+// }
 
   </script>
 
