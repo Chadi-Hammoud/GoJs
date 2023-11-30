@@ -42,7 +42,7 @@
 
     }
 
-    #autoDistributePopupForm {
+    #autoDistributePopup {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -226,7 +226,7 @@
 
 
   </div>
-  <div id="autoDistributePopupForm" style="display:none">
+  <div id="autoDistributePopup" style="display:none">
     <form id="form3" class="mt-4">
       <!-- Margins Section -->
       <div>
@@ -387,12 +387,12 @@
   }
 
   function showAutoDist() {
-    document.getElementById("autoDistributePopupForm").style.display = "block";
+    document.getElementById("autoDistributePopup").style.display = "block";
     document.getElementById("overlay").style.display = "block";
   }
 
   function hideAutoDist() {
-    document.getElementById("autoDistributePopupForm").style.display = "none";
+    document.getElementById("autoDistributePopup").style.display = "none";
     document.getElementById("overlay").style.display = "none";
   }
 

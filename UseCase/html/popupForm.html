@@ -9,18 +9,58 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <style>
-    #popupForm {
-      width: 600px;
+    #autoResizePopupForm {
+      width: 400px;
       display: none;
-      position: relative;
-      top: 15%;
-      left: 25%;
-      /* transform: translate(-50%, -50%); */
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       padding: 20px;
       background-color: #fff;
       border: 1px solid #ddd;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       z-index: 1000;
+    }
+
+    #autoDistributePopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+      width: 75%;
+      height: 100%;
+      overflow-y: auto;
+      /* Allow vertical scrolling */
+      /* initially hidden */
+    }
+
+    label {
+      display: inline-block;
+      margin-bottom: 8px;
+      width: 120px;
+      /* Adjust the width as needed */
+    }
+
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      /* semi-transparent black overlay */
+      display: none;
+      /* initially hidden */
+      z-index: 999;
+      /* make it appear above other content */
     }
   </style>
 </head>
@@ -32,38 +72,34 @@
       <div class="form-row">
         <div class="col">
           <label>X</label>
-          <input type="number" class="form-control" id="XCoord" name="XCoord">
+          <input type="number" class="form-control" id="XCoord" name="XCoord" required>
         </div>
         <div class="col">
           <label>Y</label>
-          <input type="number" class="form-control" id="YCoord" name="YCoord">
+          <input type="number" class="form-control" id="YCoord" name="YCoord" required>
         </div>
       </div>
 
       <div class="form-row">
         <div class="col">
           <label>Width</label>
-          <input type="number" class="form-control" id="width" name="width">
+          <input type="number" class="form-control" id="width" name="width" required>
         </div>
         <div class="col">
           <label>Height</label>
-          <input type="number" class="form-control" id="height" name="height">
+          <input type="number" class="form-control" id="height" name="height" required>
         </div>
       </div>
 
       <div class="form-group">
-        <!-- <button type="button" class="btn btn-primary" onclick="openPopup()">Auto Resize</button>
-        <button class="btn btn-primary">Auto Distribute</button> -->
         <button type="submit" class="btn btn-primary">Apply</button>
+        <button class="btn btn-primary" onclick="openAutoResizePopup()">Auto Resize</button>
+        <button class="btn btn-primary" onclick="openAutoDistributionPopup()">Auto Distribute</button>
       </div>
     </form>
-    <div class="form-group">
-      <button class="btn btn-primary" onclick="openAutoResizePopup()">Auto Resize</button>
-      <button class="btn btn-primary" onclick="openAutoDistributionPopup()">Auto Distribute</button>
-    </div>
   </div>
 
-  <div id="popupForm">
+  <div id="autoResizePopupForm">
     <form id="autoResizeForm">
       <label>Auto Resize</label>
       <div class="form-row">
@@ -82,6 +118,84 @@
   </div>
 
 
+  <div id="autoDistributePopup">
+    <form id="autoDistributeForm" class="mt-4">
+      <!-- Margins Section -->
+      <div>
+        <h4>Margins</h4>
+        <hr>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Left">Left</label>
+        <input type="number" class="form-control" id="margin_Left" name="margin_Left" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Right">Right</label>
+        <input type="number" class="form-control" id="margin_Right" name="margin_Right" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Top">Top</label>
+        <input type="number" class="form-control" id="margin_Top" name="margin_Top" value=30 required>
+      </div>
+
+      <div class="form-group">
+        <label for="margin_Bottom">Bottom</label>
+        <input type="number" class="form-control" id="margin_Bottom" name="margin_Bottom" value=30 required>
+      </div>
+
+      <!-- Spacing Section -->
+      <div>
+        <h4>Spacing</h4>
+        <hr>
+      </div>
+      <div class="form-group">
+        <label for="horizontal">Horizontal</label>
+        <input type="number" class="form-control" id="horizontal" name="horizontal" value=10 required>
+      </div>
+
+      <div class="form-group">
+        <label for="vertical">Vertical</label>
+        <input type="number" class="form-control" id="vertical" name="vertical" value=10 required>
+      </div>
+
+      <!-- Distribution Section -->
+      <div>
+        <h4>Distribution</h4>
+        <hr>
+      </div>
+      <div class="form-group">
+        <label for="rowsCount">Rows</label>
+        <input type="number" class="form-control" id="rowsCount" name="rowsCount" value=2 required>
+      </div>
+
+      <div class="form-group">
+        <label for="startPoint">Start Point</label>
+        <select class="form-control" id="startPoint" name="startPoint">
+          <option value="top-left">Top-Left</option>
+          <option value="top-right">Top-Right</option>
+          <option value="bottom-left">Bottom-Left</option>
+          <option value="bottom-right">Bottom-Right</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="direction">Direction</label>
+        <select class="form-control" id="direction" name="direction">
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-success">Apply</button>
+      <button id="closeAutoDist" onclick="closePopup()" class="btn btn-danger close">Close</button>
+    </form>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
   <script>
     let _data = {};
     window.addEventListener('message', function (event) {
@@ -133,32 +247,48 @@
 
 
 
+    document.getElementById('autoDistributeForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      closePopup();
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+      data.type = "autoDistribute"
+      window.opener.postMessage(data, '*');
+    });
+
+
+    // let openAutoResize = document.getElementById("openAutoResizePopup");
+    // openAutoResize.addEventListener("click", openAutoResizePopup());
+
     function openAutoResizePopup() {
-      document.getElementById("popupForm").style.display = "block";
+      document.getElementById("autoResizePopupForm").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
       document.getElementById("resizedWidth").value = _data.width || '';
       document.getElementById("resizedHeight").value = _data.height || '';
     }
 
+
+    // let openAutoDistribution = document.getElementById("openAutoDistributionPopup");
+    // openAutoDistribution.addEventListener("click", openAutoDistributionPopup());
+
     function openAutoDistributionPopup() {
-      var AutoDistributionPopupUrl = './autoDistributePopUpWindow.html';
-
-
-      // Open the first popup window
-      var AutoDistributionPopup = window.open(AutoDistributionPopupUrl, 'PopuAutoDistributionPopupUrl', 'width=400,height=600');
-
-      AutoDistributionPopup.moveTo(500, 250);
+      document.getElementById("autoDistributePopup").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
     }
+
+
+
+
+    // let closeAutoDist = document.getElementById("closeAutoDist");
+    // closeAutoDist.addEventListener("click", closePopup)
 
 
 
     function closePopup() {
-      document.getElementById("popupForm").style.display = "none";
+      document.getElementById("autoResizePopupForm").style.display = "none";
+      document.getElementById("autoDistributePopup").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
     }
-
-//     function sendDataToPanel(dataToSend) {
-  
-// }
-
   </script>
 
 </body>
