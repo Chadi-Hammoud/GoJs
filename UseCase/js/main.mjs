@@ -275,30 +275,9 @@ function sendDataToPanel(dataToSend) {
     }
 }
 
-function receiveDataFromPopUps(_receivedData){
-    console.log(_receivedData)
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// function receiveDataFromPopUps(_receivedData){
+//     console.log(_receivedData)
+// }
 
 
 
