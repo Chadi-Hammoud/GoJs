@@ -5,27 +5,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
   <meta name="description" content="Use the TableLayout extension to arrange nodes in a tabular or grid-like form." />
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
+    #myDiagramDiv {
+      margin-top: 100px;
+      margin-bottom: 100px;
+      background-color: #e0e0e0;
+      height: 300px;
+      width:600px;
+      border: solid 1px black;
+      resize: both;
+
+    }
+  </style>
 </head>
 
 <body>
 
   <script id="code" type="module" src="./Js/index.mjs"></script>
   <div id="sample">
-    <div style="width: 100%; display: flex; justify-content: space-between">
-
-      <div id="myDiagramDiv" style="background-color: #e0e0e0; flex-grow: 1; height: 600px; border: solid 1px black">
-      </div>
-    </div>
-    <!-- <div id="buttons">
-      <button id="saveModel">Save</button>
-      <a href="./previewTable.html"><button id="previewPage">Preview</button>
-
-      </a>
-    </div> -->
+    <div id="myDiagramDiv"></div>
+  
   </div>
-
-
 
 </body>
 

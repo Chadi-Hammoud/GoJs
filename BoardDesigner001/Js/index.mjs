@@ -35,29 +35,42 @@ function init() {
     {
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
-      layout: makeLayout(isVertical === 'v'),
+
       "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
       "undoManager.isEnabled": true,
-      //"fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
+      "allowZoom": false,
+      "allowResize": true,
+      //"fixedBounds": new go.Rect(0, 0, 250, 600), // Set fixedBounds to a specific rectangular area
     });
-  // myDiagram.toolManager.resizingTool.computeReshape = function () { return false; }
 
 
 
-  function makeLayout(isVertical) {
+
+
+
+
+  function makeLayout(isVertical, columns, rows) {
+    let layout = null;
     if (isVertical) {
-      return $(go.GridLayout, {
+      layout = $(go.GridLayout, {
         wrappingColumn: Infinity, alignment: go.GridLayout.Position,
-        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+        wrappingWidth: rows,
+        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4),
+
       });
     } else {
-      return $(go.GridLayout, {
+      layout = $(go.GridLayout, {
         wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-        wrappingColumn: 1,
+        wrappingColumn: columns || 1,
         cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
       });
     }
+    return layout;
   }
+
+  // Set the initial layout based on user input
+  let currentLayout = makeLayout(isVertical === 'v');
+  myDiagram.layout = currentLayout;
 
 
   function defaultColor(horiz) { // a Binding conversion function
@@ -74,14 +87,12 @@ function init() {
   //   new go.Group("Auto",
   //     {
   //       layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-  //       background: "e0e0e0",
-  //       //ungroupable: true,
-  //       resizable: false,
-
-
+  //       background: "gray",
+  //       resizable: true,
+  //       width: 400,
+  //       height: 300,
+  //       layout: makeLayout(isVertical === 'v'),
   //     })
-  //     //.bind("layout", "horiz", makeLayout)
-  //    // .bind(new go.Binding("background", "isHighlighted", h => h ? "rgba(255,0,0,0.2)" : "transparent").ofObject())
   //     .add(new go.Shape("Rectangle",
   //       { fill: null, stroke: defaultColor(false), fill: defaultColor(false), strokeWidth: 2 })
   //       .bind("stroke", "horiz", defaultColor)
@@ -91,21 +102,11 @@ function init() {
   //         .add(new go.Panel("Horizontal", // button next to TextBlock
   //           { stretch: go.GraphObject.Horizontal, background: defaultColor(false) })
   //           .bind("background", "horiz", defaultColor)
-  //           .add(go.GraphObject.make("SubGraphExpanderButton", { alignment: go.Spot.Right, margin: 5 }))
-  //           .add(new go.TextBlock(
-  //             {
-  //               //alignment: go.Spot.Left,
-  //               // editable: true,
-  //               margin: 5,
-  //               font: defaultFont(false),
-  //               opacity: 0.95, // allow some color to show through
-  //               stroke: "#404040"
-  //             })
-  //             .bind("font", "horiz", defaultFont)
-  //             .bind("text", "text", null, null)) // `null` as the fourth argument makes this a two-way binding
-  //         ) // end Horizontal Panel
-  //         .add(new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft }))
+  //         )
+  //         .add(new go.Placeholder({ padding: 5 }))
   //     ));
+
+
 
 
 
@@ -140,11 +141,34 @@ function init() {
 
   myDiagram.nodeTemplateMap.add("board",
     $(go.Node, "Auto",
+      new go.Binding("location", "loc").makeTwoWay(),
       {
         resizable: true,
-        resizeObjectName: "PANEL", // Set resizeObjectName to the name of the panel
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized
+        resizeObjectName: "PANEL",
+        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+        selectionAdorned: false,
+        resizeAdornmentTemplate: $(go.Adornment, "Spot",
+          $(go.Placeholder),
+          $(go.Shape, // the handle
+            {
+              alignment: go.Spot.TopLeft,
+              cursor: "nw-resize",
+              desiredSize: new go.Size(6, 6),
+              fill: "transparent",
+              stroke: "transparent",
+
+            }),
+          $(go.Shape, // the handle
+            {
+              alignment: go.Spot.TopRight,
+              cursor: "ne-resize",
+              desiredSize: new go.Size(6, 6),
+              fill: "transparent",
+              stroke: "transparent"
+            })
+        )
       },
+
       $(go.Panel, "Vertical",
         new go.Binding("width", "width", null, null),
         new go.Binding("height", "height", null, null),
@@ -154,67 +178,54 @@ function init() {
         new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
 
         {
-          name: "PANEL", // Give the panel a name for referencing in resizeObjectName
+          name: "PANEL",
         },
         $(go.Panel, "Horizontal",
-
-          { height: 20, stretch: go.GraphObject.Fill, },
+          new go.Binding("width", "width", null, null),
+          { height: 18 },
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v / 12),
             {
               fill: "black",
+              width: 10,
             }
           ),
-
           $(go.Panel, "Auto",
-
             $(go.Shape, "Rectangle",
-              new go.Binding("width", "width", v => v * 0.83),
-
+              new go.Binding("width", "width", v => v - 20),
               {
                 fill: "white",
-                stretch: go.GraphObject.Fill, // Make the shape resizable
-
+                stretch: go.GraphObject.Fill,
               }
             ),
-
             $(go.TextBlock, "",
               {
-                //text: "0:0",
                 name: "boardTextblock",
-                margin: 3, // Add some margin to position the text inside the rectangle
-                //editable: true, // Make the text editable
-
-                alignment: go.Spot.Left, // Center the text within the shape
+                margin: 2,
+                alignment: go.Spot.Left,
               },
-              new go.Binding("text", "text").makeTwoWay() // Bind the text to the 'text' property of the node data
+              new go.Binding("text", "text").makeTwoWay()
             )
           ),
-
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v / 10),
             {
               fill: "black",
+              width: 10,
             }
-          ),
-
-
+          )
         ),
-        new go.Binding("width", "width").makeTwoWay(),
 
         $(go.Shape, "Rectangle",
           new go.Binding("height", "height", null, null),
           {
             height: 100,
             fill: "gray",
-            stretch: go.GraphObject.Fill, // Make the shape resizable
-
+            stretch: go.GraphObject.Fill,
           }
         )
       ),
-    ),
-
+    )
   );
+
 
 
 
@@ -235,23 +246,32 @@ function init() {
 
   // Clear existing nodes
   myDiagram.model = new go.GraphLinksModel();
-  // myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "shelf" }) ;
+  //myDiagram.model.addNodeData({ key: "shelfGroup", isGroup: true, category: "shelf" });
   // Add nodes dynamically based on the user input
   let indexSlot = 0;
 
+  function addBoardsFromUserPrompt() {
+    var viewportBounds = myDiagram.viewportBounds;
+    var diagramWidth = viewportBounds.width;
+    var diagramHeight = viewportBounds.height;
 
-  for (let i = 1; i <= borderCount; i++) {
-    if (isVertical === 'v') {
+    for (let i = 1; i <= borderCount; i++) {
+      if (isVertical === 'v') {
 
-      // myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "boardGroup", category: "board", width: 120, height: 120 , text: `${startIndex}:${indexSlot}` });
-      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
+        //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: (diagramWidth / borderCount) - 13, height: diagramHeight - 10, text: `${startIndex}:${indexSlot}` });
 
-    } else {
-      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
+      } else {
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: diagramWidth - 30, height: (diagramHeight / borderCount) - 13, text: `${startIndex}:${indexSlot}` });
+        //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
 
+      }
+      startIndex++;
     }
-    startIndex++;
+
   }
+
+  addBoardsFromUserPrompt();
 
 
 
@@ -283,6 +303,7 @@ function init() {
   let horizontal;
   let vertical;
   let rowsCount
+  let layout;
 
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
@@ -324,9 +345,12 @@ function init() {
 
         horizontal = parseInt(data.horizontal);
         vertical = parseInt(data.vertical);
-        rowsCount = parseint(data.rowsCount);
+        rowsCount = parseInt(data.rowsCount);
 
-        makeMargin();
+        layout = data.direction;
+
+
+        autoDistributionNodes();
 
       }
 
@@ -398,76 +422,128 @@ function init() {
         nodeExists = true;
       }
     });
+    addNode(nodeExists);
 
+  }
+
+  function addNode(nodeExists) {
     if (!nodeExists) {
       // Start a transaction
       myDiagram.startTransaction('checkIndex');
 
       // Add a new node
       myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
+      //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
       startIndex++;
-
       // Commit the transaction
       myDiagram.commitTransaction('checkIndex');
     }
+
   }
 
-  function makeMargin() {
+  function autoDistributionNodes() {
+    // Clear existing layout
+    //myDiagram.layout = null;
+
+    // Set up new layout based on user input
+    if (layout === 'vertical') {
+      myDiagram.layout = makeLayout(true);
+    } else {
+      myDiagram.layout = makeLayout(false);
+    }
+
+    var viewportBounds = myDiagram.viewportBounds;
+    var diagramWidth = viewportBounds.width;
+    var diagramHeight = viewportBounds.height;
+
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
       // Start a transaction
-      myDiagram.startTransaction('update margin');
+      myDiagram.startTransaction('autoDistributionNodes');
 
       var key = node.key;
       var data = myDiagram.model.findNodeDataForKey(key);
 
+      // Update marginLeft, marginTop, marginRight, and marginBottom
       myDiagram.model.setDataProperty(data, "marginLeft", marginLeft);
       myDiagram.model.setDataProperty(data, "marginTop", marginTop);
       myDiagram.model.setDataProperty(data, "marginRight", marginRight);
       myDiagram.model.setDataProperty(data, "marginBottom", marginBottom);
+
+      // Update width and height based on layout direction
+      if (isVertical == 'v') {
+
+        myDiagram.model.setDataProperty(data, "height", (diagramHeight - 10) - marginTop - marginBottom);
+
+        myDiagram.model.setDataProperty(data, "width", (diagramWidth / borderCount) - 13 - marginLeft - marginRight);
+      } else {
+
+        myDiagram.model.setDataProperty(data, "height", diagramWidth - 30 - marginTop - marginBottom);
+
+        myDiagram.model.setDataProperty(data, "width", (diagramHeight / borderCount) - 13 - marginLeft - marginRight);
+      }
+
+
+
       node.updateTargetBindings();
 
       // Commit the transaction
-      myDiagram.commitTransaction('update margin');
+      myDiagram.commitTransaction('autoDistributionNodes');
     });
+
+    // Adjust spacing between nodes horizontally and vertically
+    myDiagram.layout.spacing = new go.Size(horizontal, vertical);
+    if (layout === 'vertical') {
+      currentLayout = makeLayout(true, rowsCount);
+    } else {
+      currentLayout = makeLayout(false, rowsCount);
+    }
+    myDiagram.layout = currentLayout;
   }
+
 
 
 
   // Add a listener for the SelectionChanged event
   myDiagram.addDiagramListener("ChangedSelection", function (e) {
     // Get the selected node
+
     var node = e.subject.first();
 
     // If a node is selected
     if (node instanceof go.Node) {
-      // Get the node's location, width, and height
-      //var key = node.data.key;
-      var text = node.data.text;
-      let parts = text.split(':');
-      let slotIndex = parts[0];
-      let indexOnSlot = parts[1];
+      var type = node.data.category;
+      if (type === "board") {
+        // Get the node's location, width, and height
+        //var key = node.data.key;
+        var text = node.data.text;
+        let parts = text.split(':');
+        let slotIndex = parts[0];
+        let indexOnSlot = parts[1];
 
-      var loc = node.location;
-      var width = node.data.width;
-      var height = node.data.height;
-      var x = loc.x;
-      var y = loc.y;
+        var loc = node.location;
+        var width = node.data.width;
+        var height = node.data.height;
+        var x = loc.x;
+        var y = loc.y;
 
-      var data = {
-        slotIndex: slotIndex,
-        indexOnSlot: indexOnSlot,
-        X: x,
-        Y: y,
-        width: width,
-        height: height
-      };
+        var data = {
+          slotIndex: slotIndex,
+          indexOnSlot: indexOnSlot,
+          X: x,
+          Y: y,
+          width: width,
+          height: height
+        };
 
-      // Send the location, width, and height to the popup window
-      popupWindow.postMessage(data, "*");
-      console.log(data);
-
+        // Send the location, width, and height to the popup window
+        popupWindow.postMessage(data, "*");
+        console.log(data);
+      }
     }
+
+
+
   });
 
 
