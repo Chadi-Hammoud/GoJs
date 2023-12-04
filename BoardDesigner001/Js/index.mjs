@@ -68,81 +68,40 @@ function init() {
     return layout;
   }
 
-  // Set the initial layout based on user input
-  let currentLayout = makeLayout(isVertical === 'v');
-  myDiagram.layout = currentLayout;
 
 
-  function defaultColor(horiz) { // a Binding conversion function
-    return horiz ? "lightgray" : "lightgray";
-  }
+  myDiagram.groupTemplateMap.add("shelf",
+    $(go.Group, "Auto",
+      {
+        //isSubGraphExpanded: false,
+        resizable: true,
+        resizeObjectName: "SHELF"
+      },
 
-  function defaultFont(horiz) { // a Binding conversion function
-    return horiz ? "bold 20px sans-serif" : "bold 16px sans-serif";
-  }
+      $(go.Panel, "Auto", { name: "SHELF" },
 
+        $(go.Shape, "Rectangle",
+          {
 
+            fill: "#e0e0e0",
 
-  // myDiagram.groupTemplateMap.add("shelf",
-  //   new go.Group("Auto",
-  //     {
-  //       layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-  //       background: "gray",
-  //       resizable: true,
-  //       width: 400,
-  //       height: 300,
-  //       layout: makeLayout(isVertical === 'v'),
-  //     })
-  //     .add(new go.Shape("Rectangle",
-  //       { fill: null, stroke: defaultColor(false), fill: defaultColor(false), strokeWidth: 2 })
-  //       .bind("stroke", "horiz", defaultColor)
-  //       .bind("fill", "horiz", defaultColor))
-  //     .add(
-  //       new go.Panel("Vertical") // title above Placeholder
-  //         .add(new go.Panel("Horizontal", // button next to TextBlock
-  //           { stretch: go.GraphObject.Horizontal, background: defaultColor(false) })
-  //           .bind("background", "horiz", defaultColor)
-  //         )
-  //         .add(new go.Placeholder({ padding: 5 }))
-  //     ));
+          }
+        ),
+        new go.Binding("width", "width", null, null),
+        new go.Binding("height", "height", null, null),
+      ),
+    )
+  );
 
 
 
 
-
-
-
-  //   go.Shape.defineFigureGenerator("headSection", function(shape, w, h) {
-  //     var geo = new go.Geometry();
-  //     var fig = new go.PathFigure(0, 0, true); // starting point
-  //     geo.add(fig);
-
-  //     // Top section (head)
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, w, 0));
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, w, 20));
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, 0, 20).close()); // height = 20px
-
-  //     return geo;
-  // });
-
-  // go.Shape.defineFigureGenerator("BottomSection", function(shape, w, h) {
-  //     var geo = new go.Geometry();
-  //     var fig = new go.PathFigure(0, 0, true); // starting point
-  //     geo.add(fig);
-
-  //     // Bottom section (body)
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, 0, 20)); // Adjust starting point to match the ending point of the "headSection"
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, w, 20));
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
-  //     fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close()); // height = h - 20px
-
-  //     return geo;
-  // });
 
   myDiagram.nodeTemplateMap.add("board",
     $(go.Node, "Auto",
       new go.Binding("location", "loc").makeTwoWay(),
       {
+        
         resizable: true,
         resizeObjectName: "PANEL",
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
@@ -165,8 +124,29 @@ function init() {
               desiredSize: new go.Size(6, 6),
               fill: "transparent",
               stroke: "transparent"
-            })
-        )
+            }),
+        ),
+        dragComputation: function (node, pt, gridpt) {
+          // get the shelf group
+          var shelfGroup = node.containingGroup;
+          if (shelfGroup !== null) {
+            // get the shelf group's bounds
+            var shelfBounds = shelfGroup.actualBounds;
+            // get the node's bounds
+            var nodeBounds = node.actualBounds;
+            // check if the new location is outside the shelf group
+            if (pt.x < shelfBounds.x || pt.y < shelfBounds.y ||
+              pt.x + nodeBounds.width > shelfBounds.x + shelfBounds.width ||
+              pt.y + nodeBounds.height > shelfBounds.y + shelfBounds.height) {
+              // adjust the new location to keep the node inside the shelf group
+              pt.x = Math.max(shelfBounds.x, Math.min(pt.x, shelfBounds.x + shelfBounds.width - nodeBounds.width));
+              pt.y = Math.max(shelfBounds.y, Math.min(pt.y, shelfBounds.y + shelfBounds.height - nodeBounds.height));
+            }
+          }
+          return pt;
+        },
+
+
       },
 
       $(go.Panel, "Vertical",
@@ -226,6 +206,12 @@ function init() {
     )
   );
 
+  let currentLayout = makeLayout(isVertical === 'v');
+
+
+
+
+
 
 
 
@@ -246,23 +232,39 @@ function init() {
 
   // Clear existing nodes
   myDiagram.model = new go.GraphLinksModel();
-  //myDiagram.model.addNodeData({ key: "shelfGroup", isGroup: true, category: "shelf" });
+  myDiagram.model.addNodeData({ key: "shelfGroup", isGroup: true, category: "shelf", width: 600, height: 300 });
   // Add nodes dynamically based on the user input
   let indexSlot = 0;
 
   function addBoardsFromUserPrompt() {
-    var viewportBounds = myDiagram.viewportBounds;
-    var diagramWidth = viewportBounds.width;
-    var diagramHeight = viewportBounds.height;
+    // Get the shelfGroup data
+    var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
+    // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
+    var groupWidth = shelfGroupData.width;
+    var groupHeight = shelfGroupData.height;
+
+    if (isVertical == 'v') {
+      currentLayout = makeLayout(isVertical === 'v');
+
+    } else {
+      currentLayout = makeLayout(!isVertical === 'v');
+
+    }
+
+    if (shelfGroupData) {
+      shelfGroupData.layout = currentLayout;
+
+
+    }
 
     for (let i = 1; i <= borderCount; i++) {
       if (isVertical === 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: (diagramWidth / borderCount) - 13, height: diagramHeight - 10, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: (groupWidth / borderCount) - 20, height: groupHeight - 10, text: `${startIndex}:${indexSlot}` });
 
       } else {
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: diagramWidth - 30, height: (diagramHeight / borderCount) - 13, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: groupWidth - 40, height: (groupHeight / borderCount) - 13, text: `${startIndex}:${indexSlot}` });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
 
       }
@@ -446,11 +448,11 @@ function init() {
     //myDiagram.layout = null;
 
     // Set up new layout based on user input
-    if (layout === 'vertical') {
-      myDiagram.layout = makeLayout(true);
-    } else {
-      myDiagram.layout = makeLayout(false);
-    }
+    // if (layout === 'vertical') {
+    //   myDiagram.layout = makeLayout(true);
+    // } else {
+    //   myDiagram.layout = makeLayout(false);
+    // }
 
     var viewportBounds = myDiagram.viewportBounds;
     var diagramWidth = viewportBounds.width;
