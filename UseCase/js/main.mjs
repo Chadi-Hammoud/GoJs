@@ -5,7 +5,7 @@ let numPorts = prompt("How many ports do you need?");
 // let numPorts
 let myDiagram;
 let nodeDataArray = [];
-let _data;
+let _data = [];
 let portSpacing = 20;
 let selectedNode;
 
@@ -63,15 +63,99 @@ function init() {
     } else {
         // Create a node data object for each port
         for (let i = 1; i <= numPorts; i++) {
+            // let port = {
+            //     key: "Port " + i,
+            //     text: i + ": Port Caption ",
+            //     loc: i * portSpacing + " 50",
+            //     // size: "120 120",
+            //     tooltip: getRandomNumber(),
+            //     source: "../images/port.svg",
+            //     width: 12000,
+            //     height: 12000
+            // };
+
             let port = {
-                key: "Port " + i,
-                text: i + ": Port Caption ",
                 loc: i * portSpacing + " 50",
-                // size: "120 120",
-                tooltip: getRandomNumber(),
                 source: "../images/port.svg",
-                width: 120,
-                height: 120
+                BOARDTYPECODE: "Board Type # ByChadi",
+                DESCRIPTION: "Test001",
+                NODETYPE: "",
+                DISPLAYDESCRIPTION: "",
+                CATALOGID: 1,
+                INSERTDATE: "",
+                CHANGEDATE: "",
+                INSERTEDBY: "",
+                CHANGEDBY: "global-admin",
+                EXTERNAL_CODE: "",
+                NET_STATUS: "",
+                STARTINGINDEX: "",
+                BOARDTYPEID: "BB7B837FE33E432881B002139973150A",
+                STATUS: 1,
+                POWER: 0,
+                NOISEFIGURE: 0,
+                DEPTH: 2000,
+                height: 30000,
+                width: 20000,
+                PARTNUMBER: 25732,
+                PHYSICALROLE: "",
+                ISPMP: 0,
+                HASXPIC: 0,
+                MAXINSERTIONLOSS: "",
+                POWERCONSUMPTION: "",
+                CONNECTORTYPE: "",
+                FIBERTYPE: "",
+                FIBERLENGTH: "",
+                LOSS: "",
+                DISPERSIONCOMPENSATION: "",
+                CHROMATICDISPERSIONSLOPE: "",
+                ZERODISPERSIONSLOPE: "",
+                ATTENUATION: "",
+                CAPACITY: "",
+                SUPPORTEDCONFIGURATIO: "",
+                OPTICALREGENERATIONABILITY: "",
+                MAXLINECAPACITY: "",
+                MINLINEWAVELENGTH: "",
+                MAXLINEWAVELENGTH: "",
+                MINOUTPUTPOWER: "",
+                MAXOUTPUTPOWER: "",
+                OUTPUTPOWER: "",
+                OSNRTOLERANCE: "",
+                MININPUTPOWER: "",
+                MAXINPUTPOWER: "",
+                RXSENSITIVITY: "",
+                SPECTRALWIDTH: "",
+                CHROMATICDISPERSION: "",
+                GAIN: "",
+                RXPOWER: "",
+                TXPOWER: "",
+                POSSIBLETYPE: "",
+                BANDWIDTH: "",
+                DTYPE: "",
+                ALARMTHRESHOLD: "",
+                SWITCHINGTHRESHOLD: "",
+                FAMILYID: "",
+                IS2G: "",
+                IS3G: "",
+                IS4G: "",
+                EOSUPPORT: "",
+                EOSALE: "",
+                IMAGEDATAPROVIDERID: "",
+                SUPPORTPROTECTION: "",
+                SUPPORTPROTECTEDALLNE: "",
+                SUBNETSTATUS: "",
+                INTERNAL_PART_NUMBER: "",
+                ELEMENT_DESCRIPTION: "",
+                MANUFACTURE: "",
+                MANUFACTURERID: "",
+                MANUFACTURE_PART_NUMBER: "",
+                CATEGORY: "",
+                P2P_CAPABILITY: "",
+                ILL_CAPABILITY: "",
+                LL_CAPABILITY: "",
+                MPLS_CAPABILITY: "",
+                VOICE_CAPABILITY: "",
+                DATA_CAPABILITY: "",
+                IPTV_CAPABILITY: ""
             };
             nodeDataArray.push(port);
         }
@@ -118,17 +202,17 @@ function init() {
                 },
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-            new go.Binding("width", "width", null, null),
-            new go.Binding("height", "height", null, null),
+            new go.Binding("width", "width", w => w / 100, null),
+            new go.Binding("height", "height", w => w / 100, null),
 
 
             $(go.Panel, "Vertical",
-                new go.Binding("width", "width", null, null),
-                new go.Binding("height", "height", null, null),
-                new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
-                new go.Binding("marginTop", "marginTop").makeTwoWay(),
-                new go.Binding("marginRight", "marginRight").makeTwoWay(),
-                new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
+                new go.Binding("width", "width", w => w / 100, null),
+                new go.Binding("height", "height", w => w / 100, null),
+                // new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
+                // new go.Binding("marginTop", "marginTop").makeTwoWay(),
+                // new go.Binding("marginRight", "marginRight").makeTwoWay(),
+                // new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
 
                 {
                     name: "PANEL",
@@ -143,7 +227,7 @@ function init() {
                     ),
                     $(go.Panel, "Auto",
                         $(go.Shape, "Rectangle",
-                            new go.Binding("width", "width", v => v - 20),
+                            new go.Binding("width", "width", v => (v / 100) - 20),
                             {
                                 fill: "white",
                                 stretch: go.GraphObject.Fill,
@@ -172,8 +256,8 @@ function init() {
                 },
                     new go.Binding("source", "source"),
                     new go.Binding("fill", "color"),
-                    new go.Binding("width", "width").makeTwoWay(),
-                    new go.Binding("height", "height").makeTwoWay(),
+                    new go.Binding("width", "width", w => w / 100).makeTwoWay(),
+                    new go.Binding("height", "height", w => w / 100).makeTwoWay(),
                 )
 
 
