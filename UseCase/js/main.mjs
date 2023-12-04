@@ -14,7 +14,7 @@ let selectedNode;
 window.addEventListener('message', function (event) {
     var data = event.data;
 
-    
+
     console.log('Received data from the popup:', data);
     switch (data.type) {
         case "autoResize":
@@ -86,6 +86,27 @@ function init() {
                 resizable: true,
                 resizeObjectName: "PANEL", // Set resizeObjectName to the name of the panel
                 layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+                selectionAdorned: false,
+                resizeAdornmentTemplate: $(go.Adornment, "Spot",
+                    $(go.Placeholder),
+                    $(go.Shape, // the handle
+                        {
+                            alignment: go.Spot.TopLeft,
+                            cursor: "nw-resize",
+                            desiredSize: new go.Size(6, 6),
+                            fill: "transparent",
+                            stroke: "transparent",
+
+                        }),
+                    $(go.Shape, // the handle
+                        {
+                            alignment: go.Spot.TopRight,
+                            cursor: "ne-resize",
+                            desiredSize: new go.Size(6, 6),
+                            fill: "transparent",
+                            stroke: "transparent"
+                        })
+                ),
                 click: (e, obj) => {
                     selectedNode = obj.part.data;
                     sendDataToPanel(selectedNode);
@@ -99,49 +120,55 @@ function init() {
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             new go.Binding("width", "width", null, null),
             new go.Binding("height", "height", null, null),
+
+
             $(go.Panel, "Vertical",
                 new go.Binding("width", "width", null, null),
                 new go.Binding("height", "height", null, null),
+                new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
+                new go.Binding("marginTop", "marginTop").makeTwoWay(),
+                new go.Binding("marginRight", "marginRight").makeTwoWay(),
+                new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
+
                 {
-                    name: "PANEL", // Give the panel a name for referencing in resizeObjectName
+                    name: "PANEL",
                 },
                 $(go.Panel, "Horizontal",
-                    { height: 20, stretch: go.GraphObject.Fill, },
+                    { height: 20 },
                     $(go.Shape, "Rectangle",
-                        new go.Binding("width", "width", v => v / 12),
                         {
                             fill: "black",
+                            width: 10,
                         }
                     ),
                     $(go.Panel, "Auto",
                         $(go.Shape, "Rectangle",
-                            new go.Binding("width", "width", v => v * 0.83),
+                            new go.Binding("width", "width", v => v - 20),
                             {
                                 fill: "white",
-                                stretch: go.GraphObject.Fill, // Make the shape resizable
+                                stretch: go.GraphObject.Fill,
                             }
                         ),
                         $(go.TextBlock, "",
                             {
-                                margin: 5, // Add some margin to position the text inside the rectangle
-                                editable: true, // Make the text editable
-                                stroke: "black", // Set the text color to white
-                                alignment: go.Spot.Center, // Center the text within the shape
+                                margin: 5,
+                                editable: true,
+                                alignment: go.Spot.Left,
                             },
-                            new go.Binding("text", "text").makeTwoWay() // Bind the text to the 'text' property of the node data
+                            new go.Binding("text", "text").makeTwoWay()
                         )
                     ),
                     $(go.Shape, "Rectangle",
-                        new go.Binding("width", "width", v => v / 10),
                         {
                             fill: "black",
+                            width: 10,
                         }
                     ),
                 ),
                 $(go.Picture, {
                     background: "white",
                     name: "PANEL",
-                    stretch: go.GraphObject.Fill, // Make the picture fill its parent panel
+                    stretch: go.GraphObject.Fill,
                 },
                     new go.Binding("source", "source"),
                     new go.Binding("fill", "color"),
@@ -262,7 +289,7 @@ function autoResize(_receivedData) {
     });
 }
 
-function autoDistribute(_receivedData){
+function autoDistribute(_receivedData) {
     console.log(_receivedData);
 
 }
