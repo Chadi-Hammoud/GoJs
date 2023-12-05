@@ -2,13 +2,16 @@
 import * as go from "../../node_modules/gojs/release/go.mjs";
 
 let numPorts = prompt("How many ports do you need?");
+let isVertical = prompt("is vertical?, v ");
 // let numPorts
 let myDiagram;
+let $ = go.GraphObject.make;
+
 let nodeDataArray = [];
 let _data = [];
 let portSpacing = 20;
 let selectedNode;
-
+let currentLayout = makeLayout(isVertical === 'v');
 
 
 window.addEventListener('message', function (event) {
@@ -33,6 +36,7 @@ window.addEventListener('message', function (event) {
     }
 });
 
+
 // Initialize the diagram
 function init() {
 
@@ -42,126 +46,140 @@ function init() {
     // Convert the input to a number
     numPorts = parseInt(numPorts);
 
-    var $ = go.GraphObject.make;
-
     // Create a new diagram
     myDiagram = new go.Diagram("myDiagramDiv", {
         layout: $(go.GridLayout, {}),
-        "undoManager.isEnabled": true,
-        "grid.visible": false,
-        "toolManager.hoverDelay": 100,
+        //     "grid.visible": false,
+        //     "toolManager.hoverDelay": 100,
         "draggingTool.isGridSnapEnabled": false,
         "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
+        "resizingTool.computeMinSize": function () {  // method override
+            const group = this.adornedObject.part;
+            if (group && group.diagram && group.category == "board") {
+                const membnds = group.diagram.computePartsBounds(group.memberParts);
+                membnds.addMargin(new go.Margin(5));
+                membnds.unionPoint(group.location);
+                return membnds.size;
+            }
+        },
+        "undoManager.isEnabled": true
     });
 
     //myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
 
 
-    // Check if the input is a valid number
-    if (isNaN(numPorts)) {
-        alert("Invalid input. Please enter a number.");
-    } else {
-        // Create a node data object for each port
-        for (let i = 1; i <= numPorts; i++) {
-            // let port = {
-            //     key: "Port " + i,
-            //     text: i + ": Port Caption ",
-            //     loc: i * portSpacing + " 50",
-            //     // size: "120 120",
-            //     tooltip: getRandomNumber(),
-            //     source: "../images/port.svg",
-            //     width: 12000,
-            //     height: 12000
-            // };
+    // Clear existing nodes
+    myDiagram.model = new go.GraphLinksModel();
+    //myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "board", width: 600, height: 300 });
+    let groupBoardData = { key: "boardGroup", isGroup: true, category: "board", width: 600, height: 300 }
+    nodeDataArray.push(groupBoardData);
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray);
 
-            let port = {
-                loc: i * portSpacing + " 50",
-                source: "../images/port.svg",
-                BOARDTYPECODE: "Board Type # ByChadi",
-                DESCRIPTION: "Test001",
-                NODETYPE: "",
-                DISPLAYDESCRIPTION: "",
-                CATALOGID: 1,
-                INSERTDATE: "",
-                CHANGEDATE: "",
-                INSERTEDBY: "",
-                CHANGEDBY: "global-admin",
-                EXTERNAL_CODE: "",
-                NET_STATUS: "",
-                STARTINGINDEX: "",
-                BOARDTYPEID: "BB7B837FE33E432881B002139973150A",
-                STATUS: 1,
-                POWER: 0,
-                NOISEFIGURE: 0,
-                DEPTH: 2000,
-                height: 30000,
-                width: 20000,
-                PARTNUMBER: 25732,
-                PHYSICALROLE: "",
-                ISPMP: 0,
-                HASXPIC: 0,
-                MAXINSERTIONLOSS: "",
-                POWERCONSUMPTION: "",
-                CONNECTORTYPE: "",
-                FIBERTYPE: "",
-                FIBERLENGTH: "",
-                LOSS: "",
-                DISPERSIONCOMPENSATION: "",
-                CHROMATICDISPERSIONSLOPE: "",
-                ZERODISPERSIONSLOPE: "",
-                ATTENUATION: "",
-                CAPACITY: "",
-                SUPPORTEDCONFIGURATIO: "",
-                OPTICALREGENERATIONABILITY: "",
-                MAXLINECAPACITY: "",
-                MINLINEWAVELENGTH: "",
-                MAXLINEWAVELENGTH: "",
-                MINOUTPUTPOWER: "",
-                MAXOUTPUTPOWER: "",
-                OUTPUTPOWER: "",
-                OSNRTOLERANCE: "",
-                MININPUTPOWER: "",
-                MAXINPUTPOWER: "",
-                RXSENSITIVITY: "",
-                SPECTRALWIDTH: "",
-                CHROMATICDISPERSION: "",
-                GAIN: "",
-                RXPOWER: "",
-                TXPOWER: "",
-                POSSIBLETYPE: "",
-                BANDWIDTH: "",
-                DTYPE: "",
-                ALARMTHRESHOLD: "",
-                SWITCHINGTHRESHOLD: "",
-                FAMILYID: "",
-                IS2G: "",
-                IS3G: "",
-                IS4G: "",
-                EOSUPPORT: "",
-                EOSALE: "",
-                IMAGEDATAPROVIDERID: "",
-                SUPPORTPROTECTION: "",
-                SUPPORTPROTECTEDALLNE: "",
-                SUBNETSTATUS: "",
-                INTERNAL_PART_NUMBER: "",
-                ELEMENT_DESCRIPTION: "",
-                MANUFACTURE: "",
-                MANUFACTURERID: "",
-                MANUFACTURE_PART_NUMBER: "",
-                CATEGORY: "",
-                P2P_CAPABILITY: "",
-                ILL_CAPABILITY: "",
-                LL_CAPABILITY: "",
-                MPLS_CAPABILITY: "",
-                VOICE_CAPABILITY: "",
-                DATA_CAPABILITY: "",
-                IPTV_CAPABILITY: ""
-            };
-            nodeDataArray.push(port);
+
+    function addBoardsFromUserPrompt() {
+
+        // Get the boardGroup data
+        var boardGroupData = myDiagram.model.findNodeDataForKey("boardGroup");
+        // Now you can use boardGroupBounds.width and boardGroupBounds.height
+        var groupWidth = boardGroupData.width;
+        var groupHeight = boardGroupData.height;
+
+        if (isVertical == 'v') {
+            currentLayout = makeLayout(isVertical === 'v');
+
+        } else {
+            currentLayout = makeLayout(!isVertical === 'v');
+
         }
-        // Set the diagram's model to the node data array
-        myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+
+        if (boardGroupData) {
+            boardGroupData.layout = currentLayout;
+        }
+
+        for (let i = 1; i <= numPorts; i++) {
+            if (isVertical === 'v') {
+
+                nodeDataArray.push(
+                    {
+                        key: "Port " + i,
+                        group: "boardGroup",
+                        category: "port",
+                        width: (groupWidth / numPorts) - 5,
+                        height: groupHeight - 5,
+                        text: i + ": Port Caption ",
+                        source: "../images/port.svg",
+                    });
+
+            } else {
+                nodeDataArray.push({
+                    key: "Port " + i,
+                    group: "boardGroup",
+                    category: "port",
+                    width: groupWidth - 5,
+                    height: (groupHeight / numPorts) - 5,
+                    text: i + ": Port Caption ",
+                    source: "../images/port.svg",
+                });
+
+            }
+        }
+
     }
+    addBoardsFromUserPrompt();
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+
+    // Check if the input is a valid number
+    // if (isNaN(numPorts)) {
+    //     alert("Invalid input. Please enter a number.");
+    // } else {
+    //     // Create a node data object for each port
+    //     for (let i = 1; i <= numPorts; i++) {
+    //         let port = {
+    //             key: "Port " + i,
+    //             text: i + ": Port Caption ",
+    //             loc: i * portSpacing + " 50",
+    //             // size: "120 120",
+    //             tooltip: getRandomNumber(),
+    //             source: "../images/port.svg",
+    //             width: 120,
+    //             height: 120
+    //         };
+    //     };
+    //     nodeDataArray.push(port);
+    // }
+    // Set the diagram's model to the node data array
+
+
+
+    // Define the GROUP template
+    myDiagram.groupTemplateMap.add("board",
+        $(go.Group, "Auto",
+            {
+                //isSubGraphExpanded: false,
+                resizable: true,
+                resizeObjectName: "BOARD",
+                layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+                layout: currentLayout,
+            },
+
+            $(go.Panel, "Auto", { name: "BOARD" },
+
+                $(go.Shape, "Rectangle",
+                    {
+
+                        fill: "#e0e0e0",
+
+                    }
+                ),
+                new go.Binding("width", "width", null, null),
+                new go.Binding("height", "height", null, null),
+            ),
+            new go.Binding("width", "width", null, null),
+            new go.Binding("height", "height", null, null),
+        ),
+        new go.Binding("width", "width", null, null),
+        new go.Binding("height", "height", null, null),
+    );
 
     // Define the node template
     myDiagram.nodeTemplate =
@@ -200,15 +218,35 @@ function init() {
                     sendDataToPanel(node.part.data);
                     console.log(node.part.data)
                 },
+
+                dragComputation: (node, pt, gridpt) => {
+                    // get the board group
+                    var boardGroup = node.containingGroup;
+                    if (boardGroup !== null) {
+                        // get the board group's bounds
+                        var boardBounds = boardGroup.actualBounds;
+                        // get the node's bounds
+                        var nodeBounds = node.actualBounds;
+                        // check if the new location is outside the board group
+                        if (pt.x < boardBounds.x || pt.y < boardBounds.y ||
+                            pt.x + nodeBounds.width > boardBounds.x + boardBounds.width ||
+                            pt.y + nodeBounds.height > boardBounds.y + boardBounds.height) {
+                            // adjust the new location to keep the node inside the board group
+                            pt.x = Math.max(boardBounds.x, Math.min(pt.x, boardBounds.x + boardBounds.width - nodeBounds.width));
+                            pt.y = Math.max(boardBounds.y, Math.min(pt.y, boardBounds.y + boardBounds.height - nodeBounds.height));
+                        }
+                    }
+                    return pt;
+                },
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-            new go.Binding("width", "width", w => w / 100, null),
-            new go.Binding("height", "height", w => w / 100, null),
+            new go.Binding("width", "width", w => w, null),
+            new go.Binding("height", "height", w => w, null),
 
 
             $(go.Panel, "Vertical",
-                new go.Binding("width", "width", w => w / 100, null),
-                new go.Binding("height", "height", w => w / 100, null),
+                new go.Binding("width", "width", w => w, null),
+                new go.Binding("height", "height", w => w, null),
                 // new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
                 // new go.Binding("marginTop", "marginTop").makeTwoWay(),
                 // new go.Binding("marginRight", "marginRight").makeTwoWay(),
@@ -227,7 +265,7 @@ function init() {
                     ),
                     $(go.Panel, "Auto",
                         $(go.Shape, "Rectangle",
-                            new go.Binding("width", "width", v => (v / 100) - 20),
+                            new go.Binding("width", "width", v => (v) - 20),
                             {
                                 fill: "white",
                                 stretch: go.GraphObject.Fill,
@@ -256,8 +294,8 @@ function init() {
                 },
                     new go.Binding("source", "source"),
                     new go.Binding("fill", "color"),
-                    new go.Binding("width", "width", w => w / 100).makeTwoWay(),
-                    new go.Binding("height", "height", w => w / 100).makeTwoWay(),
+                    new go.Binding("width", "width", w => w).makeTwoWay(),
+                    new go.Binding("height", "height", w => w).makeTwoWay(),
                 )
 
 
@@ -303,6 +341,25 @@ function init() {
 }
 
 window.addEventListener('DOMContentLoaded', init);
+
+function makeLayout(isVertical, columns, rows) {
+    let layout = null;
+    if (isVertical) {
+        layout = $(go.GridLayout, {
+            wrappingColumn: Infinity, alignment: go.GridLayout.Position,
+            wrappingWidth: rows,
+            cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4),
+
+        });
+    } else {
+        layout = $(go.GridLayout, {
+            wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+            wrappingColumn: columns || 1,
+            cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+        });
+    }
+    return layout;
+}
 
 // Save the diagram's model as a JSON file
 function save() {
