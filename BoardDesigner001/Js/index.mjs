@@ -35,7 +35,7 @@ function init() {
     {
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
-
+      
       "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
       "undoManager.isEnabled": true,
       "allowZoom": false,
@@ -69,13 +69,16 @@ function init() {
   }
 
 
+  let currentLayout = makeLayout(isVertical === 'v');
 
   myDiagram.groupTemplateMap.add("shelf",
     $(go.Group, "Auto",
       {
         //isSubGraphExpanded: false,
         resizable: true,
-        resizeObjectName: "SHELF"
+        resizeObjectName: "SHELF",
+        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+        layout: currentLayout,
       },
 
       $(go.Panel, "Auto", { name: "SHELF" },
@@ -90,7 +93,11 @@ function init() {
         new go.Binding("width", "width", null, null),
         new go.Binding("height", "height", null, null),
       ),
-    )
+      new go.Binding("width", "width", null, null),
+      new go.Binding("height", "height", null, null),
+    ),
+    new go.Binding("width", "width", null, null),
+    new go.Binding("height", "height", null, null),
   );
 
 
@@ -101,7 +108,7 @@ function init() {
     $(go.Node, "Auto",
       new go.Binding("location", "loc").makeTwoWay(),
       {
-        
+
         resizable: true,
         resizeObjectName: "PANEL",
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
@@ -206,7 +213,7 @@ function init() {
     )
   );
 
-  let currentLayout = makeLayout(isVertical === 'v');
+
 
 
 
@@ -217,10 +224,13 @@ function init() {
 
   // myDiagram.model = new go.GraphLinksModel(
   //   [
-  //     { key: "boardGroup", isGroup: true, category: "shelf" },
-  //     { key: "port1", group: "boardGroup", category: "board", width: 120, height: 120 },
-  //     { key: "port2", group: "boardGroup", category: "board", width: 120, height: 120 },
-  //     { key: "port3", group: "boardGroup", category: "board", width: 120, height: 120 },
+  //     { key: "boardGroup", isGroup: true, category: "shelf", width: 16.666666 * 30, height: 500 },
+  //     { key: "port1", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "0 0", text: "1 0" },
+  //     { key: "port2", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "16.666666 0", text: "2 0" },
+  //     { key: "port3", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "33.3333320", text: "3 0" },
+  //     { key: "port4", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "50 0", text: "4 0" },
+  //     { key: "port5", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "66.666664 0", text: "5 0" },
+  //     { key: "port5", group: "boardGroup", category: "board", width: 16.666666 * 10, height: 100, loc: "83.33333 0", text: "6 0" },
   //     //{ key: "port1", category: "board", width: 120, height: 120 }, // Initial height value, you can set it accordingly
 
 
@@ -237,6 +247,7 @@ function init() {
   let indexSlot = 0;
 
   function addBoardsFromUserPrompt() {
+    
     // Get the shelfGroup data
     var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
     // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
@@ -261,10 +272,10 @@ function init() {
       if (isVertical === 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: (groupWidth / borderCount) - 20, height: groupHeight - 10, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: (groupWidth / borderCount)-5 , height: groupHeight -5 , text: `${startIndex}:${indexSlot}` });
 
       } else {
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: groupWidth - 40, height: (groupHeight / borderCount) - 13, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: groupWidth -5 , height: (groupHeight / borderCount)-5 , text: `${startIndex}:${indexSlot}` });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
 
       }
