@@ -39,10 +39,6 @@ window.addEventListener('message', function (event) {
 
 // Initialize the diagram
 function init() {
-
-
-
-
     // Convert the input to a number
     numPorts = parseInt(numPorts);
 
@@ -52,9 +48,15 @@ function init() {
         //     "grid.visible": false,
         //     "toolManager.hoverDelay": 100,
         "draggingTool.isGridSnapEnabled": false,
-        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
+        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area,
+        "undoManager.isEnabled": true,
+        "PartResized": (e) => {
+            var obj = e.subject;
+            console.log(obj.desiredSize.toString());
+        },
         "resizingTool.computeMinSize": function () {  // method override
             const group = this.adornedObject.part;
+            console.log(group);  // Debugging line
             if (group && group.diagram && group.category == "board") {
                 const membnds = group.diagram.computePartsBounds(group.memberParts);
                 membnds.addMargin(new go.Margin(5));
@@ -62,10 +64,38 @@ function init() {
                 return membnds.size;
             }
         },
-        "undoManager.isEnabled": true
+
+
+
+
     });
 
     //myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
+
+    // myDiagram.addDiagramListener("PartResized", (e) => {
+    //     const group = e.subject.part;
+    //     console.log(group);  // Debugging line
+    //     if (group && group.category === "board") {
+    //         group.diagram.model.startTransaction("resize group");
+
+    //         const membnds = group.diagram.computePartsBounds(group.memberParts);
+    //         membnds.addMargin(new go.Margin(5));
+
+    //         // Ensure that the group's desired size is set based on the computed bounds
+    //         group.desiredSize = membnds.size;
+
+    //         // Make sure the group's location is also considered
+    //         membnds.unionRect(group.actualBounds);
+
+    //         // Update the group's actualBounds to ensure it reflects the new size
+    //         // Note: actualBounds is read-only, so use desiredSize to set the new size
+    //         group.diagram.model.setDataProperty(group.data, "width", membnds.width);
+    //         group.diagram.model.setDataProperty(group.data, "height", membnds.height);
+
+    //         // Commit the transaction to apply the changes
+    //         group.diagram.model.commitTransaction("resize group");
+    //     }
+    // });
 
 
     // Clear existing nodes
@@ -251,7 +281,6 @@ function init() {
                 // new go.Binding("marginTop", "marginTop").makeTwoWay(),
                 // new go.Binding("marginRight", "marginRight").makeTwoWay(),
                 // new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
-
                 {
                     name: "PANEL",
                 },
