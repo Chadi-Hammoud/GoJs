@@ -69,10 +69,13 @@ function init() {
   }
 
 
+
   let currentLayout = makeLayout(isVertical === 'v');
 
   myDiagram.groupTemplateMap.add("shelf",
+
     $(go.Group, "Auto",
+      new go.Binding("location", "location").makeTwoWay(),
       {
         //isSubGraphExpanded: false,
         resizable: true,
@@ -82,24 +85,64 @@ function init() {
 
         dragComputation: function (group, pt, gridpt) {
           // Get the new size of the group
-          const newWidth = group.actualBounds.width;
-          const newHeight = group.actualBounds.height;
-        
-          // Iterate through all nodes in the group and adjust their sizes
+
+          var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
+          // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
+          var groupWidth = shelfGroupData.width;
+          var groupHeight = shelfGroupData.height;
+
+          var data;
+          var key;
+
+          if (isVertical == 'v') {
+            // Iterate through all nodes in the group and adjust their sizes
+            var width = (groupWidth / borderCount) - 5;
+            var height = groupHeight - 5;
+
+          } else {
+            var width = groupWidth - 5;
+            var height = (groupHeight / borderCount) - 5;
+
+          }
           group.memberParts.each(function (node) {
             if (node instanceof go.Node) {
-              var key = node.key;
-              var data = myDiagram.model.findNodeDataForKey(key);
-        
-              myDiagram.model.setDataProperty(data, "width", newWidth);
-              myDiagram.model.setDataProperty(data, "height", newHeight);
+              key = node.key;
+              data = myDiagram.model.findNodeDataForKey(key);
+
+              var x = node.location.x;
+              var y = node.location.y;
+
+              myDiagram.model.setDataProperty(data, "width", width);
+              myDiagram.model.setDataProperty(data, "height", height);
+              var newLocation = "";
+              if (isVertical == 'v') {
+                if (x > 0) {
+
+                  var newLocationX = x - width;
+                  newLocation = new go.Point(newLocationX, y);
+                }
+
+              } else {
+                if (y > 0) {
+                  var newLocationY = y - height;
+                  newLocation = new go.Point(x, newLocationY);
+                }
+              }
+              console.log(node.location);
+              myDiagram.model.setDataProperty(data, "location", newLocation.toString());
+
+
+
               node.updateTargetBindings();
             }
           });
-        
-          return pt; // Continue with the default drag computation
+
+
+          return pt;
         },
-        
+
+
+
       },
 
       $(go.Panel, "Auto", { name: "SHELF" },
@@ -127,7 +170,7 @@ function init() {
 
   myDiagram.nodeTemplateMap.add("board",
     $(go.Node, "Auto",
-      new go.Binding("location", "loc").makeTwoWay(),
+      new go.Binding("location", "location").makeTwoWay(),
       {
 
         resizable: true,
@@ -178,6 +221,7 @@ function init() {
       },
 
       $(go.Panel, "Vertical",
+
         new go.Binding("width", "width", null, null),
         new go.Binding("height", "height", null, null),
         new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
