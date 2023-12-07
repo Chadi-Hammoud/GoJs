@@ -62,6 +62,8 @@ function init() {
                 membnds.addMargin(new go.Margin(5));
                 membnds.unionPoint(group.location);
                 return membnds.size;
+            }else{
+                return null;
             }
         },
 
@@ -185,19 +187,44 @@ function init() {
     myDiagram.groupTemplateMap.add("board",
         $(go.Group, "Auto",
             {
-                //isSubGraphExpanded: false,
                 resizable: true,
                 resizeObjectName: "BOARD",
                 layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-                layout: currentLayout,
-            },
+                dragComputation: function (group, pt, gridpt) {
+                    var groupWidth = group.actualBounds.width;
+                    var groupHeight = group.actualBounds.height;
+                    var data, key;
 
+                    group.memberParts.each(function (node) {
+                        if (node instanceof go.Node) {
+                            key = node.key;
+                            data = myDiagram.model.findNodeDataForKey(key);
+
+                            // Calculate new location based on group size
+                            var x = (groupWidth / numPorts) * (key.slice(-1) - 1);
+                            var y = (groupHeight / numPorts) * (key.slice(-1) - 1);
+
+                            // Update the location and size of the node
+                            myDiagram.model.setDataProperty(data, "loc", go.Point.stringify(new go.Point(x, y)));
+                            myDiagram.model.setDataProperty(data, "width", (groupWidth / numPorts) - 5);
+                            myDiagram.model.setDataProperty(data, "height", (groupHeight / numPorts) - 5);
+
+                            node.updateTargetBindings();
+                        }
+                    });
+                    return pt;
+                },
+            },
+            $(go.Placeholder,
+                { padding: 10 },
+                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            ),
             $(go.Panel, "Auto", { name: "BOARD" },
 
                 $(go.Shape, "Rectangle",
                     {
-
-                        fill: "#e0e0e0",
+                        name: "BOARD",
+                        fill: "red",
 
                     }
                 ),
@@ -206,9 +233,7 @@ function init() {
             ),
             new go.Binding("width", "width", null, null),
             new go.Binding("height", "height", null, null),
-        ),
-        new go.Binding("width", "width", null, null),
-        new go.Binding("height", "height", null, null),
+        )
     );
 
     // Define the node template
@@ -249,25 +274,25 @@ function init() {
                     console.log(node.part.data)
                 },
 
-                dragComputation: (node, pt, gridpt) => {
-                    // get the board group
-                    var boardGroup = node.containingGroup;
-                    if (boardGroup !== null) {
-                        // get the board group's bounds
-                        var boardBounds = boardGroup.actualBounds;
-                        // get the node's bounds
-                        var nodeBounds = node.actualBounds;
-                        // check if the new location is outside the board group
-                        if (pt.x < boardBounds.x || pt.y < boardBounds.y ||
-                            pt.x + nodeBounds.width > boardBounds.x + boardBounds.width ||
-                            pt.y + nodeBounds.height > boardBounds.y + boardBounds.height) {
-                            // adjust the new location to keep the node inside the board group
-                            pt.x = Math.max(boardBounds.x, Math.min(pt.x, boardBounds.x + boardBounds.width - nodeBounds.width));
-                            pt.y = Math.max(boardBounds.y, Math.min(pt.y, boardBounds.y + boardBounds.height - nodeBounds.height));
-                        }
-                    }
-                    return pt;
-                },
+                // dragComputation: (node, pt, gridpt) => {
+                //     // get the board group
+                //     var boardGroup = node.containingGroup;
+                //     if (boardGroup !== null) {
+                //         // get the board group's bounds
+                //         var boardBounds = boardGroup.actualBounds;
+                //         // get the node's bounds
+                //         var nodeBounds = node.actualBounds;
+                //         // check if the new location is outside the board group
+                //         if (pt.x < boardBounds.x || pt.y < boardBounds.y ||
+                //             pt.x + nodeBounds.width > boardBounds.x + boardBounds.width ||
+                //             pt.y + nodeBounds.height > boardBounds.y + boardBounds.height) {
+                //             // adjust the new location to keep the node inside the board group
+                //             pt.x = Math.max(boardBounds.x, Math.min(pt.x, boardBounds.x + boardBounds.width - nodeBounds.width));
+                //             pt.y = Math.max(boardBounds.y, Math.min(pt.y, boardBounds.y + boardBounds.height - nodeBounds.height));
+                //         }
+                //     }
+                //     return pt;
+                // },
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             new go.Binding("width", "width", w => w, null),
