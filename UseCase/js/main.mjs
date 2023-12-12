@@ -39,10 +39,6 @@ window.addEventListener('message', function (event) {
 
 // Initialize the diagram
 function init() {
-
-
-
-
     // Convert the input to a number
     numPorts = parseInt(numPorts);
 
@@ -52,20 +48,56 @@ function init() {
         //     "grid.visible": false,
         //     "toolManager.hoverDelay": 100,
         "draggingTool.isGridSnapEnabled": false,
-        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area
+        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area,
+        "undoManager.isEnabled": true,
+        "PartResized": (e) => {
+            var obj = e.subject;
+            console.log(obj.desiredSize.toString());
+        },
         "resizingTool.computeMinSize": function () {  // method override
             const group = this.adornedObject.part;
+            console.log(group);  // Debugging line
             if (group && group.diagram && group.category == "board") {
                 const membnds = group.diagram.computePartsBounds(group.memberParts);
                 membnds.addMargin(new go.Margin(5));
                 membnds.unionPoint(group.location);
                 return membnds.size;
+            }else{
+                return null;
             }
         },
-        "undoManager.isEnabled": true
+
+
+
+
     });
 
     //myDiagram.toolManager.resizingTool.computeReshape = function () { return true; }
+
+    // myDiagram.addDiagramListener("PartResized", (e) => {
+    //     const group = e.subject.part;
+    //     console.log(group);  // Debugging line
+    //     if (group && group.category === "board") {
+    //         group.diagram.model.startTransaction("resize group");
+
+    //         const membnds = group.diagram.computePartsBounds(group.memberParts);
+    //         membnds.addMargin(new go.Margin(5));
+
+    //         // Ensure that the group's desired size is set based on the computed bounds
+    //         group.desiredSize = membnds.size;
+
+    //         // Make sure the group's location is also considered
+    //         membnds.unionRect(group.actualBounds);
+
+    //         // Update the group's actualBounds to ensure it reflects the new size
+    //         // Note: actualBounds is read-only, so use desiredSize to set the new size
+    //         group.diagram.model.setDataProperty(group.data, "width", membnds.width);
+    //         group.diagram.model.setDataProperty(group.data, "height", membnds.height);
+
+    //         // Commit the transaction to apply the changes
+    //         group.diagram.model.commitTransaction("resize group");
+    //     }
+    // });
 
 
     // Clear existing nodes
@@ -155,19 +187,44 @@ function init() {
     myDiagram.groupTemplateMap.add("board",
         $(go.Group, "Auto",
             {
-                //isSubGraphExpanded: false,
                 resizable: true,
                 resizeObjectName: "BOARD",
                 layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-                layout: currentLayout,
-            },
+                dragComputation: function (group, pt, gridpt) {
+                    var groupWidth = group.actualBounds.width;
+                    var groupHeight = group.actualBounds.height;
+                    var data, key;
 
+                    group.memberParts.each(function (node) {
+                        if (node instanceof go.Node) {
+                            key = node.key;
+                            data = myDiagram.model.findNodeDataForKey(key);
+
+                            // Calculate new location based on group size
+                            var x = (groupWidth / numPorts) * (key.slice(-1) - 1);
+                            var y = (groupHeight / numPorts) * (key.slice(-1) - 1);
+
+                            // Update the location and size of the node
+                            myDiagram.model.setDataProperty(data, "loc", go.Point.stringify(new go.Point(x, y)));
+                            myDiagram.model.setDataProperty(data, "width", (groupWidth / numPorts) - 5);
+                            myDiagram.model.setDataProperty(data, "height", (groupHeight / numPorts) - 5);
+
+                            node.updateTargetBindings();
+                        }
+                    });
+                    return pt;
+                },
+            },
+            $(go.Placeholder,
+                { padding: 10 },
+                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            ),
             $(go.Panel, "Auto", { name: "BOARD" },
 
                 $(go.Shape, "Rectangle",
                     {
-
-                        fill: "#e0e0e0",
+                        name: "BOARD",
+                        fill: "red",
 
                     }
                 ),
@@ -176,9 +233,7 @@ function init() {
             ),
             new go.Binding("width", "width", null, null),
             new go.Binding("height", "height", null, null),
-        ),
-        new go.Binding("width", "width", null, null),
-        new go.Binding("height", "height", null, null),
+        )
     );
 
     // Define the node template
@@ -219,25 +274,25 @@ function init() {
                     console.log(node.part.data)
                 },
 
-                dragComputation: (node, pt, gridpt) => {
-                    // get the board group
-                    var boardGroup = node.containingGroup;
-                    if (boardGroup !== null) {
-                        // get the board group's bounds
-                        var boardBounds = boardGroup.actualBounds;
-                        // get the node's bounds
-                        var nodeBounds = node.actualBounds;
-                        // check if the new location is outside the board group
-                        if (pt.x < boardBounds.x || pt.y < boardBounds.y ||
-                            pt.x + nodeBounds.width > boardBounds.x + boardBounds.width ||
-                            pt.y + nodeBounds.height > boardBounds.y + boardBounds.height) {
-                            // adjust the new location to keep the node inside the board group
-                            pt.x = Math.max(boardBounds.x, Math.min(pt.x, boardBounds.x + boardBounds.width - nodeBounds.width));
-                            pt.y = Math.max(boardBounds.y, Math.min(pt.y, boardBounds.y + boardBounds.height - nodeBounds.height));
-                        }
-                    }
-                    return pt;
-                },
+                // dragComputation: (node, pt, gridpt) => {
+                //     // get the board group
+                //     var boardGroup = node.containingGroup;
+                //     if (boardGroup !== null) {
+                //         // get the board group's bounds
+                //         var boardBounds = boardGroup.actualBounds;
+                //         // get the node's bounds
+                //         var nodeBounds = node.actualBounds;
+                //         // check if the new location is outside the board group
+                //         if (pt.x < boardBounds.x || pt.y < boardBounds.y ||
+                //             pt.x + nodeBounds.width > boardBounds.x + boardBounds.width ||
+                //             pt.y + nodeBounds.height > boardBounds.y + boardBounds.height) {
+                //             // adjust the new location to keep the node inside the board group
+                //             pt.x = Math.max(boardBounds.x, Math.min(pt.x, boardBounds.x + boardBounds.width - nodeBounds.width));
+                //             pt.y = Math.max(boardBounds.y, Math.min(pt.y, boardBounds.y + boardBounds.height - nodeBounds.height));
+                //         }
+                //     }
+                //     return pt;
+                // },
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             new go.Binding("width", "width", w => w, null),
@@ -251,7 +306,6 @@ function init() {
                 // new go.Binding("marginTop", "marginTop").makeTwoWay(),
                 // new go.Binding("marginRight", "marginRight").makeTwoWay(),
                 // new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
-
                 {
                     name: "PANEL",
                 },
