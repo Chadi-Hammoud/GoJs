@@ -30,24 +30,19 @@ function init() {
 
 
   let $ = go.GraphObject.make;
+  let currentLayout = makeLayout(isVertical === 'v');
 
   myDiagram = new go.Diagram("myDiagramDiv",
     {
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
-
+      layout: currentLayout,
       "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
       "undoManager.isEnabled": true,
-      "allowZoom": false,
+      "allowZoom": true,
       "allowResize": true,
       //"fixedBounds": new go.Rect(0, 0, 250, 600), // Set fixedBounds to a specific rectangular area
     });
-
-
-
-
-
-
 
   function makeLayout(isVertical, columns, rows) {
     let layout = null;
@@ -70,99 +65,6 @@ function init() {
 
 
 
-  let currentLayout = makeLayout(isVertical === 'v');
-
-  myDiagram.groupTemplateMap.add("shelf",
-
-    $(go.Group, "Auto",
-      new go.Binding("location", "location").makeTwoWay(),
-      {
-        //isSubGraphExpanded: false,
-        resizable: true,
-        resizeObjectName: "SHELF",
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        layout: currentLayout,
-
-        dragComputation: function (group, pt, gridpt) {
-          // Get the new size of the group
-
-          var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
-          // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
-          var groupWidth = shelfGroupData.width;
-          var groupHeight = shelfGroupData.height;
-
-          var data;
-          var key;
-
-          if (isVertical == 'v') {
-            // Iterate through all nodes in the group and adjust their sizes
-            var width = (groupWidth / borderCount) - 5;
-            var height = groupHeight - 5;
-
-          } else {
-            var width = groupWidth - 5;
-            var height = (groupHeight / borderCount) - 5;
-
-          }
-          group.memberParts.each(function (node) {
-            if (node instanceof go.Node) {
-              key = node.key;
-              data = myDiagram.model.findNodeDataForKey(key);
-
-              var x = node.location.x;
-              var y = node.location.y;
-
-              myDiagram.model.setDataProperty(data, "width", width);
-              myDiagram.model.setDataProperty(data, "height", height);
-              var newLocation = "";
-              if (isVertical == 'v') {
-                if (x > 0) {
-
-                  var newLocationX = x - width;
-                  newLocation = new go.Point(newLocationX, y);
-                }
-
-              } else {
-                if (y > 0) {
-                  var newLocationY = y - height;
-                  newLocation = new go.Point(x, newLocationY);
-                }
-              }
-              console.log(node.location);
-              myDiagram.model.setDataProperty(data, "location", newLocation.toString());
-
-
-
-              node.updateTargetBindings();
-            }
-          });
-
-
-          return pt;
-        },
-
-
-
-      },
-
-      $(go.Panel, "Auto", { name: "SHELF" },
-
-        $(go.Shape, "Rectangle",
-          {
-
-            fill: "#e0e0e0",
-
-          }
-        ),
-        new go.Binding("width", "width", null, null),
-        new go.Binding("height", "height", null, null),
-      ),
-      new go.Binding("width", "width", null, null),
-      new go.Binding("height", "height", null, null),
-    ),
-    new go.Binding("width", "width", null, null),
-    new go.Binding("height", "height", null, null),
-  );
 
 
 
@@ -170,9 +72,9 @@ function init() {
 
   myDiagram.nodeTemplateMap.add("board",
     $(go.Node, "Auto",
-      new go.Binding("location", "location").makeTwoWay(),
-      {
+      new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
 
+      {
         resizable: true,
         resizeObjectName: "PANEL",
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
@@ -197,25 +99,25 @@ function init() {
               stroke: "transparent"
             }),
         ),
-        dragComputation: function (node, pt, gridpt) {
-          // get the shelf group
-          var shelfGroup = node.containingGroup;
-          if (shelfGroup !== null) {
-            // get the shelf group's bounds
-            var shelfBounds = shelfGroup.actualBounds;
-            // get the node's bounds
-            var nodeBounds = node.actualBounds;
-            // check if the new location is outside the shelf group
-            if (pt.x < shelfBounds.x || pt.y < shelfBounds.y ||
-              pt.x + nodeBounds.width > shelfBounds.x + shelfBounds.width ||
-              pt.y + nodeBounds.height > shelfBounds.y + shelfBounds.height) {
-              // adjust the new location to keep the node inside the shelf group
-              pt.x = Math.max(shelfBounds.x, Math.min(pt.x, shelfBounds.x + shelfBounds.width - nodeBounds.width));
-              pt.y = Math.max(shelfBounds.y, Math.min(pt.y, shelfBounds.y + shelfBounds.height - nodeBounds.height));
-            }
-          }
-          return pt;
-        },
+        // dragComputation: function (node, pt, gridpt) {
+        //   // get the shelf group
+        //   var shelfGroup = node.containingGroup;
+        //   if (shelfGroup !== null) {
+        //     // get the shelf group's bounds
+        //     var shelfBounds = shelfGroup.actualBounds;
+        //     // get the node's bounds
+        //     var nodeBounds = node.actualBounds;
+        //     // check if the new location is outside the shelf group
+        //     if (pt.x < shelfBounds.x || pt.y < shelfBounds.y ||
+        //       pt.x + nodeBounds.width > shelfBounds.x + shelfBounds.width ||
+        //       pt.y + nodeBounds.height > shelfBounds.y + shelfBounds.height) {
+        //       // adjust the new location to keep the node inside the shelf group
+        //       pt.x = Math.max(shelfBounds.x, Math.min(pt.x, shelfBounds.x + shelfBounds.width - nodeBounds.width));
+        //       pt.y = Math.max(shelfBounds.y, Math.min(pt.y, shelfBounds.y + shelfBounds.height - nodeBounds.height));
+        //     }
+        //   }
+        //   return pt;
+        // },
 
 
       },
@@ -275,12 +177,117 @@ function init() {
           }
         )
       ),
-    )
+    ),
+
   );
 
 
 
 
+
+  // myDiagram.groupTemplateMap.add("shelf",
+
+  //   $(go.Group, "Auto",
+  //     new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+  //     {
+  //       //isSubGraphExpanded: false,
+  //       resizable: true,
+  //       resizeObjectName: "SHELF",
+  //       layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+  //       layout: currentLayout,
+
+  //       dragComputation: function (group, pt, gridpt) {
+  //         // Get the new size of the group
+
+  //         // var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
+  //         // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
+  //         var groupWidth = group.width;
+  //         var groupHeight = group.height;
+
+  //         var data;
+  //         var key;
+  //         var width;
+  //         var height
+
+  //         if (isVertical == 'v') {
+  //           // Iterate through all nodes in the group and adjust their sizes
+  //           width = (groupWidth / borderCount) - 5;
+  //           height = groupHeight - 5;
+
+  //         } else {
+  //           width = groupWidth - 5;
+  //           height = (groupHeight / borderCount) - 5;
+
+  //         }
+  //         group.memberParts.each(function (node) {
+  //           if (node instanceof go.Node) {
+  //             key = node.key;
+  //             data = myDiagram.model.findNodeDataForKey(key);
+
+  //             myDiagram.startTransaction("move nodes");
+
+  //             var x = node.location.x;
+  //             var y = node.location.y;
+
+  //             var newLocation = "";
+  //             if (isVertical == 'v') {
+  //               if (x > 0) {
+
+  //                 var newLocationX = x - 5;
+  //                 newLocation = `${newLocationX} ${y}`;
+  //                 myDiagram.model.setDataProperty(data, "location", newLocation);
+  //               }
+
+  //             } else {
+  //               if (y > 0) {
+  //                 var newLocationY = y - 5;
+  //                 newLocation = `${x} ${newLocationY}`;
+  //                 myDiagram.model.setDataProperty(data, "location", newLocation);
+  //               }
+  //             }
+
+  //             myDiagram.commitTransaction("move nodes");
+
+
+  //             myDiagram.model.setDataProperty(data, "width", width);
+  //             myDiagram.model.setDataProperty(data, "height", height);
+
+  //             myDiagram.startTransaction("update bindings");
+  //             node.updateTargetBindings();
+  //             myDiagram.commitTransaction("update bindings");
+
+  //             console.log("new location: ", key , " " ,newLocation, " ", node.location);
+
+
+
+  //           }
+  //         });
+
+
+  //         return pt;
+  //       },
+  //     },
+
+  //     $(go.Panel, "Auto", { name: "SHELF" },
+  //       { defaultAlignment: go.Spot.Left },
+  //       $(go.Shape, "Rectangle",
+  //         {
+
+  //           fill: "#e0e0e0",
+
+  //         }
+  //       ),
+  //       new go.Binding("width", "width", null, null),
+  //       new go.Binding("height", "height", null, null),
+  //     ),
+  //     new go.Binding("width", "width", null, null),
+  //     new go.Binding("height", "height", null, null),
+
+
+  //   ),
+  //   new go.Binding("width", "width", null, null),
+  //   new go.Binding("height", "height", null, null),
+  // );
 
 
 
@@ -307,17 +314,24 @@ function init() {
 
   // Clear existing nodes
   myDiagram.model = new go.GraphLinksModel();
-  myDiagram.model.addNodeData({ key: "shelfGroup", isGroup: true, category: "shelf", width: 600, height: 300 });
+  // myDiagram.model.addNodeData({
+  //   key: "shelfGroup",
+  //   isGroup: true,
+  //   category: "shelf",
+  //   width: 600,
+  //   height: 300,
+  //   location: ""
+  // });
   // Add nodes dynamically based on the user input
   let indexSlot = 0;
 
   function addBoardsFromUserPrompt() {
 
-    // Get the shelfGroup data
-    var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
-    // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
-    var groupWidth = shelfGroupData.width;
-    var groupHeight = shelfGroupData.height;
+    // // Get the shelfGroup data
+    // var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
+    // // Now you can use shelfGroupBounds.width and shelfGroupBounds.height
+    // var groupWidth = shelfGroupData.width;
+    // var groupHeight = shelfGroupData.height;
 
     if (isVertical == 'v') {
       currentLayout = makeLayout(isVertical === 'v');
@@ -327,20 +341,35 @@ function init() {
 
     }
 
-    if (shelfGroupData) {
-      shelfGroupData.layout = currentLayout;
-
-
-    }
+   
+      myDiagram.layout = currentLayout;
+      myDiagram.layout.invalidateLayout();
+   
 
     for (let i = 1; i <= borderCount; i++) {
       if (isVertical === 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: (groupWidth / borderCount) - 5, height: groupHeight - 5, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({
+          key: `port${startIndex}`,
+         
+          category: "board",
+          width: 240,
+          height: 600,
+          text: `${startIndex}:${indexSlot}`,
+          location: ""
+        });
 
       } else {
-        myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: groupWidth - 5, height: (groupHeight / borderCount) - 5, text: `${startIndex}:${indexSlot}` });
+        myDiagram.model.addNodeData({
+          key: `port${startIndex}`,
+         
+          category: "board",
+          width: 600,
+          height: 240,
+          text: `${startIndex}:${indexSlot}`,
+          location: ""
+        });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
 
       }
@@ -350,6 +379,46 @@ function init() {
   }
 
   addBoardsFromUserPrompt();
+
+  // myDiagram.addDiagramListener("PartResized", e => {
+  //   var resizedPart = e.subject.part;
+  //   // Check if the resized part is a group and has the category "shelf"
+  //   if (resizedPart instanceof go.Group && resizedPart.category === "shelf") {
+  //     myDiagram.startTransaction("move nodes");
+
+  //     // Get the bounds of the group
+  //     var groupBounds = resizedPart.actualBounds;
+  //     let key;
+  //     let data;
+  //     resizedPart.memberParts.each(function (node) {
+  //       if (node instanceof go.Node) {
+  //         key = node.data.key;
+  //         data = myDiagram.model.findNodeDataForKey(key);
+  //         // Get the bounds of the node
+  //         var nodeBounds = node.actualBounds;
+  //         // Get the current location of the node
+  //         var loc = node.position;
+  //         let newLoc = "";
+  //         // Check if the node is outside the group, and if so, adjust its location
+  //         if (loc.x < groupBounds.x || loc.y < groupBounds.y ||
+  //           loc.x + nodeBounds.width > groupBounds.right ||
+  //           loc.y + nodeBounds.height > groupBounds.bottom) {
+  //           // Adjust the location of the node to keep it inside the group
+  //           loc.x = Math.max(groupBounds.x, Math.min(loc.x, groupBounds.right - nodeBounds.width));
+  //           loc.y = Math.max(groupBounds.y, Math.min(loc.y, groupBounds.bottom - nodeBounds.height));
+  //           newLoc = `${loc.x} ${loc.y}`;
+
+  //           myDiagram.model.setDataProperty(data, "location", newLoc);
+  //           node.updateTargetBindings();
+
+  //         }
+  //       }
+  //     });
+
+  //     myDiagram.commitTransaction("move nodes");
+  //   }
+  // });
+
 
 
 
