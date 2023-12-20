@@ -14,27 +14,27 @@ let selectedNode;
 let currentLayout = makeLayout(isVertical === 'v');
 
 
-window.addEventListener('message', function (event) {
-    var data = event.data;
+// window.addEventListener('message', function (event) {
+//     var data = event.data;
 
 
-    console.log('Received data from the popup:', data);
-    switch (data.type) {
-        case "autoResize":
-            autoResize(data);
-            break;
-        case "adjustNodeCoordinates":
-            adjustNodeCoordinates(data);
-            break;
-        case "autoDistribute":
-            autoDistribute(data)
-            break;
+//     console.log('Received data from the popup:', data);
+//     switch (data.type) {
+//         case "autoResize":
+//             autoResize(data);
+//             break;
+//         case "adjustNodeCoordinates":
+//             adjustNodeCoordinates(data);
+//             break;
+//         case "autoDistribute":
+//             autoDistribute(data)
+//             break;
 
-        default:
-            alert(`Unknown message type ${data.type}`);
+//         default:
+//             alert(`Unknown message type ${data.type}`);
 
-    }
-});
+//     }
+// });
 
 
 // Initialize the diagram
@@ -48,24 +48,24 @@ function init() {
         //     "grid.visible": false,
         //     "toolManager.hoverDelay": 100,
         "draggingTool.isGridSnapEnabled": false,
-        "fixedBounds": new go.Rect(0, 0, 800, 400), // Set fixedBounds to a specific rectangular area,
+        "fixedBounds": new go.Rect(0, 0, 500, 400), // Set fixedBounds to a specific rectangular area,
         "undoManager.isEnabled": true,
         "PartResized": (e) => {
             var obj = e.subject;
             console.log(obj.desiredSize.toString());
         },
-        "resizingTool.computeMinSize": function () {  // method override
-            const group = this.adornedObject.part;
-            console.log(group);  // Debugging line
-            if (group && group.diagram && group.category == "board") {
-                const membnds = group.diagram.computePartsBounds(group.memberParts);
-                membnds.addMargin(new go.Margin(5));
-                membnds.unionPoint(group.location);
-                return membnds.size;
-            }else{
-                return null;
-            }
-        },
+        // "resizingTool.computeMinSize": function () {  // method override
+        //     const group = this.adornedObject.part;
+        //     console.log(group);  // Debugging line
+        //     if (group && group.diagram && group.category == "board") {
+        //         const membnds = group.diagram.computePartsBounds(group.memberParts);
+        //         membnds.addMargin(new go.Margin(5));
+        //         membnds.unionPoint(group.location);
+        //         return membnds.size;
+        //     }else{
+        //         return null;
+        //     }
+        // },
 
 
 
@@ -103,9 +103,9 @@ function init() {
     // Clear existing nodes
     myDiagram.model = new go.GraphLinksModel();
     //myDiagram.model.addNodeData({ key: "boardGroup", isGroup: true, category: "board", width: 600, height: 300 });
-    let groupBoardData = { key: "boardGroup", isGroup: true, category: "board", width: 600, height: 300 }
-    nodeDataArray.push(groupBoardData);
-    myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+    // let groupBoardData = { key: "boardGroup", isGroup: true, category: "board", width: 600, height: 300 }
+    // nodeDataArray.push(groupBoardData);
+    // myDiagram.model = new go.GraphLinksModel(nodeDataArray);
 
 
     function addBoardsFromUserPrompt() {
@@ -113,8 +113,8 @@ function init() {
         // Get the boardGroup data
         var boardGroupData = myDiagram.model.findNodeDataForKey("boardGroup");
         // Now you can use boardGroupBounds.width and boardGroupBounds.height
-        var groupWidth = boardGroupData.width;
-        var groupHeight = boardGroupData.height;
+        var groupWidth = 450;
+        var groupHeight = 300;
 
         if (isVertical == 'v') {
             currentLayout = makeLayout(isVertical === 'v');
@@ -134,7 +134,7 @@ function init() {
                 nodeDataArray.push(
                     {
                         key: "Port " + i,
-                        group: "boardGroup",
+                        // group: "boardGroup",
                         category: "port",
                         width: (groupWidth / numPorts) - 5,
                         height: groupHeight - 5,
@@ -145,7 +145,7 @@ function init() {
             } else {
                 nodeDataArray.push({
                     key: "Port " + i,
-                    group: "boardGroup",
+                    // group: "boardGroup",
                     category: "port",
                     width: groupWidth - 5,
                     height: (groupHeight / numPorts) - 5,
@@ -184,57 +184,57 @@ function init() {
 
 
     // Define the GROUP template
-    myDiagram.groupTemplateMap.add("board",
-        $(go.Group, "Auto",
-            {
-                resizable: true,
-                resizeObjectName: "BOARD",
-                layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-                dragComputation: function (group, pt, gridpt) {
-                    var groupWidth = group.actualBounds.width;
-                    var groupHeight = group.actualBounds.height;
-                    var data, key;
+    // myDiagram.groupTemplateMap.add("board",
+    //     $(go.Group, "Auto",
+    //         {
+    //             resizable: true,
+    //             resizeObjectName: "BOARD",
+    //             layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+    //             dragComputation: function (group, pt, gridpt) {
+    //                 var groupWidth = group.actualBounds.width;
+    //                 var groupHeight = group.actualBounds.height;
+    //                 var data, key;
 
-                    group.memberParts.each(function (node) {
-                        if (node instanceof go.Node) {
-                            key = node.key;
-                            data = myDiagram.model.findNodeDataForKey(key);
+    //                 group.memberParts.each(function (node) {
+    //                     if (node instanceof go.Node) {
+    //                         key = node.key;
+    //                         data = myDiagram.model.findNodeDataForKey(key);
 
-                            // Calculate new location based on group size
-                            var x = (groupWidth / numPorts) * (key.slice(-1) - 1);
-                            var y = (groupHeight / numPorts) * (key.slice(-1) - 1);
+    //                         // Calculate new location based on group size
+    //                         var x = (groupWidth / numPorts) * (key.slice(-1) - 1);
+    //                         var y = (groupHeight / numPorts) * (key.slice(-1) - 1);
 
-                            // Update the location and size of the node
-                            myDiagram.model.setDataProperty(data, "loc", go.Point.stringify(new go.Point(x, y)));
-                            myDiagram.model.setDataProperty(data, "width", (groupWidth / numPorts) - 5);
-                            myDiagram.model.setDataProperty(data, "height", (groupHeight / numPorts) - 5);
+    //                         // Update the location and size of the node
+    //                         myDiagram.model.setDataProperty(data, "loc", go.Point.stringify(new go.Point(x, y)));
+    //                         myDiagram.model.setDataProperty(data, "width", (groupWidth / numPorts) - 5);
+    //                         myDiagram.model.setDataProperty(data, "height", (groupHeight / numPorts) - 5);
 
-                            node.updateTargetBindings();
-                        }
-                    });
-                    return pt;
-                },
-            },
-            $(go.Placeholder,
-                { padding: 10 },
-                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-            ),
-            $(go.Panel, "Auto", { name: "BOARD" },
+    //                         node.updateTargetBindings();
+    //                     }
+    //                 });
+    //                 return pt;
+    //             },
+    //         },
+    //         $(go.Placeholder,
+    //             { padding: 10 },
+    //             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    //         ),
+    //         $(go.Panel, "Auto", { name: "BOARD" },
 
-                $(go.Shape, "Rectangle",
-                    {
-                        name: "BOARD",
-                        fill: "red",
+    //             $(go.Shape, "Rectangle",
+    //                 {
+    //                     //name: "BOARD",
+    //                     fill: "gray",
 
-                    }
-                ),
-                new go.Binding("width", "width", null, null),
-                new go.Binding("height", "height", null, null),
-            ),
-            new go.Binding("width", "width", null, null),
-            new go.Binding("height", "height", null, null),
-        )
-    );
+    //                 }
+    //             ),
+    //             new go.Binding("width", "width", null, null),
+    //             new go.Binding("height", "height", null, null),
+    //         ),
+    //         new go.Binding("width", "width", null, null),
+    //         new go.Binding("height", "height", null, null),
+    //     )
+    // );
 
     // Define the node template
     myDiagram.nodeTemplate =
@@ -435,13 +435,7 @@ function downloadData(dataArray) {
     document.body.removeChild(a);
 }
 
-document.getElementById("saveModel").addEventListener("click", save);
-
-function getRandomNumber() {
-    var randomNumber = Math.random();
-    var roundedNumber = Math.round(randomNumber);
-    return roundedNumber;
-}
+// document.getElementById("saveModel").addEventListener("click", save);
 
 function adjustNodeCoordinates(data) {
     var nodeData = myDiagram.model.findNodeDataForKey(data.selectedNodeID);
@@ -489,17 +483,51 @@ function autoDistribute(_receivedData) {
 
 }
 
-function sendDataToPanel(dataToSend) {
-    if (popup1) {
-        popup1.postMessage(dataToSend, '*');
+function sendDataToPanel(_data) {
+    // if (popup1) {
+    //     popup1.postMessage(dataToSend, '*');
+    // } else {
+    //     console.log("No window available to send data");
+    // }
+
+    console.log('Received data from the GoJS file:', _data);
+    if (_data.type == "autoDistribute") {
+        return
     } else {
-        console.log("No window available to send data");
+
+        let locArray = _data.loc.split(" ");
+        let xCoordinate = locArray[0];
+        let yCoordinate = locArray[1];
+
+        // Fill the form inputs with the received data
+        document.getElementById("XCoord").value = xCoordinate || 'undefined';
+        document.getElementById("YCoord").value = yCoordinate || 'undefined';
+        document.getElementById("width").value = _data.width || 'undefined';
+        document.getElementById("height").value = _data.height || 'undefined';
+        document.getElementById("resizedWidth").value = _data.height || 'undefined';
+        document.getElementById("resizedHeight").value = _data.height || 'undefined';
     }
 }
 
-// function receiveDataFromPopUps(_receivedData){
-//     console.log(_receivedData)
-// }
+export function receiveDataFromPopUps(_receivedData) {
+    console.log("_receivedData", _receivedData)
+        switch (_receivedData.type) {
+        case "autoResizeForm":
+            autoResize(_receivedData);
+            break;
+        case "adjustNodeCoordinates":
+            adjustNodeCoordinates(_receivedData);
+            break;
+        case "autoDistributeForm":
+            autoDistribute(_receivedData)
+            break;
+
+        default:
+            alert(`Unknown message type ${_receivedData.type}`);
+
+    }
+
+}
 
 
 

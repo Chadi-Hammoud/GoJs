@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Design Use case</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .container {
+            width: 30%;
+            margin-top: 10%;
+        }
+
+        #autoResizePopupForm,
+        #autoDistributePopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 250px;
+            height: 300px;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+
+        label {
+            display: inline-block;
+            margin-bottom: 8px;
+            width: 120px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="../js/main.mjs" type="module"></script>
+    <div style="width: 100%; display: flex; justify-content: space-between">
+        <div id="myDiagramDiv"
+            style="flex-grow: 1; height: 500px; background-color: #DAE4E4; border: 1px solid black; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
+            <canvas tabindex="0" width="500" height="700"
+                style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 922px; height: 498px;"></canvas>
+            <div style="position: absolute; overflow: auto; width: 922px; height: 498px; z-index: 1;">
+                <div style="position: absolute; width: 1px; height: 1px;"></div>
+            </div>
+        </div>
+
+        <!-- The content of the second HTML file goes here -->
+        <div class="container">
+            <form id="customizationForm">
+                <div class="form-row">
+                    <div class="col">
+                        <label>X</label>
+                        <input type="number" class="form-control" id="XCoord" name="XCoord" required>
+                    </div>
+                    <div class="col">
+                        <label>Y</label>
+                        <input type="number" class="form-control" id="YCoord" name="YCoord" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col">
+                        <label>Width</label>
+                        <input type="number" class="form-control" id="width" name="width" required>
+                    </div>
+                    <div class="col">
+                        <label>Height</label>
+                        <input type="number" class="form-control" id="height" name="height" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col" style="top: 10px; right: 10px;">
+                            <button type="submit" class="btn btn-primary">Apply</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col" style="top:15px; right: 10px;">
+                            <input type="button" class="btn btn-primary" onclick="openAutoResizePopup()"
+                                value="Auto Resize" />
+                            <input type="button" class="btn btn-primary" onclick="openAutoDistributionPopup()"
+                                value="Auto Distribute" />
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="autoResizePopupForm">
+            <form id="autoResizeForm">
+                <label>Auto Resize</label>
+                <div class="form-row">
+                    <label>Width</label>
+                    <input type="number" class="form-control" id="resizedWidth" name="width" required>
+
+                </div>
+                <div class="form-row">
+                    <label>Height</label>
+                    <input type="number" class="form-control" id="resizedHeight" name="height" required>
+                </div>
+
+                <button type="submit" style=" position: relative;top: 20px;right: 10px;"
+                    class="btn btn-primary">Apply</button>
+                <button type="button" style=" position: relative;top: 20px;right: 10px;" class="btn btn-primary"
+                    onclick="closePopup()">Close</button>
+            </form>
+        </div>
+
+        <div id="autoDistributePopup">
+            <!-- The content of the autoDistributePopup goes here -->
+            <form id="autoDistributeForm">
+                <label>Auto Distribute</label>
+                <div class="form-row">
+
+                    <label>X</label>
+                    <input type="number" class="form-control" id="distributedX" name="XCoord" required>
+
+                </div>
+                <div class="form-row">
+
+                    <label>Y</label>
+                    <input type="number" class="form-control" id="distributedY" name="YCoord" required>
+
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">Apply</button>
+                <button type="button" class="btn btn-primary" onclick="closePopup()">Close</button>
+            </form>
+        </div>
+
+        <div id="overlay" class="overlay"></div>
+    </div>
+
+    <script>
+        //import { receiveDataFromPopUps } from '../js/main.mjs';
+        function openAutoResizePopup() {
+            document.getElementById("autoResizePopupForm").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function openAutoDistributionPopup() {
+            document.getElementById("autoDistributePopup").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("autoResizePopupForm").style.display = "none";
+            document.getElementById("autoDistributePopup").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+    </script>
+    <script type="module">
+        import { receiveDataFromPopUps } from '../js/main.mjs';
+
+        // Assume the form has the id 'autoResizeForm'
+        const customizationForm = document.getElementById('customizationForm');
+
+        customizationForm.addEventListener('submit', function (event) {
+            // Prevent the form from submitting normally
+            event.preventDefault();
+
+            // Create a FormData instance
+            const formData = new FormData(customizationForm);
+            const data = Object.fromEntries(formData);
+            data.formType = "adjustNodeCoordinatesForm";
+            console.log(data);
+            receiveDataFromPopUps(data);
+
+            // You can access the form data entries with the `entries()` method
+            for (let entry of formData.entries()) {
+                console.log(entry[0] + ': ' + entry[1]);
+            }
+        });
+
+        const autoResizeForm = document.getElementById('autoResizeForm');
+
+        autoResizeForm.addEventListener('submit', function (event) {
+            // Prevent the form from submitting normally
+            event.preventDefault();
+
+            // Create a FormData instance
+            const formData = new FormData(autoResizeForm);
+            const data = Object.fromEntries(formData);
+            data.type = "autoResizeForm";
+            console.log(data);
+            receiveDataFromPopUps(data);
+
+            // You can access the form data entries with the `entries()` method
+            for (let entry of formData.entries()) {
+                console.log(entry[0] + ': ' + entry[1]);
+            }
+
+            closePopup();
+        });
+
+        const autoDistributeForm = document.getElementById('autoDistributeForm');
+
+        autoDistributeForm.addEventListener('submit', function (event) {
+            // Prevent the form from submitting normally
+            event.preventDefault();
+
+            // Create a FormData instance
+            const formData = new FormData(autoDistributeForm);
+            const data = Object.fromEntries(formData);
+            data.formType = "autoDistributeForm"
+            console.log(data);
+            receiveDataFromPopUps(data);
+
+            // You can access the form data entries with the `entries()` method
+            for (let entry of formData.entries()) {
+                console.log(entry[0] + ': ' + entry[1]);
+            }
+
+            closePopup();
+        });
+
+
+    </script>
+</body>
+
+</html>
