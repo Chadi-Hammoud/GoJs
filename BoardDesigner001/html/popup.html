@@ -163,7 +163,7 @@
 
       <div class="form-col">
         <div class="form-group row">
-          <label for="width" class="col-sm-2 col-form-label">Width</label>
+          <label for="width1" class="col-sm-2 col-form-label">Width</label>
           <div class="col-sm-10">
             <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
           </div>
@@ -223,7 +223,7 @@
           </div>
         </div>
       </div>
-      </form>
+    </form>
 
 
   </div>
@@ -247,7 +247,7 @@
 
       <div class="form-group">
         <label for="marginTop">Top</label>
-        <input type="number" class="form-control" id="marginTop" name="marginTop" value=30 required >
+        <input type="number" class="form-control" id="marginTop" name="marginTop" value=30 required>
       </div>
 
       <div class="form-group">
@@ -267,7 +267,7 @@
 
       <div class="form-group">
         <label for="vertical">Vertical</label>
-        <input type="number" class="form-control" id="vertical" name="vertical" value=10 required >
+        <input type="number" class="form-control" id="vertical" name="vertical" value=10 required>
       </div>
 
       <!-- Distribution Section -->
@@ -282,8 +282,8 @@
 
       <div class="form-group">
         <label for="startPoint">Start Point</label>
-        <select class="form-control" id="startPoint" name="startPoint">
-          <option value="top-left">Top-Left</option>
+        <select class="form-control" id="startPoint" name="startPoint" required>
+          <option value="top-left" selected>Top-Left</option>
           <option value="top-right">Top-Right</option>
           <option value="bottom-left">Bottom-Left</option>
           <option value="bottom-right">Bottom-Right</option>
@@ -292,8 +292,8 @@
 
       <div class="form-group">
         <label for="direction">Direction</label>
-        <select class="form-control" id="direction" name="direction">
-          <option value="horizontal">Horizontal</option>
+        <select class="form-control" id="direction" name="direction" required>
+          <option value="horizontal" selected>Horizontal</option>
           <option value="vertical">Vertical</option>
         </select>
       </div>
@@ -311,7 +311,7 @@
 
 <script type="module">
 
-  
+
   document.querySelector('#form0').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);

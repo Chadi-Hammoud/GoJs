@@ -12,7 +12,7 @@ function init() {
   let isVertical = prompt("is vertical?, v ");
 
 
-  function openPopup() {
+  function createConfigNewSlotDialog() {
     // Specify the URL and other options for the popup window
     var popupOptions = 'width=600,height=800,scrollbars=yes';
 
@@ -26,17 +26,18 @@ function init() {
     }
   }
 
-  openPopup();
+  createConfigNewSlotDialog();
 
 
   let $ = go.GraphObject.make;
-  let currentLayout = makeLayout(isVertical === 'v');
+  // let currentLayout = makeLayout(isVertical === 'v');
 
   myDiagram = new go.Diagram("myDiagramDiv",
     {
+
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
-      layout: currentLayout,
+      // layout: currentLayout,
       "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
       "undoManager.isEnabled": true,
       "allowZoom": true,
@@ -99,25 +100,6 @@ function init() {
               stroke: "transparent"
             }),
         ),
-        // dragComputation: function (node, pt, gridpt) {
-        //   // get the shelf group
-        //   var shelfGroup = node.containingGroup;
-        //   if (shelfGroup !== null) {
-        //     // get the shelf group's bounds
-        //     var shelfBounds = shelfGroup.actualBounds;
-        //     // get the node's bounds
-        //     var nodeBounds = node.actualBounds;
-        //     // check if the new location is outside the shelf group
-        //     if (pt.x < shelfBounds.x || pt.y < shelfBounds.y ||
-        //       pt.x + nodeBounds.width > shelfBounds.x + shelfBounds.width ||
-        //       pt.y + nodeBounds.height > shelfBounds.y + shelfBounds.height) {
-        //       // adjust the new location to keep the node inside the shelf group
-        //       pt.x = Math.max(shelfBounds.x, Math.min(pt.x, shelfBounds.x + shelfBounds.width - nodeBounds.width));
-        //       pt.y = Math.max(shelfBounds.y, Math.min(pt.y, shelfBounds.y + shelfBounds.height - nodeBounds.height));
-        //     }
-        //   }
-        //   return pt;
-        // },
 
 
       },
@@ -180,6 +162,10 @@ function init() {
     ),
 
   );
+
+
+
+
 
 
 
@@ -325,7 +311,7 @@ function init() {
   // Add nodes dynamically based on the user input
   let indexSlot = 0;
 
-  function addBoardsFromUserPrompt() {
+  function addSlot() {
 
     // // Get the shelfGroup data
     // var shelfGroupData = myDiagram.model.findNodeDataForKey("shelfGroup");
@@ -333,100 +319,61 @@ function init() {
     // var groupWidth = shelfGroupData.width;
     // var groupHeight = shelfGroupData.height;
 
-    if (isVertical == 'v') {
-      currentLayout = makeLayout(isVertical === 'v');
+    // if (isVertical == 'v') {
+    //   currentLayout = makeLayout(isVertical === 'v');
 
-    } else {
-      currentLayout = makeLayout(!isVertical === 'v');
+    // } else {
+    //   currentLayout = makeLayout(!isVertical === 'v');
 
-    }
+    // }
 
-   
-      myDiagram.layout = currentLayout;
-      myDiagram.layout.invalidateLayout();
-   
 
+    // myDiagram.layout = currentLayout;
+    // myDiagram.layout.invalidateLayout();
+
+    let defaultValue = (startIndex === NaN ? startIndex : 0);
+
+    // for (let i = 1; i <= borderCount; i++) {
+    //   addSlot();
+    // }
+    let tempVal = 0.0;
     for (let i = 1; i <= borderCount; i++) {
+      
+      let dis = 1000.0 / borderCount
       if (isVertical === 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
         myDiagram.model.addNodeData({
-          key: `port${startIndex}`,
-         
+          key: `port${defaultValue}`,
           category: "board",
-          width: 240,
-          height: 600,
-          text: `${startIndex}:${indexSlot}`,
-          location: ""
+          width: 100,
+          height: dis,
+          text: `${defaultValue}:${indexSlot}`,
+          location: `0 ${tempVal}`
         });
+
+
 
       } else {
         myDiagram.model.addNodeData({
           key: `port${startIndex}`,
-         
           category: "board",
-          width: 600,
-          height: 240,
-          text: `${startIndex}:${indexSlot}`,
-          location: ""
+          width: dis,
+          height: 100,
+          text: `${defaultValue}:${indexSlot}`,
+          location: `${tempVal} 0`
         });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
-
       }
-      startIndex++;
+      tempVal += dis;
+      defaultValue++;
     }
 
   }
 
-  addBoardsFromUserPrompt();
-
-  // myDiagram.addDiagramListener("PartResized", e => {
-  //   var resizedPart = e.subject.part;
-  //   // Check if the resized part is a group and has the category "shelf"
-  //   if (resizedPart instanceof go.Group && resizedPart.category === "shelf") {
-  //     myDiagram.startTransaction("move nodes");
-
-  //     // Get the bounds of the group
-  //     var groupBounds = resizedPart.actualBounds;
-  //     let key;
-  //     let data;
-  //     resizedPart.memberParts.each(function (node) {
-  //       if (node instanceof go.Node) {
-  //         key = node.data.key;
-  //         data = myDiagram.model.findNodeDataForKey(key);
-  //         // Get the bounds of the node
-  //         var nodeBounds = node.actualBounds;
-  //         // Get the current location of the node
-  //         var loc = node.position;
-  //         let newLoc = "";
-  //         // Check if the node is outside the group, and if so, adjust its location
-  //         if (loc.x < groupBounds.x || loc.y < groupBounds.y ||
-  //           loc.x + nodeBounds.width > groupBounds.right ||
-  //           loc.y + nodeBounds.height > groupBounds.bottom) {
-  //           // Adjust the location of the node to keep it inside the group
-  //           loc.x = Math.max(groupBounds.x, Math.min(loc.x, groupBounds.right - nodeBounds.width));
-  //           loc.y = Math.max(groupBounds.y, Math.min(loc.y, groupBounds.bottom - nodeBounds.height));
-  //           newLoc = `${loc.x} ${loc.y}`;
-
-  //           myDiagram.model.setDataProperty(data, "location", newLoc);
-  //           node.updateTargetBindings();
-
-  //         }
-  //       }
-  //     });
-
-  //     myDiagram.commitTransaction("move nodes");
-  //   }
-  // });
+  addSlot();
 
 
-
-
-
-  // let openPopupButton = document.createElement('button');
-  // openPopupButton.textContent = 'Open Popup';
-  // openPopupButton.addEventListener('click', openPopup);
-  // document.body.appendChild(openPopupButton);
 
   let slotIndex;
   let indexOnSlot;
@@ -441,16 +388,20 @@ function init() {
   let addSlotIndex;
   let addIndexOnSlot;
 
-  let marginTop;
-  let marginLeft;
-  let marginRight;
-  let marginBottom;
+  let top;
+  let left;
+  let right;
+  let bottom;
 
 
   let horizontal;
   let vertical;
-  let rowsCount
-  let layout;
+  let rows;
+
+  let distribution;
+  let startPoint;
+ 
+  
 
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
@@ -479,25 +430,26 @@ function init() {
         //if form1
         width1 = parseFloat(data.width1, 10);
         height1 = parseFloat(data.height1, 10);
-        UpdateAllNodesSize();
+        autoResizePorts();
       } else if (data.formId == 'form2') {
         addSlotIndex = parseInt(data.addSlotIndex);
         addIndexOnSlot = parseInt(data.addIndexOnSlot);
         checkIndex();
       } else if (data.formId == 'form3') {
-        marginTop = parseInt(data.marginTop);
-        marginRight = parseInt(data.marginRight);
-        marginBottom = parseInt(data.marginBottom);
-        marginLeft = parseInt(data.marginLeft);
+        top = parseInt(data.marginTop);
+        right = parseInt(data.marginRight);
+        bottom = parseInt(data.marginBottom);
+        left = parseInt(data.marginLeft);
 
         horizontal = parseInt(data.horizontal);
         vertical = parseInt(data.vertical);
-        rowsCount = parseInt(data.rowsCount);
+        rows = parseInt(data.rowsCount);
 
-        layout = data.direction;
+        distribution = data.direction;
+        startPoint = data.startPoint;
 
 
-        autoDistributionNodes();
+        autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
 
       }
 
@@ -537,23 +489,44 @@ function init() {
 
   }
 
+  function updateBoardTypePortFromModel(data, x, y) {
+    var viewportBounds = myDiagram.viewportBounds;
+    var diagramWidth = viewportBounds.width;
+    var diagramHeight = viewportBounds.height;
 
-  function UpdateAllNodesSize() {
-    // Iterate over all nodes
+    let location = `${parseInt(x * diagramWidth / 1000)} ${parseInt(y * diagramHeight / 1000)}`;
+    let width = parseInt(data.width * diagramWidth / 1000);
+    let height = parseInt(data.height * diagramHeight / 1000);
+    myDiagram.model.setDataProperty(data, "width", width);
+    myDiagram.model.setDataProperty(data, "height", height);
+
+    myDiagram.model.setDataProperty(data, "location", location);
+  }
+
+  function autoResizePorts() {
+    let x, y;
     myDiagram.nodes.each(function (node) {
       // Start a transaction
       myDiagram.startTransaction('update size');
 
       var key = node.key;
       var data = myDiagram.model.findNodeDataForKey(key);
-
+      let parts = data.location.split(' ');
+      x = parts[0];
+      y = parts[1];
       myDiagram.model.setDataProperty(data, "width", width1);
       myDiagram.model.setDataProperty(data, "height", height1);
+
+      updateBoardTypePortFromModel(data, x, y);
+
+      console.log(data);
       node.updateTargetBindings();
       // Commit the transaction
       myDiagram.commitTransaction('update size');
 
     });
+
+
 
 
   }
@@ -588,64 +561,68 @@ function init() {
 
   }
 
-  function autoDistributionNodes() {
-    // Clear existing layout
-    //myDiagram.layout = null;
+  var viewportBounds = myDiagram.viewportBounds;
+  var diagramWidth = viewportBounds.width;
+  var diagramHeight = viewportBounds.height;
 
-    // Set up new layout based on user input
-    // if (layout === 'vertical') {
-    //   myDiagram.layout = makeLayout(true);
-    // } else {
-    //   myDiagram.layout = makeLayout(false);
-    // }
+  function updateBoardTypePort(x, y, portWidth, portHeight, data){
+    let xPercentage = ((parseFloat((x * 1000) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * 1000) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * 1000) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * 1000) / diagramHeight));
 
-    var viewportBounds = myDiagram.viewportBounds;
-    var diagramWidth = viewportBounds.width;
-    var diagramHeight = viewportBounds.height;
+    let location = `${xPercentage} ${yPercentage}`;
+    myDiagram.model.setDataProperty(data, "location", location);
+    myDiagram.model.setDataProperty(data, "width", widthPercentage);
+    myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
-    // Iterate over all nodes
-    myDiagram.nodes.each(function (node) {
-      // Start a transaction
-      myDiagram.startTransaction('autoDistributionNodes');
+  }
+  function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
+    if (borderCount > 0) {
+      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(borderCount) / nbRows));
+      let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
+      let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
+      let i =0;
+      // Iterate over all nodes
+      myDiagram.nodes.each(function (node) {
+        
+        var key = node.key;
+        var data = myDiagram.model.findNodeDataForKey(key);
 
-      var key = node.key;
-      var data = myDiagram.model.findNodeDataForKey(key);
+        let x = 0, y = 0;
 
-      // Update marginLeft, marginTop, marginRight, and marginBottom
-      myDiagram.model.setDataProperty(data, "marginLeft", marginLeft);
-      myDiagram.model.setDataProperty(data, "marginTop", marginTop);
-      myDiagram.model.setDataProperty(data, "marginRight", marginRight);
-      myDiagram.model.setDataProperty(data, "marginBottom", marginBottom);
+        // default calculation for top left
+        let columnIndex = distribution === "horizontal" ? parseInt(((i % nbColumns) + 1)) : parseInt(((i / nbRows) + 1));
+        let rowIndex = distribution === "horizontal" ? parseInt(((i / nbColumns) + 1)) : parseInt(((i % nbRows) + 1));
 
-      // Update width and height based on layout direction
-      if (isVertical == 'v') {
+        if ("top-right"=== startPoint) {
+          columnIndex = nbColumns - columnIndex + 1;
+        }
+        else if ("bottom-left"=== startPoint) {
+          rowIndex = nbRows - rowIndex + 1;
+        }
+        else if ("bottom-right"=== startPoint) {
+          columnIndex = nbColumns - columnIndex + 1;
+          rowIndex = nbRows - rowIndex + 1;
+        }
 
-        myDiagram.model.setDataProperty(data, "height", (diagramHeight - 10) - marginTop - marginBottom);
-
-        myDiagram.model.setDataProperty(data, "width", (diagramWidth / borderCount) - 13 - marginLeft - marginRight);
-      } else {
-
-        myDiagram.model.setDataProperty(data, "height", diagramWidth - 30 - marginTop - marginBottom);
-
-        myDiagram.model.setDataProperty(data, "width", (diagramHeight / borderCount) - 13 - marginLeft - marginRight);
-      }
+        x = left + (columnIndex - 1) * (portWidth + horizontal);
+        y = top + (rowIndex - 1) * (portHeight + vertical);
 
 
+        updateBoardTypePort(x, y, portWidth, portHeight, data);
 
-      node.updateTargetBindings();
+        i++;
+        node.updateTargetBindings();
 
-      // Commit the transaction
-      myDiagram.commitTransaction('autoDistributionNodes');
-    });
-
-    // Adjust spacing between nodes horizontally and vertically
-    myDiagram.layout.spacing = new go.Size(horizontal, vertical);
-    if (layout === 'vertical') {
-      currentLayout = makeLayout(true, rowsCount);
-    } else {
-      currentLayout = makeLayout(false, rowsCount);
+      });
     }
-    myDiagram.layout = currentLayout;
+
+    }
+  function autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
+  
+    applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+
   }
 
 
