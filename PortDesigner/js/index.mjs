@@ -64,100 +64,105 @@ function init() {
     return layout;
   }
 
-
   myDiagram.nodeTemplateMap.add("board",
-    $(go.Node, "Auto",
-      new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
-      new go.Binding("visible", "visible", null, null),
-
-      {
-        resizable: true,
-        resizeObjectName: "PANEL",
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        selectionAdorned: false,
-        resizeAdornmentTemplate: $(go.Adornment, "Spot",
-          $(go.Placeholder),
-          $(go.Shape, // the handle
+        $(go.Node, "Auto",
             {
-              alignment: go.Spot.TopLeft,
-              cursor: "nw-resize",
-              desiredSize: new go.Size(6, 6),
-              fill: "transparent",
-              stroke: "transparent",
+                resizable: true,
+                resizeObjectName: "PANEL", // Set resizeObjectName to the name of the panel
+                layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+                selectionAdorned: false,
+                resizeAdornmentTemplate: $(go.Adornment, "Spot",
+                    $(go.Placeholder),
+                    $(go.Shape, // the handle
+                        {
+                            alignment: go.Spot.TopLeft,
+                            cursor: "nw-resize",
+                            desiredSize: new go.Size(6, 6),
+                            fill: "transparent",
+                            stroke: "transparent",
 
-            }),
-          $(go.Shape, // the handle
-            {
-              alignment: go.Spot.TopRight,
-              cursor: "ne-resize",
-              desiredSize: new go.Size(6, 6),
-              fill: "transparent",
-              stroke: "transparent"
-            }),
-        ),
+                        }),
+                    $(go.Shape, // the handle
+                        {
+                            alignment: go.Spot.TopRight,
+                            cursor: "ne-resize",
+                            desiredSize: new go.Size(6, 6),
+                            fill: "transparent",
+                            stroke: "transparent"
+                        })
+                ),
+                click: (e, obj) => {
+                    selectedNode = obj.part.data;
+                    sendDataToPanel(selectedNode);
+                    console.log(e, obj)
+                },
+                mouseDrop: (e, node) => {
+                    sendDataToPanel(node.part.data);
+                    console.log(node.part.data)
+                },
+
+            },
+            new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+            new go.Binding("width", "width", w => w, null),
+            new go.Binding("height", "height", w => w, null),
 
 
-      },
+            $(go.Panel, "Vertical",
+                new go.Binding("width", "width", w => w, null),
+                new go.Binding("height", "height", w => w, null),
+                // new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
+                // new go.Binding("marginTop", "marginTop").makeTwoWay(),
+                // new go.Binding("marginRight", "marginRight").makeTwoWay(),
+                // new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
+                {
+                    name: "PANEL",
+                },
+                $(go.Panel, "Horizontal",
+                    { height: 20 },
+                    $(go.Shape, "Rectangle",
+                        {
+                            fill: "black",
+                            width: 10,
+                        }
+                    ),
+                    $(go.Panel, "Auto",
+                        $(go.Shape, "Rectangle",
+                            new go.Binding("width", "width", v => (v) - 20),
+                            {
+                                fill: "white",
+                                stretch: go.GraphObject.Fill,
+                            }
+                        ),
+                        $(go.TextBlock, "",
+                            {
+                                margin: 5,
+                                editable: true,
+                                alignment: go.Spot.Left,
+                            },
+                            new go.Binding("text", "text").makeTwoWay()
+                        )
+                    ),
+                    $(go.Shape, "Rectangle",
+                        {
+                            fill: "black",
+                            width: 10,
+                        }
+                    ),
+                ),
+                $(go.Picture, {
+                    background: "white",
+                    name: "PANEL",
+                    stretch: go.GraphObject.Fill,
+                },
+                    new go.Binding("source", "source", null, null),
+                    new go.Binding("fill", "color"),
+                    new go.Binding("width", "width", w => w).makeTwoWay(),
+                    new go.Binding("height", "height", w => w).makeTwoWay(),
+                )
 
-      $(go.Panel, "Vertical",
 
-        new go.Binding("width", "width", null, null),
-        new go.Binding("height", "height", null, null),
-        new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
-        new go.Binding("marginTop", "marginTop").makeTwoWay(),
-        new go.Binding("marginRight", "marginRight").makeTwoWay(),
-        new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
-
-        {
-          name: "PANEL",
-        },
-        $(go.Panel, "Horizontal",
-          new go.Binding("width", "width", null, null),
-          { height: 18 },
-          $(go.Shape, "Rectangle",
-            {
-              fill: "black",
-              width: 10,
-            }
-          ),
-          $(go.Panel, "Auto",
-            $(go.Shape, "Rectangle",
-              new go.Binding("width", "width", v => v - 20),
-              {
-                fill: "white",
-                stretch: go.GraphObject.Fill,
-              }
-            ),
-            $(go.TextBlock, "",
-              {
-                name: "boardTextblock",
-                margin: 2,
-                alignment: go.Spot.Left,
-              },
-              new go.Binding("text", "text").makeTwoWay()
             )
-          ),
-          $(go.Shape, "Rectangle",
-            {
-              fill: "black",
-              width: 10,
-            }
-          )
-        ),
-
-        $(go.Shape, "Rectangle",
-          new go.Binding("height", "height", null, null),
-          {
-            height: 100,
-            fill: "gray",
-            stretch: go.GraphObject.Fill,
-          }
-        )
-      ),
-    ),
-
-  );
-
+        ));
 
 
 
@@ -333,7 +338,7 @@ function init() {
     // }
     let tempVal = 0.0;
     for (let i = 1; i <= borderCount; i++) {
-
+      
       let dis = 1000.0 / borderCount
       if (isVertical === 'v') {
 
@@ -345,7 +350,7 @@ function init() {
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
-          visible: true,
+          source: "../images/port.svg",
         });
 
 
@@ -357,8 +362,7 @@ function init() {
           width: dis,
           height: 100,
           text: `${defaultValue}:${indexSlot}`,
-          location: `${tempVal} 0`,
-          visible: true,
+          location: `${tempVal} 0`
         });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
       }
@@ -371,11 +375,6 @@ function init() {
   addSlot();
 
 
-  let node;
-  myDiagram.addDiagramListener("ChangedSelection", function (e) {
-    // Get the selected node
-    node = e.subject.first();
-  });
 
   let slotIndex;
   let indexOnSlot;
@@ -402,10 +401,8 @@ function init() {
 
   let distribution;
   let startPoint;
-  let isbackMode;
-  let rearSlotCB;
-  let backSlot = [];
-
+ 
+  
 
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
@@ -427,7 +424,7 @@ function init() {
         console.log("received message");
         // Use the data
         console.log(data);
-        updateAttributesFromFields();
+        updateProperties();
 
       } else if (data.formId == 'form1') {
 
@@ -455,27 +452,6 @@ function init() {
 
         autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
 
-      } else if (data.formId == 'displayBackMode') {
-
-        isbackMode = data.displayBackModeChB === "on" ? true : false;
-        displayBackMode(isbackMode);
-
-      } else if (data.formId == 'backSlot') {
-        rearSlotCB = data.backSLotChB === "on" ? true : false;
-
-        if (rearSlotCB) {
-          if (node instanceof go.Node) {
-            var type = node.data.category;
-            if (type === "board") {
-              backSlot.push(node.key);
-            }
-          }
-         // displayBackMode(rearSlotCB);
-        }
-
-
-
-
       }
 
     }
@@ -486,7 +462,7 @@ function init() {
 
 
 
-  function updateAttributesFromFields() {
+  function updateProperties() {
 
 
     let nodeText = slotIndex + ":" + indexOnSlot;
@@ -501,18 +477,14 @@ function init() {
 
         var key = node.key;
         var data = myDiagram.model.findNodeDataForKey(key);
-        let location = `${X} ${Y}`;
 
         myDiagram.model.setDataProperty(data, "width", width);
         myDiagram.model.setDataProperty(data, "height", height);
-        myDiagram.model.setDataProperty(data, "location", location);
-
-
+        node.location = new go.Point(X, Y);
         node.updateTargetBindings();
         // Commit the transaction
         myDiagram.commitTransaction('update properties');
       }
-      displayBackMode(isbackMode);
     });
 
 
@@ -547,6 +519,7 @@ function init() {
       myDiagram.model.setDataProperty(data, "height", height1);
 
       updateBoardTypePortFromModel(data, x, y);
+      console.log(data.source);
 
       console.log(data);
       node.updateTargetBindings();
@@ -594,7 +567,7 @@ function init() {
   var diagramWidth = viewportBounds.width;
   var diagramHeight = viewportBounds.height;
 
-  function updateBoardTypePort(x, y, portWidth, portHeight, data) {
+  function updateBoardTypePort(x, y, portWidth, portHeight, data){
     let xPercentage = ((parseFloat((x * 1000) / diagramWidth)));
     let yPercentage = ((parseFloat(y * 1000) / diagramHeight));
     let widthPercentage = ((parseFloat(portWidth * 1000) / diagramWidth));
@@ -611,10 +584,10 @@ function init() {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(borderCount) / nbRows));
       let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
       let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
-      let i = 0;
+      let i =0;
       // Iterate over all nodes
       myDiagram.nodes.each(function (node) {
-
+        
         var key = node.key;
         var data = myDiagram.model.findNodeDataForKey(key);
 
@@ -624,13 +597,13 @@ function init() {
         let columnIndex = distribution === "horizontal" ? parseInt(((i % nbColumns) + 1)) : parseInt(((i / nbRows) + 1));
         let rowIndex = distribution === "horizontal" ? parseInt(((i / nbColumns) + 1)) : parseInt(((i % nbRows) + 1));
 
-        if ("top-right" === startPoint) {
+        if ("top-right"=== startPoint) {
           columnIndex = nbColumns - columnIndex + 1;
         }
-        else if ("bottom-left" === startPoint) {
+        else if ("bottom-left"=== startPoint) {
           rowIndex = nbRows - rowIndex + 1;
         }
-        else if ("bottom-right" === startPoint) {
+        else if ("bottom-right"=== startPoint) {
           columnIndex = nbColumns - columnIndex + 1;
           rowIndex = nbRows - rowIndex + 1;
         }
@@ -647,57 +620,13 @@ function init() {
       });
     }
 
-  }
+    }
   function autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
-
+  
     applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
 
   }
 
-  function displayBackMode(isbackMode) {
-    let backS ;
-    myDiagram.nodes.each(function (node) {
-
-      var key = node.key;
-      var data = myDiagram.model.findNodeDataForKey(key);
-
-      if (backSlot.includes(key)) {
-        backS = 0;
-        if (isbackMode) {
-          if (backS == 0)
-            myDiagram.model.setDataProperty(data, "visible", false);
-        }
-        else {
-          if (backS == 0)
-            myDiagram.model.setDataProperty(data, "visible", true)
-        }
-      }else{
-        backS = null;
-        if (backS == null){
-          if (isbackMode) {
-            myDiagram.model.setDataProperty(data, "visible", false)
-          }else{
-            myDiagram.model.setDataProperty(data, "visible", true)
-          }
-         
-        }
-      }
-
-
-    })
-  }
-  displayBackMode(false);
-
-  // let backMode = document.getElementById("displayBackMode");
-  // backMode.addEventListener('change', function (event) {
-
-  //   if (event.target.checked) {
-  //     displayBackMode(true);
-
-  //   } else {
-  //     displayBackMode(false);
-  //   }
-  // });
 
 
 

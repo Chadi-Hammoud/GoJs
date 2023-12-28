@@ -80,7 +80,7 @@
 
 <body>
   <div id="" class="container">
-    <form id="displayBackMode">
+    <form id="form0">
       <div class="form-group">
         <legend>
           <fieldset>
@@ -88,15 +88,10 @@
           </fieldset>
         </legend>
         <div class="form-check">
-          <input type="checkbox" id="displayBackModeChB" name="displayBackModeChB" class="form-check-input">
+          <input type="checkbox" class="form-check-input">
           <label class="form-check-label">Back Mode</label>
-          <input type="submit">
-
         </div>
       </div>
-    </form>
-
-    <form id="backSlot">
 
       <div class="form-group">
         <legend>
@@ -105,15 +100,10 @@
           </fieldset>
         </legend>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="backSLotChB" name="backSLotChB" >
+          <input type="checkbox" class="form-check-input">
           <label class="form-check-label">Back Slot</label>
-          <input type="submit">
         </div>
       </div>
-    </form>
-
-    <form id="form0">
-
 
       <div class="form-group">
         <label>Choose slot index:</label>
@@ -319,32 +309,7 @@
   <div class="overlay" id="overlay"></div>
 </body>
 
-
-
-
 <script type="module">
-
-  document.querySelector('#displayBackMode').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
-    data.formId = 'displayBackMode';
-    window.opener.postMessage(data, '*');
-    
-  });
-
-  document.querySelector('#backSlot').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
-    data.formId = 'backSlot';
-    window.opener.postMessage(data, '*');
-    
-  });
-
-
 
 
   document.querySelector('#form0').addEventListener('submit', function (event) {
