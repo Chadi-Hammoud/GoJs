@@ -69,6 +69,7 @@ function init() {
     $(go.Node, "Auto",
       new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
       new go.Binding("visible", "visible", null, null),
+      new go.Binding("rear", "rear", null, null),
 
       {
         resizable: true,
@@ -341,11 +342,12 @@ function init() {
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
           category: "board",
-          width: 100,
+          width: 1000,
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
           visible: true,
+          rear: null || 0,
         });
 
 
@@ -355,10 +357,11 @@ function init() {
           key: `port${startIndex}`,
           category: "board",
           width: dis,
-          height: 100,
+          height: 1000,
           text: `${defaultValue}:${indexSlot}`,
           location: `${tempVal} 0`,
           visible: true,
+          rear: null || 0,
         });
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
       }
@@ -371,11 +374,6 @@ function init() {
   addSlot();
 
 
-  let node;
-  myDiagram.addDiagramListener("ChangedSelection", function (e) {
-    // Get the selected node
-    node = e.subject.first();
-  });
 
   let slotIndex;
   let indexOnSlot;
@@ -403,9 +401,14 @@ function init() {
   let distribution;
   let startPoint;
   let isbackMode;
-  let rearSlotCB;
-  let backSlot = [];
+  let rear;
 
+
+  let node;
+  myDiagram.addDiagramListener("ChangedSelection", function (e) {
+    // Get the selected node
+    node = e.subject.first();
+  });
 
   window.addEventListener('message', function (event) {
     // Optional: Check the origin of the data!
@@ -461,17 +464,20 @@ function init() {
         displayBackMode(isbackMode);
 
       } else if (data.formId == 'backSlot') {
-        rearSlotCB = data.backSLotChB === "on" ? true : false;
+        rear = data.backSLotChB === "on" ? 1 : 0;
 
-        if (rearSlotCB) {
-          if (node instanceof go.Node) {
-            var type = node.data.category;
-            if (type === "board") {
-              backSlot.push(node.key);
-            }
+
+        if (node instanceof go.Node) {
+          var type = node.data.category;
+          if (type === "board") {
+            node.data.rear = rear;
+            data.backSLotChB = "off";
+            isbackMode = data.displayBackModeChB === "on" ? true : false;
+            displayBackMode(isbackMode);
           }
-         // displayBackMode(rearSlotCB);
         }
+        // displayBackMode(rearSlotCB);
+
 
 
 
@@ -581,7 +587,16 @@ function init() {
       myDiagram.startTransaction('checkIndex');
 
       // Add a new node
-      myDiagram.model.addNodeData({ key: `port${startIndex}`, category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
+      myDiagram.model.addNodeData({
+        key: `port${startIndex}`,
+        category: "board",
+        width: 120,
+        height: 120,
+        text: `${addSlotIndex}:${addIndexOnSlot}`,
+        location: `0 0`,
+        visible: true,
+        rear: null || 0,
+      });
       //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
       startIndex++;
       // Commit the transaction
@@ -655,33 +670,31 @@ function init() {
   }
 
   function displayBackMode(isbackMode) {
-    let backS ;
+    let backS;
     myDiagram.nodes.each(function (node) {
 
       var key = node.key;
       var data = myDiagram.model.findNodeDataForKey(key);
 
-      if (backSlot.includes(key)) {
-        backS = 0;
-        if (isbackMode) {
-          if (backS == 0)
-            myDiagram.model.setDataProperty(data, "visible", false);
+      let bacKS = data.rear;
+
+      if (isbackMode) {
+        if (bacKS == 0 || bacKS == null) {
+          myDiagram.model.setDataProperty(data, "visible", false);
+
+        } else {
+          myDiagram.model.setDataProperty(data, "visible", true);
         }
-        else {
-          if (backS == 0)
-            myDiagram.model.setDataProperty(data, "visible", true)
-        }
-      }else{
-        backS = null;
-        if (backS == null){
-          if (isbackMode) {
-            myDiagram.model.setDataProperty(data, "visible", false)
-          }else{
-            myDiagram.model.setDataProperty(data, "visible", true)
-          }
-         
+      } else {
+        if (bacKS == null || bacKS == 0) {
+          myDiagram.model.setDataProperty(data, "visible", true);
+        } else if (bacKS == 1) {
+          myDiagram.model.setDataProperty(data, "visible", false);
+        } else {
+          myDiagram.model.setDataProperty(data, "visible", true);
         }
       }
+
 
 
     })
