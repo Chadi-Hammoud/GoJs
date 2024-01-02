@@ -96,7 +96,9 @@
       </div>
     </form>
 
-    <form id="backSlot">
+
+
+    <form id="form0">
 
       <div class="form-group">
         <legend>
@@ -105,16 +107,10 @@
           </fieldset>
         </legend>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="backSLotChB" name="backSLotChB" >
+          <input type="checkbox" class="form-check-input" id="backSLotChB" name="backSLotChB">
           <label class="form-check-label">Back Slot</label>
-          <input type="submit">
         </div>
       </div>
-    </form>
-
-    <form id="form0">
-
-
       <div class="form-group">
         <label>Choose slot index:</label>
         <input type="number" class="form-control" id="slotIndex" name="slotIndex">
@@ -331,17 +327,7 @@
     const data = Object.fromEntries(formData);
     data.formId = 'displayBackMode';
     window.opener.postMessage(data, '*');
-    
-  });
 
-  document.querySelector('#backSlot').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
-    data.formId = 'backSlot';
-    window.opener.postMessage(data, '*');
-    
   });
 
 
@@ -353,6 +339,7 @@
     const data = Object.fromEntries(formData);
     data.formId = 'form0';
     window.opener.postMessage(data, '*');
+    console.log("submitted");
   });
 
   document.querySelector('#form1').addEventListener('submit', function (event) {

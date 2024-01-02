@@ -336,7 +336,7 @@ function init() {
     for (let i = 1; i <= borderCount; i++) {
 
       let dis = 1000.0 / borderCount
-      if (isVertical === 'v') {
+      if (isVertical !== 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
         myDiagram.model.addNodeData({
@@ -404,10 +404,10 @@ function init() {
   let rear;
 
 
-  let node;
+  let selectedNode;
   myDiagram.addDiagramListener("ChangedSelection", function (e) {
     // Get the selected node
-    node = e.subject.first();
+    selectedNode = e.subject.first();
   });
 
   window.addEventListener('message', function (event) {
@@ -430,7 +430,10 @@ function init() {
         console.log("received message");
         // Use the data
         console.log(data);
-        updateAttributesFromFields();
+
+
+
+        updateAttributesFromFields(data);
 
       } else if (data.formId == 'form1') {
 
@@ -463,25 +466,6 @@ function init() {
         isbackMode = data.displayBackModeChB === "on" ? true : false;
         displayBackMode(isbackMode);
 
-      } else if (data.formId == 'backSlot') {
-        rear = data.backSLotChB === "on" ? 1 : 0;
-
-
-        if (node instanceof go.Node) {
-          var type = node.data.category;
-          if (type === "board") {
-            node.data.rear = rear;
-            data.backSLotChB = "off";
-            isbackMode = data.displayBackModeChB === "on" ? true : false;
-            displayBackMode(isbackMode);
-          }
-        }
-        // displayBackMode(rearSlotCB);
-
-
-
-
-
       }
 
     }
@@ -492,7 +476,7 @@ function init() {
 
 
 
-  function updateAttributesFromFields() {
+  function updateAttributesFromFields(formData) {
 
 
     let nodeText = slotIndex + ":" + indexOnSlot;
@@ -518,8 +502,21 @@ function init() {
         // Commit the transaction
         myDiagram.commitTransaction('update properties');
       }
-      displayBackMode(isbackMode);
-    });
+
+    })
+
+    rear = formData.backSLotChB === "on" ? 1 : 0;
+
+
+    if (selectedNode instanceof go.Node) {
+      var type = selectedNode.data.category;
+      if (type === "board") {
+        selectedNode.data.rear = rear;
+        formData.backSLotChB = "off";
+        isbackMode = formData.displayBackModeChB === "on" ? true : false;
+        displayBackMode(isbackMode);
+      }
+    };
 
 
   }
@@ -560,9 +557,6 @@ function init() {
       myDiagram.commitTransaction('update size');
 
     });
-
-
-
 
   }
 
@@ -670,7 +664,7 @@ function init() {
   }
 
   function displayBackMode(isbackMode) {
-    let backS;
+
     myDiagram.nodes.each(function (node) {
 
       var key = node.key;
@@ -697,7 +691,9 @@ function init() {
 
 
 
-    })
+    },
+    )
+    return;
   }
   displayBackMode(false);
 
@@ -714,10 +710,8 @@ function init() {
 
 
 
-  // Add a listener for the SelectionChanged event
-  myDiagram.addDiagramListener("ChangedSelection", function (e) {
-    // Get the selected node
 
+  function nodeMoved(e) {
     var node = e.subject.first();
 
     // If a node is selected
@@ -751,9 +745,17 @@ function init() {
         console.log(data);
       }
     }
+  }
+
+  // Add a listener for the ChangedSelection event
+  myDiagram.addDiagramListener("ChangedSelection", function (e) {
+    nodeMoved(e);
+  });
 
 
-
+  // Add a listener for the SelectionChanged event
+  myDiagram.addDiagramListener("SelectionMoved", function (e) {
+    nodeMoved(e);
   });
 
 
