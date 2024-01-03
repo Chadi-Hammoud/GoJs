@@ -739,222 +739,276 @@ function init() {
     }
   }
 
-  // Add a listener for the ChangedSelection event
-  myDiagram.addDiagramListener("ChangedSelection", function (e) {
-    nodeMoved(e);
-  });
+
+ 
+
+ // Add a listener for the ChangedSelection event
+ myDiagram.addDiagramListener("ChangedSelection", function (e) {
+  // nodeMoved(e);
+ });
 
 
-  // Add a listener for the SelectionChanged event
-  myDiagram.addDiagramListener("SelectionMoved", function (e) {
-    nodeMoved(e);
-  });
+ // Add a listener for the SelectionChanged event
+ myDiagram.addDiagramListener("SelectionMoved", function (e) {
+   nodeMoved(e);
+ });
 
 
-  let selectedNodes = [];
+ let selectedNodes = [];
 
 
-  function alignXSelectedHandler(e) {
-    // Get the current selection
-    let selection = e.diagram.selection;
+ function alignXSelectedHandler(e) {
+   // Get the current selection
+   let selection = e.diagram.selection;
 
-    // Iterate over the selection
-    selection.each(function (part) {
-      if (part instanceof go.Node) {
-        selectedNodes.push(part);
+   // Iterate over the selection
+   selection.each(function (part) {
+     if (part instanceof go.Node) {
+       selectedNodes.push(part);
 
-      }
-    });
+     }
+   });
 
-    let first;
-    let destination;
-    let firstData;
-    let distinationData;
-    let partsFirst;
-    let xFirst;
-    let partsDestination;
-    let yDestination;
-    let location;
-
-
-
-    if (selectedNodes.length === 2) {
-      first = selectedNodes[0].key;
-      destination = selectedNodes[1].key;
-
-      firstData = myDiagram.model.findNodeDataForKey(first);
-      distinationData = myDiagram.model.findNodeDataForKey(destination);
-
-      partsFirst = firstData.location.split(' ');
-      xFirst = partsFirst[0];
-
-      partsDestination = distinationData.location.split(' ');
-      yDestination = partsDestination[1];
-
-
-      location = `${xFirst} ${yDestination}`
-      myDiagram.model.setDataProperty(distinationData, "location", location);
-
-
-      myDiagram.clearSelection();
-      selectedNodes = [];
-    }
-
-  }
-
-
-  let alignXSelected = document.getElementById("alignXSelected");
-  alignXSelected.addEventListener('click', function () {
-    myDiagram.addDiagramListener("ChangedSelection", alignXSelectedHandler);
-  });
-
-
-  function alignYSelectedHandler(e) {
-    // Get the current selection
-    let selection = e.diagram.selection;
-
-    // Iterate over the selection
-    selection.each(function (part) {
-      if (part instanceof go.Node) {
-        selectedNodes.push(part);
-
-      }
-    });
-
-    let first;
-    let destination;
-    let firstData;
-    let distinationData;
-    let partsFirst;
-    let yFirst;
-    let partsDestination;
-    let xDestination;
-    let location;
+   let first;
+   let destination;
+   let firstData;
+   let distinationData;
+   let partsFirst;
+   let xFirst;
+   let partsDestination;
+   let yDestination;
+   let location;
 
 
 
-    if (selectedNodes.length === 2) {
-      first = selectedNodes[0].key;
-      destination = selectedNodes[1].key;
+   if (selectedNodes.length === 2) {
+     first = selectedNodes[0].key;
+     destination = selectedNodes[1].key;
 
-      firstData = myDiagram.model.findNodeDataForKey(first);
-      distinationData = myDiagram.model.findNodeDataForKey(destination);
+     firstData = myDiagram.model.findNodeDataForKey(first);
+     distinationData = myDiagram.model.findNodeDataForKey(destination);
 
-      partsFirst = firstData.location.split(' ');
-      yFirst = partsFirst[1];
+     partsFirst = firstData.location.split(' ');
+     xFirst = partsFirst[0];
 
-      partsDestination = distinationData.location.split(' ');
-      xDestination = partsDestination[0];
+     partsDestination = distinationData.location.split(' ');
+     yDestination = partsDestination[1];
 
 
-      location = `${xDestination} ${yFirst}`
-      myDiagram.model.setDataProperty(distinationData, "location", location);
+     location = `${xFirst} ${yDestination}`
+     myDiagram.model.setDataProperty(distinationData, "location", location);
 
-      myDiagram.clearSelection();
-      selectedNodes = [];
-    }
 
-  }
+     myDiagram.clearSelection();
+     selectedNodes = [];
+   }
 
-  let alignYSelected = document.getElementById("alignYSelected");
-  alignYSelected.addEventListener('click', function () {
-    myDiagram.addDiagramListener("ChangedSelection", alignYSelectedHandler);
-  });
+ }
 
-  // Define the revertSelected function
-  function revertSelectedHandler(e) {
-    // Get the current selection
-    var node = e.subject.first();
 
-    let destination;
-    let destinationData;
-    let partsDestination;
-    let yDestination;
-    let location;
-    let xDestination;
-    let height;
-    let width;
+ let alignXSelected = document.getElementById("alignXSelected");
+ alignXSelected.addEventListener('click', function () {
+   myDiagram.addDiagramListener("ChangedSelection", alignXSelectedHandler);
+ });
 
-    // If a node is selected
-    if (node instanceof go.Node) {
-      var type = node.data.category;
-      if (type === "board") {
-        destination = node.data.key;
 
-        destinationData = myDiagram.model.findNodeDataForKey(destination);
+ function alignYSelectedHandler(e) {
+   // Get the current selection
+   let selection = e.diagram.selection;
 
-        var viewportBounds = myDiagram.viewportBounds;
-        var diagramWidth = viewportBounds.width;
-        var diagramHeight = viewportBounds.height;
+   // Iterate over the selection
+   selection.each(function (part) {
+     if (part instanceof go.Node) {
+       selectedNodes.push(part);
 
-        partsDestination = destinationData.location.split(' ');
-        xDestination = partsDestination[0];
-        yDestination = partsDestination[1];
+     }
+   });
 
-        location = `${(yDestination * diagramWidth) / diagramHeight} ${(xDestination * diagramHeight) / diagramWidth}`;
-        width = (destinationData.height * diagramWidth) / diagramHeight;
-        height = (destinationData.width * diagramHeight) / diagramWidth;
+   let first;
+   let destination;
+   let firstData;
+   let distinationData;
+   let partsFirst;
+   let yFirst;
+   let partsDestination;
+   let xDestination;
+   let location;
 
-        myDiagram.model.setDataProperty(destinationData, "location", location);
-        myDiagram.model.setDataProperty(destinationData, "width", width);
-        myDiagram.model.setDataProperty(destinationData, "height", height);
 
-        myDiagram.clearSelection();
-        selectedNodes = [];
-      }
-    }
-  }
 
-  // Add the listener using the defined function
-  let revertSelected = document.getElementById("revertSelected");
-  revertSelected.addEventListener('click', function () {
-    myDiagram.addDiagramListener("ChangedSelection", revertSelectedHandler);
-  });
+   if (selectedNodes.length === 2) {
+     first = selectedNodes[0].key;
+     destination = selectedNodes[1].key;
+
+     firstData = myDiagram.model.findNodeDataForKey(first);
+     distinationData = myDiagram.model.findNodeDataForKey(destination);
+
+     partsFirst = firstData.location.split(' ');
+     yFirst = partsFirst[1];
+
+     partsDestination = distinationData.location.split(' ');
+     xDestination = partsDestination[0];
+
+
+     location = `${xDestination} ${yFirst}`
+     myDiagram.model.setDataProperty(distinationData, "location", location);
+
+     myDiagram.clearSelection();
+     selectedNodes = [];
+   }
+
+ }
+
+ let alignYSelected = document.getElementById("alignYSelected");
+ alignYSelected.addEventListener('click', function () {
+   myDiagram.addDiagramListener("ChangedSelection", alignYSelectedHandler);
+ });
+
+ // Define the revertSelected function
+ function revertSelectedHandler(e) {
+   // Get the current selection
+   var node = e.subject.first();
+
+   let destination;
+   let destinationData;
+   let partsDestination;
+   let yDestination;
+   let location;
+   let xDestination;
+   let height;
+   let width;
+
+   // If a node is selected
+   if (node instanceof go.Node) {
+     var type = node.data.category;
+     if (type === "board") {
+       destination = node.data.key;
+
+       destinationData = myDiagram.model.findNodeDataForKey(destination);
+
+       var viewportBounds = myDiagram.viewportBounds;
+       var diagramWidth = viewportBounds.width;
+       var diagramHeight = viewportBounds.height;
+
+       partsDestination = destinationData.location.split(' ');
+       xDestination = partsDestination[0];
+       yDestination = partsDestination[1];
+
+       location = `${(yDestination * diagramWidth) / diagramHeight} ${(xDestination * diagramHeight) / diagramWidth}`;
+       width = (destinationData.height * diagramWidth) / diagramHeight;
+       height = (destinationData.width * diagramHeight) / diagramWidth;
+
+       myDiagram.model.setDataProperty(destinationData, "location", location);
+       myDiagram.model.setDataProperty(destinationData, "width", width);
+       myDiagram.model.setDataProperty(destinationData, "height", height);
+
+       myDiagram.clearSelection();
+       selectedNodes = [];
+     }
+   }
+ }
+
+ // Add the listener using the defined function
+ let revertSelected = document.getElementById("revertSelected");
+ revertSelected.addEventListener('click', function () {
+   myDiagram.addDiagramListener("ChangedSelection", revertSelectedHandler);
+ });
 
 
 function setWidthSelectedHandler(e){
-  let selection = e.diagram.selection;
+ let selection = e.diagram.selection;
 
-  // Iterate over the selection
-  selection.each(function (part) {
-    if (part instanceof go.Node) {
-      selectedNodes.push(part);
+ // Iterate over the selection
+ selection.each(function (part) {
+   if (part instanceof go.Node) {
+     selectedNodes.push(part);
 
-    }
-  });
+   }
+ });
 
-  let first;
-  let destination;
-  let firstData;
-  let destinationData;
-  let location;
+ let first;
+ let destination;
+ let firstData;
+ let destinationData;
+ let width;
+ let height;
 
-  if (selectedNodes.length === 2) {
-    first = selectedNodes[0].key;
-    destination = selectedNodes[1].key;
+ if (selectedNodes.length === 2) {
+   first = selectedNodes[0].key;
+   destination = selectedNodes[1].key;
 
-    firstData = myDiagram.model.findNodeDataForKey(first);
-    destinationData = myDiagram.model.findNodeDataForKey(destination);
+   firstData = myDiagram.model.findNodeDataForKey(first);
+   destinationData = myDiagram.model.findNodeDataForKey(destination);
 
-    location = `${firstData.width} ${destinationData.height}`;
-    myDiagram.model.setDataProperty(destinationData, "location", location);
+   width = firstData.width ;
+   height = destinationData.height;
+   myDiagram.model.setDataProperty(destinationData, "width", width);
+   myDiagram.model.setDataProperty(destinationData, "height", height);
 
 
-    myDiagram.clearSelection();
-    selectedNodes = [];
-  }
+   myDiagram.clearSelection();
+   selectedNodes = [];
+ }
 }
 
-  // Remove the listener using the same function reference
-  let removeAction = document.getElementById("removeAction");
-  removeAction.addEventListener('click', function () {
-    myDiagram.removeDiagramListener("ChangedSelection", revertSelectedHandler);
-    myDiagram.removeDiagramListener("ChangedSelection", alignYSelectedHandler);
-    myDiagram.removeDiagramListener("ChangedSelection", alignXSelectedHandler);
-    myDiagram.clearSelection();
-    selectedNodes = [];
-  });
+let setHeightSelected = document.getElementById("setHeightSelected");
+setHeightSelected.addEventListener('click', function () {
+ myDiagram.addDiagramListener("ChangedSelection", setHeightSelectedHandler);
+});
 
+
+function setHeightSelectedHandler(e){
+ let selection = e.diagram.selection;
+
+ // Iterate over the selection
+ selection.each(function (part) {
+   if (part instanceof go.Node) {
+     selectedNodes.push(part);
+
+   }
+ });
+
+ let first;
+ let destination;
+ let firstData;
+ let destinationData;
+ let width;
+ let height;
+
+ if (selectedNodes.length === 2) {
+   first = selectedNodes[0].key;
+   destination = selectedNodes[1].key;
+
+   firstData = myDiagram.model.findNodeDataForKey(first);
+   destinationData = myDiagram.model.findNodeDataForKey(destination);
+
+   width = destinationData.width ;
+   height = firstData.height;
+   myDiagram.model.setDataProperty(destinationData, "width", width);
+   myDiagram.model.setDataProperty(destinationData, "height", height);
+
+
+   myDiagram.clearSelection();
+   selectedNodes = [];
+ }
+}
+
+let setWidthSelected = document.getElementById("setWidthSelected");
+setWidthSelected.addEventListener('click', function () {
+ myDiagram.addDiagramListener("ChangedSelection", setWidthSelectedHandler);
+});
+
+ // Remove the listener using the same function reference
+ let removeAction = document.getElementById("removeAction");
+ removeAction.addEventListener('click', function () {
+   myDiagram.removeDiagramListener("ChangedSelection", revertSelectedHandler);
+   myDiagram.removeDiagramListener("ChangedSelection", alignYSelectedHandler);
+   myDiagram.removeDiagramListener("ChangedSelection", alignXSelectedHandler);
+   myDiagram.removeDiagramListener("ChangedSelection", setWidthSelectedHandler);
+   myDiagram.removeDiagramListener("ChangedSelection", setHeightSelectedHandler);
+   myDiagram.clearSelection();
+   selectedNodes = [];
+ });
 
 
 
@@ -962,3 +1016,4 @@ function setWidthSelectedHandler(e){
 
 window.addEventListener('DOMContentLoaded', init);
 
+export { myDiagram };
