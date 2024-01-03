@@ -41,27 +41,27 @@ function init() {
       "undoManager.isEnabled": true,
       "allowZoom": true,
       "allowResize": true,
-      //"fixedBounds": new go.Rect(0, 0, 250, 600), // Set fixedBounds to a specific rectangular area
+      //"fixedBounds": new go.Rect(10, 10, 100, 100), // Set fixedBounds to a specific rectangular area
     });
 
-  function makeLayout(isVertical, columns, rows) {
-    let layout = null;
-    if (isVertical) {
-      layout = $(go.GridLayout, {
-        wrappingColumn: Infinity, alignment: go.GridLayout.Position,
-        wrappingWidth: rows,
-        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4),
+  // function makeLayout(isVertical, columns, rows) {
+  //   let layout = null;
+  //   if (isVertical) {
+  //     layout = $(go.GridLayout, {
+  //       wrappingColumn: Infinity, alignment: go.GridLayout.Position,
+  //       wrappingWidth: rows,
+  //       cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4),
 
-      });
-    } else {
-      layout = $(go.GridLayout, {
-        wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-        wrappingColumn: columns || 1,
-        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-      });
-    }
-    return layout;
-  }
+  //     });
+  //   } else {
+  //     layout = $(go.GridLayout, {
+  //       wrappingWidth: Infinity, alignment: go.GridLayout.Position,
+  //       wrappingColumn: columns || 1,
+  //       cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
+  //     });
+  //   }
+  //   return layout;
+  // }
 
 
   myDiagram.nodeTemplateMap.add("board",
@@ -113,7 +113,7 @@ function init() {
         },
         $(go.Panel, "Horizontal",
           new go.Binding("width", "width", null, null),
-          { height: 18 },
+          { height: 14 },
           $(go.Shape, "Rectangle",
             {
               fill: "black",
@@ -160,7 +160,10 @@ function init() {
 
 
 
-
+  function fitNodesOnScreen() {
+    // Execute the "Fit Document" command
+    myDiagram.zoomToFit();
+  }
 
 
 
@@ -369,6 +372,7 @@ function init() {
       defaultValue++;
     }
 
+    // fitNodesOnScreen();
   }
 
   addSlot();
@@ -697,18 +701,6 @@ function init() {
   }
   displayBackMode(false);
 
-  // let backMode = document.getElementById("displayBackMode");
-  // backMode.addEventListener('change', function (event) {
-
-  //   if (event.target.checked) {
-  //     displayBackMode(true);
-
-  //   } else {
-  //     displayBackMode(false);
-  //   }
-  // });
-
-
 
 
   function nodeMoved(e) {
@@ -762,206 +754,211 @@ function init() {
   let selectedNodes = [];
 
 
+  function alignXSelectedHandler(e) {
+    // Get the current selection
+    let selection = e.diagram.selection;
+
+    // Iterate over the selection
+    selection.each(function (part) {
+      if (part instanceof go.Node) {
+        selectedNodes.push(part);
+
+      }
+    });
+
+    let first;
+    let destination;
+    let firstData;
+    let distinationData;
+    let partsFirst;
+    let xFirst;
+    let partsDestination;
+    let yDestination;
+    let location;
+
+
+
+    if (selectedNodes.length === 2) {
+      first = selectedNodes[0].key;
+      destination = selectedNodes[1].key;
+
+      firstData = myDiagram.model.findNodeDataForKey(first);
+      distinationData = myDiagram.model.findNodeDataForKey(destination);
+
+      partsFirst = firstData.location.split(' ');
+      xFirst = partsFirst[0];
+
+      partsDestination = distinationData.location.split(' ');
+      yDestination = partsDestination[1];
+
+
+      location = `${xFirst} ${yDestination}`
+      myDiagram.model.setDataProperty(distinationData, "location", location);
+
+
+      myDiagram.clearSelection();
+      selectedNodes = [];
+    }
+
+  }
+
 
   let alignXSelected = document.getElementById("alignXSelected");
   alignXSelected.addEventListener('click', function () {
- myDiagram.addDiagramListener("ChangedSelection", function (e) {
-      // Get the current selection
-      let selection = e.diagram.selection;
-
-      // Iterate over the selection
-      selection.each(function (part) {
-        if (part instanceof go.Node) {
-          selectedNodes.push(part);
-
-        }
-      });
-
-      let first;
-      let destination;
-      let firstData;
-      let distinationData;
-      let partsFirst;
-      let xFirst;
-      let partsDestination;
-      let yDestination;
-      let location;
-
-
-
-      if (selectedNodes.length === 2) {
-        first = selectedNodes[0].key;
-        destination = selectedNodes[1].key;
-
-        firstData = myDiagram.model.findNodeDataForKey(first);
-        distinationData = myDiagram.model.findNodeDataForKey(destination);
-
-        partsFirst = firstData.location.split(' ');
-        xFirst = partsFirst[0];
-
-        partsDestination = distinationData.location.split(' ');
-        yDestination = partsDestination[1];
-
-
-        location = `${xFirst} ${yDestination}`
-        myDiagram.model.setDataProperty(distinationData, "location", location);
-
-
-        myDiagram.clearSelection();
-        selectedNodes = [];
-      }
-
-    });
-
+    myDiagram.addDiagramListener("ChangedSelection", alignXSelectedHandler);
   });
 
+
+  function alignYSelectedHandler(e) {
+    // Get the current selection
+    let selection = e.diagram.selection;
+
+    // Iterate over the selection
+    selection.each(function (part) {
+      if (part instanceof go.Node) {
+        selectedNodes.push(part);
+
+      }
+    });
+
+    let first;
+    let destination;
+    let firstData;
+    let distinationData;
+    let partsFirst;
+    let yFirst;
+    let partsDestination;
+    let xDestination;
+    let location;
+
+
+
+    if (selectedNodes.length === 2) {
+      first = selectedNodes[0].key;
+      destination = selectedNodes[1].key;
+
+      firstData = myDiagram.model.findNodeDataForKey(first);
+      distinationData = myDiagram.model.findNodeDataForKey(destination);
+
+      partsFirst = firstData.location.split(' ');
+      yFirst = partsFirst[1];
+
+      partsDestination = distinationData.location.split(' ');
+      xDestination = partsDestination[0];
+
+
+      location = `${xDestination} ${yFirst}`
+      myDiagram.model.setDataProperty(distinationData, "location", location);
+
+      myDiagram.clearSelection();
+      selectedNodes = [];
+    }
+
+  }
 
   let alignYSelected = document.getElementById("alignYSelected");
   alignYSelected.addEventListener('click', function () {
-    myDiagram.addDiagramListener("ChangedSelection", function (e) {
-      // Get the current selection
-      let selection = e.diagram.selection;
+    myDiagram.addDiagramListener("ChangedSelection", alignYSelectedHandler);
+  });
 
-      // Iterate over the selection
-      selection.each(function (part) {
-        if (part instanceof go.Node) {
-          selectedNodes.push(part);
+  // Define the revertSelected function
+  function revertSelectedHandler(e) {
+    // Get the current selection
+    var node = e.subject.first();
 
-        }
-      });
+    let destination;
+    let destinationData;
+    let partsDestination;
+    let yDestination;
+    let location;
+    let xDestination;
+    let height;
+    let width;
 
-      let first;
-      let destination;
-      let firstData;
-      let distinationData;
-      let partsFirst;
-      let yFirst;
-      let partsDestination;
-      let xDestination;
-      let location;
+    // If a node is selected
+    if (node instanceof go.Node) {
+      var type = node.data.category;
+      if (type === "board") {
+        destination = node.data.key;
 
+        destinationData = myDiagram.model.findNodeDataForKey(destination);
 
+        var viewportBounds = myDiagram.viewportBounds;
+        var diagramWidth = viewportBounds.width;
+        var diagramHeight = viewportBounds.height;
 
-      if (selectedNodes.length === 2) {
-        first = selectedNodes[0].key;
-        destination = selectedNodes[1].key;
-
-        firstData = myDiagram.model.findNodeDataForKey(first);
-        distinationData = myDiagram.model.findNodeDataForKey(destination);
-
-        partsFirst = firstData.location.split(' ');
-        yFirst = partsFirst[1];
-
-        partsDestination = distinationData.location.split(' ');
+        partsDestination = destinationData.location.split(' ');
         xDestination = partsDestination[0];
+        yDestination = partsDestination[1];
 
+        location = `${(yDestination * diagramWidth) / diagramHeight} ${(xDestination * diagramHeight) / diagramWidth}`;
+        width = (destinationData.height * diagramWidth) / diagramHeight;
+        height = (destinationData.width * diagramHeight) / diagramWidth;
 
-        location = `${xDestination} ${yFirst}`
-        myDiagram.model.setDataProperty(distinationData, "location", location);
-
+        myDiagram.model.setDataProperty(destinationData, "location", location);
+        myDiagram.model.setDataProperty(destinationData, "width", width);
+        myDiagram.model.setDataProperty(destinationData, "height", height);
 
         myDiagram.clearSelection();
         selectedNodes = [];
       }
+    }
+  }
 
-    });
-
-  });
-
+  // Add the listener using the defined function
   let revertSelected = document.getElementById("revertSelected");
   revertSelected.addEventListener('click', function () {
-    myDiagram.addDiagramListener("ChangedSelection", function (e) {
-      // Get the current selection
-      var node = e.subject.first();
-
-
-      let destination;
-      let destinationData;
-      let partsDestination;
-      let yDestination;
-      let location;
-      let xDestination;
-      let height;
-      let width;
-
-      // If a node is selected
-      if (node instanceof go.Node) {
-        var type = node.data.category;
-        if (type === "board") {
-          destination = node.data.key;
-
-          destinationData = myDiagram.model.findNodeDataForKey(destination);
-
-          var viewportBounds = myDiagram.viewportBounds;
-          var diagramWidth = viewportBounds.width;
-          var diagramHeight = viewportBounds.height;
-
-
-          partsDestination = destinationData.location.split(' ');
-          xDestination = partsDestination[0];
-          yDestination = partsDestination[1];
-
-          location = `${(yDestination * diagramWidth) / diagramHeight} ${(xDestination * diagramHeight) / diagramWidth}`;
-          width = (destinationData.height * diagramWidth) / diagramHeight;
-          height = (destinationData.width * diagramHeight) / diagramWidth;
-
-          myDiagram.model.setDataProperty(destinationData, "location", location);
-          myDiagram.model.setDataProperty(destinationData, "width", width);
-          myDiagram.model.setDataProperty(destinationData, "height", height);
-
-
-          myDiagram.clearSelection();
-
-        }
-
-      }
-
-
-
-
-    });
-
+    myDiagram.addDiagramListener("ChangedSelection", revertSelectedHandler);
   });
 
 
-  // function printNodeTexts() {
-  //   myDiagram.startTransaction('printNodeTexts');
-  //   // Iterate over all nodes in the diagram
-  //   myDiagram.nodes.each(function (node) {
-  //     // Find the TextBlock in the node
-  //     // var textBlock = node.findObject('boardTextblock'); // Replace 'TEXTBLOCK' with the actual name of your TextBlock, if you have assigned one
-  //     // if (textBlock) {
-  //     //   // Print the text
-  //     //   console.log(textBlock.text);
-  //     // }
+function setWidthSelectedHandler(e){
+  let selection = e.diagram.selection;
+
+  // Iterate over the selection
+  selection.each(function (part) {
+    if (part instanceof go.Node) {
+      selectedNodes.push(part);
+
+    }
+  });
+
+  let first;
+  let destination;
+  let firstData;
+  let destinationData;
+  let location;
+
+  if (selectedNodes.length === 2) {
+    first = selectedNodes[0].key;
+    destination = selectedNodes[1].key;
+
+    firstData = myDiagram.model.findNodeDataForKey(first);
+    destinationData = myDiagram.model.findNodeDataForKey(destination);
+
+    location = `${firstData.width} ${destinationData.height}`;
+    myDiagram.model.setDataProperty(destinationData, "location", location);
 
 
-
-  //     myDiagram.commitTransaction('printNodeTexts');
-  //   });
-  // }
-  // printNodeTexts();
-
-
-  // function printNodeShapes() {
-  //   myDiagram.startTransaction('printNodeShape');
-  //   // Iterate over all nodes in the diagram
-  //   myDiagram.nodes.each(function (node) {
-
-
-  //     var shape = node.findObject(node.findMainElement().panel.itemArray[0].name);
-  //     console.log(shape);
-
-  //     myDiagram.commitTransaction('printNodeShapes');
-  //   });
-  // }
-  // printNodeShapes();
-
-
-
-  // setMyDiagram(myDiagram);
+    myDiagram.clearSelection();
+    selectedNodes = [];
+  }
 }
 
+  // Remove the listener using the same function reference
+  let removeAction = document.getElementById("removeAction");
+  removeAction.addEventListener('click', function () {
+    myDiagram.removeDiagramListener("ChangedSelection", revertSelectedHandler);
+    myDiagram.removeDiagramListener("ChangedSelection", alignYSelectedHandler);
+    myDiagram.removeDiagramListener("ChangedSelection", alignXSelectedHandler);
+    myDiagram.clearSelection();
+    selectedNodes = [];
+  });
+
+
+
+
+}
 
 window.addEventListener('DOMContentLoaded', init);
 
