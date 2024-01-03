@@ -34,7 +34,6 @@ function init() {
 
   myDiagram = new go.Diagram("myDiagramDiv",
     {
-
       // when a drag-drop occurs in the Diagram's background, make it a top-level node
       // mouseDrop: e => finishDrop(e, null),
       // layout: currentLayout,
@@ -335,14 +334,14 @@ function init() {
     let tempVal = 0.0;
     for (let i = 1; i <= borderCount; i++) {
 
-      let dis = 1000.0 / borderCount
+      let dis = 900.0 / borderCount
       if (isVertical !== 'v') {
 
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
           category: "board",
-          width: 1000,
+          width: 2000,
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
@@ -353,11 +352,12 @@ function init() {
 
 
       } else {
+        dis = 2000.0 / borderCount
         myDiagram.model.addNodeData({
           key: `port${startIndex}`,
           category: "board",
           width: dis,
-          height: 1000,
+          height: 900,
           text: `${defaultValue}:${indexSlot}`,
           location: `${tempVal} 0`,
           visible: true,
@@ -526,9 +526,9 @@ function init() {
     var diagramWidth = viewportBounds.width;
     var diagramHeight = viewportBounds.height;
 
-    let location = `${parseInt(x * diagramWidth / 1000)} ${parseInt(y * diagramHeight / 1000)}`;
-    let width = parseInt(data.width * diagramWidth / 1000);
-    let height = parseInt(data.height * diagramHeight / 1000);
+    let location = `${parseInt(x * diagramWidth / 2000)} ${parseInt(y * diagramHeight / 900)}`;
+    let width = parseInt(data.width * diagramWidth / 2000);
+    let height = parseInt(data.height * diagramHeight / 900);
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
 
@@ -604,10 +604,10 @@ function init() {
   var diagramHeight = viewportBounds.height;
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-    let xPercentage = ((parseFloat((x * 1000) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * 1000) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * 1000) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * 1000) / diagramHeight));
+    let xPercentage = ((parseFloat((x * 2000) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * 900) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * 2000) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * 900) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
@@ -758,6 +758,170 @@ function init() {
     nodeMoved(e);
   });
 
+
+  let selectedNodes = [];
+
+
+
+  let alignXSelected = document.getElementById("alignXSelected");
+  alignXSelected.addEventListener('click', function () {
+ myDiagram.addDiagramListener("ChangedSelection", function (e) {
+      // Get the current selection
+      let selection = e.diagram.selection;
+
+      // Iterate over the selection
+      selection.each(function (part) {
+        if (part instanceof go.Node) {
+          selectedNodes.push(part);
+
+        }
+      });
+
+      let first;
+      let destination;
+      let firstData;
+      let distinationData;
+      let partsFirst;
+      let xFirst;
+      let partsDestination;
+      let yDestination;
+      let location;
+
+
+
+      if (selectedNodes.length === 2) {
+        first = selectedNodes[0].key;
+        destination = selectedNodes[1].key;
+
+        firstData = myDiagram.model.findNodeDataForKey(first);
+        distinationData = myDiagram.model.findNodeDataForKey(destination);
+
+        partsFirst = firstData.location.split(' ');
+        xFirst = partsFirst[0];
+
+        partsDestination = distinationData.location.split(' ');
+        yDestination = partsDestination[1];
+
+
+        location = `${xFirst} ${yDestination}`
+        myDiagram.model.setDataProperty(distinationData, "location", location);
+
+
+        myDiagram.clearSelection();
+        selectedNodes = [];
+      }
+
+    });
+
+  });
+
+
+  let alignYSelected = document.getElementById("alignYSelected");
+  alignYSelected.addEventListener('click', function () {
+    myDiagram.addDiagramListener("ChangedSelection", function (e) {
+      // Get the current selection
+      let selection = e.diagram.selection;
+
+      // Iterate over the selection
+      selection.each(function (part) {
+        if (part instanceof go.Node) {
+          selectedNodes.push(part);
+
+        }
+      });
+
+      let first;
+      let destination;
+      let firstData;
+      let distinationData;
+      let partsFirst;
+      let yFirst;
+      let partsDestination;
+      let xDestination;
+      let location;
+
+
+
+      if (selectedNodes.length === 2) {
+        first = selectedNodes[0].key;
+        destination = selectedNodes[1].key;
+
+        firstData = myDiagram.model.findNodeDataForKey(first);
+        distinationData = myDiagram.model.findNodeDataForKey(destination);
+
+        partsFirst = firstData.location.split(' ');
+        yFirst = partsFirst[1];
+
+        partsDestination = distinationData.location.split(' ');
+        xDestination = partsDestination[0];
+
+
+        location = `${xDestination} ${yFirst}`
+        myDiagram.model.setDataProperty(distinationData, "location", location);
+
+
+        myDiagram.clearSelection();
+        selectedNodes = [];
+      }
+
+    });
+
+  });
+
+  let revertSelected = document.getElementById("revertSelected");
+  revertSelected.addEventListener('click', function () {
+    myDiagram.addDiagramListener("ChangedSelection", function (e) {
+      // Get the current selection
+      var node = e.subject.first();
+
+
+      let destination;
+      let destinationData;
+      let partsDestination;
+      let yDestination;
+      let location;
+      let xDestination;
+      let height;
+      let width;
+
+      // If a node is selected
+      if (node instanceof go.Node) {
+        var type = node.data.category;
+        if (type === "board") {
+          destination = node.data.key;
+
+          destinationData = myDiagram.model.findNodeDataForKey(destination);
+
+          var viewportBounds = myDiagram.viewportBounds;
+          var diagramWidth = viewportBounds.width;
+          var diagramHeight = viewportBounds.height;
+
+
+          partsDestination = destinationData.location.split(' ');
+          xDestination = partsDestination[0];
+          yDestination = partsDestination[1];
+
+          location = `${(yDestination * diagramWidth) / diagramHeight} ${(xDestination * diagramHeight) / diagramWidth}`;
+          width = (destinationData.height * diagramWidth) / diagramHeight;
+          height = (destinationData.width * diagramHeight) / diagramWidth;
+
+          myDiagram.model.setDataProperty(destinationData, "location", location);
+          myDiagram.model.setDataProperty(destinationData, "width", width);
+          myDiagram.model.setDataProperty(destinationData, "height", height);
+
+
+          myDiagram.clearSelection();
+
+        }
+
+      }
+
+
+
+
+    });
+
+  });
 
 
   // function printNodeTexts() {

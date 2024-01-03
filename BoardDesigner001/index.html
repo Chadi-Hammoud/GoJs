@@ -5,21 +5,84 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
   <meta name="description" content="Use the TableLayout extension to arrange nodes in a tabular or grid-like form." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"
+    integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
+
   <style>
+    html,
     body {
       margin: 0;
-      display: flex;
-      height: 100vh;
+      overflow: hidden;
+      height: 100%;
     }
 
     #myDiagramDiv {
-
       background-color: #e0e0e0;
-      height: 1000px;
-      width:1000px;
+      height: 900px;
+      width: 2000px;
       border: solid 1px black;
       resize: both;
+      position: relative;
+      z-index: 1;
+      /* Set the z-index for the diagram */
+    }
 
+    #toolbar {
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px;
+      border-bottom: solid 1px #ccc;
+      position: relative;
+      z-index: 2;
+      /* Set the z-index for the toolbar */
+    }
+
+    #toolbar ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: none;
+      flex-direction: column;
+      /* Set the direction to column */
+      align-items: flex-start;
+      z-index: 3;
+      /* Set the z-index for the ul */
+    }
+
+    #toolbar li {
+      margin-bottom: 10px;
+      z-index: 3;
+      /* Set the z-index for the li elements */
+    }
+
+    #toggleActions {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #toolbar input[type="radio"] {
+      margin-bottom: 10px;
+      z-index: 3;
+      cursor: pointer;
+    }
+
+    .modal-dialog {
+      margin: 0;
+      max-width: none;
+    }
+
+    .modal-content {
+      height: 100vh;
+      width: 100vw;
     }
   </style>
 </head>
@@ -30,9 +93,87 @@
   <!-- <script id="code" type="module" src="./Js/test.mjs"></script> -->
 
   <div id="sample">
-    <div id="myDiagramDiv"></div>
-  
+
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shelfModal">
+      open diagram
+    </button>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="shelfModal" tabindex="-1" aria-labelledby="shelfModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="shelfModalLabel">slot on shelf</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="myDiagramDiv" style="border:1px solid black;"></div>
+          </div>
+          <div class="modal-footer">
+            <div id="toolbar" class="p-3 mb-2 bg-light text-dark">
+              <span id="toggleActions" onclick="toggleActions()" class="text-primary">Actions</span>
+              <form id="actionsForm" action="Js/index.mjs">
+                <!-- Replace ul and li with radio input elements -->
+                <input type="radio" id="alignXSelected" name="action" class="mb-2">
+                <label for="alignXSelected">Align horizontally the selected ports</label>
+
+                <input type="radio" id="alignYSelected" name="action" class="mb-2">
+                <label for="alignYSelected">Align vertically the selected ports</label>
+
+                <input type="radio" id="setWidthSelected" name="action" class="mb-2">
+                <label for="setWidthSelected">Set the same width</label>
+
+                <input type="radio" id="setHeightSelected" name="action" class="mb-2">
+                <label for="setHeightSelected">Set the same height</label>
+
+                <input type="radio" id="calculateVerticalDistance" name="action" class="mb-2">
+                <label for="calculateVerticalDistance">Vertical distance: Define the same distance between successive
+                  port</label>
+
+                <input type="radio" id="calculateHorizontalDistance" name="action" class="mb-2">
+                <label for="calculateHorizontalDistance">Horizontal distance: Define the same distance between
+                  successive ports selected</label>
+
+                <input type="radio" id="setNextHorizontalSelected" name="action" class="mb-2">
+                <label for="setNextHorizontalSelected">The second is the Next Horizontal</label>
+
+                <input type="radio" id="setNextVerticalSelected" name="action" class="mb-2">
+                <label for="setNextVerticalSelected">The second is the Next Vertical</label>
+
+                <input type="radio" id="revertSelected" name="action" class="mb-2">
+                <label for="revertSelected">Revert selected</label>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, but required for modal functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   </div>
+
+  <script>
+    function toggleActions() {
+      var actionsList = document.getElementById('toolbar').querySelector('ul');
+      actionsList.style.display = (actionsList.style.display === 'none' || actionsList.style.display === '') ? 'flex' : 'none';
+    }
+
+    $(function () {
+      $("#modal-dialog").dialog({
+        resizable: true,
+        width: document.getElementById("myDiagramDiv").width, // Initial width
+        height: document.getElementById("myDiagramDiv").height,  // Initial height
+
+      });
+
+      $("#modal-dialog").resizable({
+        handles: "n, e, s, w, ne, se, sw, nw",
+
+      });
+    });
+  </script>
 
 </body>
 
