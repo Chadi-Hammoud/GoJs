@@ -416,21 +416,8 @@ function init() {
         addSlotIndex = parseInt(data.addSlotIndex);
         addIndexOnSlot = parseInt(data.addIndexOnSlot);
         checkIndex();
-      } else if (data.formId == 'form3') {
-        top = parseInt(data.marginTop);
-        right = parseInt(data.marginRight);
-        bottom = parseInt(data.marginBottom);
-        left = parseInt(data.marginLeft);
-
-        horizontal = parseInt(data.horizontal);
-        vertical = parseInt(data.vertical);
-        rows = parseInt(data.rowsCount);
-
-        distribution = data.direction;
-        startPoint = data.startPoint;
-
-
-        autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+      } else if (data.formId == 'autoDistributionForm') {
+       
 
       } else if (data.formId == 'displayBackMode') {
 
@@ -444,6 +431,33 @@ function init() {
     console.log(event.source.name);
 
   }, false);
+
+  document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    
+    top = parseInt(document.getElementById("marginTop").value);
+    right = parseInt(document.getElementById("marginRight").value);
+    bottom = parseInt(document.getElementById("marginBottom").value);
+    left = parseInt(document.getElementById("marginLeft").value);
+
+    horizontal = parseInt(document.getElementById("horizontal").value);
+    vertical = parseInt(document.getElementById("vertical").value);
+    rows = parseInt(document.getElementById("rowsCount").value);
+
+    distribution = document.getElementById("direction").value;
+    startPoint = document.getElementById("startPoint").value;
+
+
+    autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+  });
+
+  document.querySelector('#autoResizeForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    width1 = parseFloat(document.getElementById("width1").value, 10);
+    height1 = parseFloat(document.getElementById("height1").value, 10);
+    autoResizePorts();
+  });
 
 
 

@@ -42,7 +42,7 @@
       max-width: 2000px;
       height: 900px;
       border: solid 1px black;
-      resize: both;
+      /* resize: both; */
       overflow: auto;
       position: relative;
       z-index: 1;
@@ -75,6 +75,96 @@
       display: block;
       padding: 8px 0;
     }
+
+
+    #sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #343a40;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      padding-right: 30px;
+      z-index: 2;
+    }
+
+    #sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 18px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    #sidebar a:hover {
+      color: #007bff;
+    }
+
+    #sidebar .close-btn {
+      position: absolute;
+      top: 10px;
+      /* Adjusted top position */
+      right: 10px;
+      /* Adjusted right position */
+      font-size: 20px;
+      color: white;
+      text-decoration: none;
+      z-index: 4;
+      /* Added z-index value */
+    }
+
+    #autoDistributionForm {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      /* Adjust the z-index value based on your needs */
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      /* Adjust the alpha value for transparency */
+      z-index: 9998;
+      /* Set z-index lower than the form */
+      display: none;
+    }
+
+    #autoResizeForm {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #overlay2 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+      display: none;
+    }
   </style>
 </head>
 
@@ -87,7 +177,7 @@
 
 
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container">
+    <div>
 
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,17 +193,11 @@
             </a>
 
             <ul id="ul" class="dropdown-menu" aria-labelledby="servicesDropdown" style="display: none">
-
-
               <li class="dropdown-item" id="alignXSelected">Align horizontally the selected ports </li>
 
-
               <li class="dropdown-item" id="alignYSelected">Align vertically the selected ports</li>
-
               <li class="dropdown-item" id="setWidthSelected">Set the same width</li>
-
               <li class="dropdown-item" id="setHeightSelected"> Set the same height</li>
-
               <li class="dropdown-item" id="calculateVerticalDistance">Vertical distance: Define the same distance
                 between successive
                 port</li>
@@ -163,10 +247,198 @@
     </div>
   </nav>
 
+
+
+  <!-- Add a button/icon to trigger the side menu -->
+  <button class="btn btn-secondary d-lg-none" onclick="toggleSidebar()">Open Menu</button>
+
+  <div id="sidebar">
+    <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+    <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
+    <a id="autoResizeLink" class="nav-link">Auto Resize</a>
+    <!-- Add more links as needed -->
+  </div>
+
+  <!-- Auto Distribution Sidebar -->
+  <div id="autoDistributionSidebar" style="display: none;">
+
+    <form id="autoDistributionForm" class="mt-4">
+      <div>
+        <!-- Margins Section -->
+        <div class="mb-4">
+          <h4>Margins</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginLeft" class="form-label">Left</label>
+            <input type="number" class="form-control" id="marginLeft" name="marginLeft" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginRight" class="form-label">Right</label>
+            <input type="number" class="form-control" id="marginRight" name="marginRight" value="30" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginTop" class="form-label">Top</label>
+            <input type="number" class="form-control" id="marginTop" name="marginTop" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginBottom" class="form-label">Bottom</label>
+            <input type="number" class="form-control" id="marginBottom" name="marginBottom" value="30" required>
+          </div>
+        </div>
+
+        <!-- Spacing Section -->
+        <div class="mb-4">
+          <h4>Spacing</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="mb-3">
+          <label for="horizontal" class="form-label">Horizontal</label>
+          <input type="number" class="form-control" id="horizontal" name="horizontal" value="10" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="vertical" class="form-label">Vertical</label>
+          <input type="number" class="form-control" id="vertical" name="vertical" value="10" required>
+        </div>
+
+        <!-- Distribution Section -->
+        <div class="mb-4">
+          <h4>Distribution</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="mb-3">
+          <label for="rowsCount" class="form-label">Rows</label>
+          <input type="number" class="form-control" id="rowsCount" name="rowsCount" value="2" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="startPoint" class="form-label">Start Point</label>
+          <select class="form-select" id="startPoint" name="startPoint" required>
+            <option value="top-left" selected>Top-Left</option>
+            <option value="top-right">Top-Right</option>
+            <option value="bottom-left">Bottom-Left</option>
+            <option value="bottom-right">Bottom-Right</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="direction" class="form-label">Direction</label>
+          <select class="form-select" id="direction" name="direction" required>
+            <option value="horizontal" selected>Horizontal</option>
+            <option value="vertical">Vertical</option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+          <button type="submit" class="btn btn-success">Apply</button>
+          <button id="closeAutoDist" type="button" class="btn btn-danger close">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <div id="autoResizeSidebar" style="display: none;">
+    <form id="autoResizeForm" class="mt-4">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Size</label>
+        <div class="col-sm-10">
+          <hr>
+        </div>
+      </div>
+
+      <div class="form-col">
+        <div class="form-group row">
+          <label for="width1" class="col-sm-2 col-form-label">Width</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="height" class="col-sm-2 col-form-label">Height</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="height1" name="height1" step="0.00000000000000001" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+          <button type="submit" class="btn btn-primary">Apply</button>
+          <button id="close" class="btn btn-primary">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
   <div id="sample">
     <div id="myDiagramDiv" style="border:1px solid black;"></div>
   </div>
 
+  <script>
+    function showForm() {
+      document.getElementById('overlay').style.display = 'block';
+    }
+
+    function hideForm() {
+      document.getElementById('overlay').style.display = 'none';
+    }
+  </script>
+
+  <script>
+    function showForm2() {
+      document.getElementById('overlay2').style.display = 'block';
+    }
+
+    function hideForm2() {
+      document.getElementById('overlay2').style.display = 'none';
+    }
+  </script>
+
+
+  <script>
+    // Toggle the sidebar menu
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
+    }
+
+    // Toggle the Auto Distribution sidebar
+    function toggleAutoDistributionSidebar() {
+      var autoDistributionSidebar = document.getElementById('autoDistributionSidebar');
+      autoDistributionSidebar.style.display = autoDistributionSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleAutoResizeSidebar() {
+      var autoResizeSidebar = document.getElementById('autoResizeSidebar');
+      autoResizeSidebar.style.display = autoResizeSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Event listener for Auto Distribution link
+    document.getElementById("autoDistributionLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleAutoDistributionSidebar();
+    });
+
+
+    // Event listener for Auto Distribution link
+    document.getElementById("autoResizeLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleAutoResizeSidebar();
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      // Your existing DOMContentLoaded logic
+    });
+  </script>
 
 
   <!-- Bootstrap JS (optional, but required for modal functionality) -->
@@ -227,6 +499,8 @@
       });
     });
   </script>
+
+
 
 </body>
 

@@ -42,7 +42,7 @@
       max-width: 2000px;
       height: 900px;
       border: solid 1px black;
-      resize: both;
+      /* resize: both; */
       overflow: auto;
       position: relative;
       z-index: 1;
@@ -168,9 +168,14 @@
       Add Background
     </button>
 
-    <div id = "showBacks" style="display: none; margin:auto; width:auto" >
+    <button id="removeBackround" class="btn btn-primary"> 
+      Remove Background
+    </button>
+
+    <div id = "showBacks" style="display: none; margin:auto; width:auto">
       <b> select a backround </b>
       <img id="back1" src="./backgrounds/back1.jpg" style= "height:200px; width:200px"/>
+      <img id="back2" src="./backgrounds/back2.jpg" style= "height:200px; width:200px"/>
      
     </div>
   </div>

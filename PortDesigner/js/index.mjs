@@ -10,6 +10,8 @@ function init() {
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
 
+  let divWidth = 2000;
+  let divHeight = 900;
 
   function createConfigNewSlotDialog() {
     // Specify the URL and other options for the popup window
@@ -172,17 +174,17 @@ function modifyPart(src, backWidth, backHeight) {
 
     let tempVal = 0.0;
     let backWidth = 0;
-    let backHeight = 100;
+    let backHeight = 0;
     for (let i = 1; i <= borderCount; i++) {
 
-      let dis = 900.0 / borderCount
+      let dis = divHeight / borderCount
       if (isVertical !== 'v') {
 
-        backWidth = 2000;
+        backWidth = divWidth;
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
           category: "board",
-          width: 2000,
+          width: divWidth,
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
@@ -194,13 +196,13 @@ function modifyPart(src, backWidth, backHeight) {
 
       } else {
 
-        backHeight = 900;
+        backHeight = divHeight;
 
         myDiagram.model.addNodeData({
           key: `port${startIndex}`,
           category: "board",
           width: dis,
-          height: 900,
+          height: divHeight,
           text: `${defaultValue}:${indexSlot}`,
           location: `${tempVal} 0`,
           visible: true,
@@ -217,6 +219,7 @@ function modifyPart(src, backWidth, backHeight) {
     document.getElementById("addBackround").addEventListener("click", e => {
       document.getElementById("showBacks").style.display = "block";
       let back = document.getElementById("back1");
+      let back1 = document.getElementById("back2");
 
       back.addEventListener("click", event => {
 
@@ -225,6 +228,20 @@ function modifyPart(src, backWidth, backHeight) {
         let part = modifyPart(src, backWidth, backHeight);
         myDiagram.redraw(part);
       });
+
+      back1.addEventListener("click", event => {
+
+        src = back1.currentSrc;
+
+        let part = modifyPart(src, backWidth, backHeight);
+        myDiagram.redraw(part);
+      });
+
+    });
+
+    document.getElementById("removeBackround").addEventListener("click", e=> {
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.remove(part); 
     });
 
 
@@ -361,9 +378,9 @@ function modifyPart(src, backWidth, backHeight) {
     var diagramWidth = viewportBounds.width;
     var diagramHeight = viewportBounds.height;
 
-    let location = `${parseInt(x * diagramWidth / 2000)} ${parseInt(y * diagramHeight / 900)}`;
-    let width = parseInt(data.width * diagramWidth / 2000);
-    let height = parseInt(data.height * diagramHeight / 900);
+    let location = `${parseInt(x * diagramWidth / divWidth)} ${parseInt(y * diagramHeight / divHeight)}`;
+    let width = parseInt(data.width * diagramWidth / divWidth);
+    let height = parseInt(data.height * diagramHeight / divHeight);
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
 
@@ -400,10 +417,10 @@ function modifyPart(src, backWidth, backHeight) {
   var diagramHeight = viewportBounds.height;
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-    let xPercentage = ((parseFloat((x * 2000) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * 900) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * 2000) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * 900) / diagramHeight));
+    let xPercentage = ((parseFloat((x * divWidth) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * divHeight) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * divHeight) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
