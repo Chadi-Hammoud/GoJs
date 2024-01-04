@@ -407,10 +407,7 @@ function init() {
 
 
 
-  // Add a listener for the SelectionChanged event
-  myDiagram.addDiagramListener("ChangedSelection", function (e) {
-    // Get the selected node
-
+  function nodeMoved(e) {
     var node = e.subject.first();
 
     // If a node is selected
@@ -436,8 +433,7 @@ function init() {
           X: x,
           Y: y,
           width: width,
-          height: height,
-          source: node.data.source,
+          height: height
         };
 
         // Send the location, width, and height to the popup window
@@ -445,9 +441,21 @@ function init() {
         console.log(data);
       }
     }
+  }
 
+
+
+
+  // Add a listener for the ChangedSelection event
+  myDiagram.addDiagramListener("ChangedSelection", function (e) {
+    nodeMoved(e);
   });
 
+
+  // Add a listener for the SelectionChanged event
+  myDiagram.addDiagramListener("SelectionMoved", function (e) {
+    nodeMoved(e);
+  });
 
 }
 

@@ -720,11 +720,6 @@ function init() {
     nodeMoved(e);
   });
 
-
- 
-
-
-
 }
 
 window.addEventListener('DOMContentLoaded', init);
