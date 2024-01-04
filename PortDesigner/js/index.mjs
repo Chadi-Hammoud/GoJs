@@ -1,8 +1,7 @@
 
-import * as go from "../../node_modules/gojs/release/go.mjs";
-//import {setMyDiagram} from "./data.js";
+import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
 
-let myDiagram;
+
 let popupWindow;
 
 function init() {
@@ -29,40 +28,6 @@ function init() {
   createConfigNewSlotDialog();
 
 
-  let $ = go.GraphObject.make;
-  // let currentLayout = makeLayout(isVertical === 'v');
-
-  myDiagram = new go.Diagram("myDiagramDiv",
-    {
-
-      // when a drag-drop occurs in the Diagram's background, make it a top-level node
-      // mouseDrop: e => finishDrop(e, null),
-      // layout: currentLayout,
-      "commandHandler.archetypeGroupData": { isGroup: true, text: "Group", horiz: false },
-      "undoManager.isEnabled": true,
-      "allowZoom": true,
-      "allowResize": true,
-      //"fixedBounds": new go.Rect(0, 0, 250, 600), // Set fixedBounds to a specific rectangular area
-    });
-
-  function makeLayout(isVertical, columns, rows) {
-    let layout = null;
-    if (isVertical) {
-      layout = $(go.GridLayout, {
-        wrappingColumn: Infinity, alignment: go.GridLayout.Position,
-        wrappingWidth: rows,
-        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4),
-
-      });
-    } else {
-      layout = $(go.GridLayout, {
-        wrappingWidth: Infinity, alignment: go.GridLayout.Position,
-        wrappingColumn: columns || 1,
-        cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
-      });
-    }
-    return layout;
-  }
 
 
   myDiagram.nodeTemplateMap.add("board",
@@ -176,14 +141,14 @@ function init() {
     let tempVal = 0.0;
     for (let i = 1; i <= borderCount; i++) {
 
-      let dis = 1000.0 / borderCount
+      let dis = 900.0 / borderCount
       if (isVertical !== 'v') {
 
      
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
           category: "board",
-          width: 1000,
+          width: 2000,
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
@@ -198,7 +163,7 @@ function init() {
           key: `port${startIndex}`,
           category: "board",
           width: dis,
-          height: 1000,
+          height: 900,
           text: `${defaultValue}:${indexSlot}`,
           location: `${tempVal} 0`,
           visible: true,
@@ -340,9 +305,9 @@ function init() {
     var diagramWidth = viewportBounds.width;
     var diagramHeight = viewportBounds.height;
 
-    let location = `${parseInt(x * diagramWidth / 1000)} ${parseInt(y * diagramHeight / 1000)}`;
-    let width = parseInt(data.width * diagramWidth / 1000);
-    let height = parseInt(data.height * diagramHeight / 1000);
+    let location = `${parseInt(x * diagramWidth / 2000)} ${parseInt(y * diagramHeight / 900)}`;
+    let width = parseInt(data.width * diagramWidth / 2000);
+    let height = parseInt(data.height * diagramHeight / 900);
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
 
@@ -379,10 +344,10 @@ function init() {
   var diagramHeight = viewportBounds.height;
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-    let xPercentage = ((parseFloat((x * 1000) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * 1000) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * 1000) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * 1000) / diagramHeight));
+    let xPercentage = ((parseFloat((x * 2000) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * 900) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * 2000) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * 900) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
@@ -481,11 +446,7 @@ function init() {
       }
     }
 
-
-
   });
-
-
 
 
 }

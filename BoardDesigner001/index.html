@@ -80,7 +80,10 @@
 
 <body>
 
+
+  <script id="code" type="module" src="./Js/Diagram.mjs"></script>
   <script id="code" type="module" src="./Js/index.mjs"></script>
+  <script id="code1" type="module" src="./Js/actions.mjs"></script>
 
 
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
@@ -134,8 +137,22 @@
             </a>
 
             <ul id="ull" class="dropdown-menu" aria-labelledby="servicesDropdown" style="display: none">
-              <li class="dropdown-item" id="shelfType"> shelf type </li>
-              <li class="dropdown-item" id="BoardType"> board type </li>
+              <li class="dropdown-item" id="BoardType">
+
+
+                <a id="selectType" href="../PortDesigner/index.html" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" style="color: black; text-decoration: none;">
+                  board type
+                </a>
+              </li>
+              <li class="dropdown-item" id="shelfType">
+
+                <a id="selectType" href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
+                  shelf type
+                </a>
+
+              </li>
 
             </ul>
           </li>
@@ -159,16 +176,16 @@
     document.addEventListener("DOMContentLoaded", function () {
       let actionsDropdownMenu = document.getElementById("ul");
       let selectTypeDropdownMenu = document.getElementById("ull");
-  
+
       let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
       let typesItems = document.querySelectorAll("#ull .dropdown-item");
-  
+
       // Function to hide the dropdown menus
       function hideDropdownMenus() {
         actionsDropdownMenu.style.display = "none";
         selectTypeDropdownMenu.style.display = "none";
       }
-  
+
       // Event listener for Actions dropdown
       let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
       actionsDropdownMenuButton.addEventListener("click", function (event) {
@@ -177,7 +194,7 @@
         // Hide the other dropdown menu
         selectTypeDropdownMenu.style.display = "none";
       });
-  
+
       // Event listener for Select Type dropdown
       let selectTypeDropdownMenuButton = document.getElementById("selectType");
       selectTypeDropdownMenuButton.addEventListener("click", function (event) {
@@ -186,21 +203,21 @@
         // Hide the other dropdown menu
         actionsDropdownMenu.style.display = "none";
       });
-  
+
       // Event listeners for Actions dropdown items
       actionsDropdownItems.forEach(function (item) {
         item.addEventListener("click", function () {
           hideDropdownMenus();
         });
       });
-  
+
       // Event listeners for Select Type dropdown items
       typesItems.forEach(function (item) {
         item.addEventListener("click", function () {
           hideDropdownMenus();
         });
       });
-  
+
       // Close dropdowns when clicking outside of them
       document.addEventListener("click", function (event) {
         if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
