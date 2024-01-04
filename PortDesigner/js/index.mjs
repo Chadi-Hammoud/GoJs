@@ -126,25 +126,59 @@ function init() {
   );
 
 
+
+
+
+
+
+
   // Clear existing nodes
   myDiagram.model = new go.GraphLinksModel();
 
   let indexSlot = 0;
+  let parts = [];
+
+function modifyPart(src, backWidth, backHeight) {
+  let part = $(go.Part, {
+    locationSpot: go.Spot.Center,
+    layerName: "Background",
+    position: new go.Point(-10, -10),
+    selectable: false,
+    pickable: false,
+    movable: false,
+  }, 
+  $(go.Picture, src || "", {
+    background: "white",
+    stretch: go.GraphObject.Fill,
+    width: backWidth + 20,
+    height: backHeight + 20,
+  }));
+
+  if (parts.length > 0) {
+    // Clear existing parts
+    parts.forEach(existingPart => myDiagram.remove(existingPart));
+    parts.length = 0;
+  }
+
+  parts.push(part);
+  myDiagram.add(part); // Add the new part to the diagram
+  return part;
+}
+
 
   function addPort() {
-
-   
-
     let defaultValue = (startIndex === NaN ? startIndex : 0);
 
-  
+
     let tempVal = 0.0;
+    let backWidth = 0;
+    let backHeight = 100;
     for (let i = 1; i <= borderCount; i++) {
 
       let dis = 900.0 / borderCount
       if (isVertical !== 'v') {
 
-     
+        backWidth = 2000;
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
           category: "board",
@@ -156,9 +190,12 @@ function init() {
           source: "http://127.0.0.1:5500/PortDesigner/images/port.svg",
         });
 
-
+        backHeight += dis;
 
       } else {
+
+        backHeight = 900;
+
         myDiagram.model.addNodeData({
           key: `port${startIndex}`,
           category: "board",
@@ -169,11 +206,31 @@ function init() {
           visible: true,
           source: "http://127.0.0.1:5500/PortDesigner/images/port.svg",
         });
+
+        backWidth += dis;
         //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
       }
       tempVal += dis;
       defaultValue++;
     }
+    let src;
+    document.getElementById("addBackround").addEventListener("click", e => {
+      document.getElementById("showBacks").style.display = "block";
+      let back = document.getElementById("back1");
+
+      back.addEventListener("click", event => {
+
+        src = back.currentSrc;
+
+        let part = modifyPart(src, backWidth, backHeight);
+        myDiagram.redraw(part);
+      });
+    });
+
+
+    let part = modifyPart(src, backWidth, backHeight);
+    myDiagram.redraw(part);
+
 
   }
 
@@ -206,8 +263,7 @@ function init() {
 
   let distribution;
   let startPoint;
-  let isbackMode;
-  let rear;
+
 
 
 
