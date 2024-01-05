@@ -1,6 +1,6 @@
 
 
-import { $ , myDiagram } from "./Diagram.mjs";
+import { $, myDiagram } from "./Diagram.mjs";
 
 
 let popupWindow;
@@ -127,10 +127,7 @@ function init() {
 
 
 
-  function fitNodesOnScreen() {
-    // Execute the "Fit Document" command
-    myDiagram.zoomToFit();
-  }
+
 
 
 
@@ -417,7 +414,7 @@ function init() {
         addIndexOnSlot = parseInt(data.addIndexOnSlot);
         checkIndex();
       } else if (data.formId == 'autoDistributionForm') {
-       
+
 
       } else if (data.formId == 'displayBackMode') {
 
@@ -435,7 +432,7 @@ function init() {
   document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    
+
     top = parseInt(document.getElementById("marginTop").value);
     right = parseInt(document.getElementById("marginRight").value);
     bottom = parseInt(document.getElementById("marginBottom").value);
@@ -460,8 +457,43 @@ function init() {
   });
 
 
+  document.querySelector('#addSlotForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    addSlotIndex = parseInt(document.getElementById("addSlotIndex").value);
+    addIndexOnSlot = parseInt(document.getElementById("addIndexOnSlot").value);
+    document.getElementById("added").style.display = "block";
+    checkIndex();
+  });
 
-  function updateAttributesFromFields(formData) {
+  let displayBackModeChB;
+  document.querySelector('#displayBackModeChB').addEventListener('click', function (event) {
+    isbackMode = document.getElementById("displayBackModeChB").checked;
+    displayBackMode(isbackMode);
+
+  });
+
+  let backSLotChB;
+
+  document.querySelector('#configureSlotForm').addEventListener("submit", function (event) {
+    event.preventDefault();
+    slotIndex = parseInt(document.getElementById("slotIndex").value);
+    indexOnSlot = parseInt(document.getElementById("indexOnSlot").value);
+    X = parseFloat(document.getElementById("X").value, 10);
+    Y = parseFloat(document.getElementById("Y").value, 10);
+    width = parseFloat(document.getElementById("width").value, 10);
+    height = parseFloat(document.getElementById("height").value, 10);
+    backSLotChB = document.getElementById("backSLotChB").checked;
+    displayBackModeChB = document.getElementById("displayBackModeChB").checked;
+
+
+    updateAttributesFromFields();
+
+  });
+
+
+
+
+  function updateAttributesFromFields() {
 
 
     let nodeText = slotIndex + ":" + indexOnSlot;
@@ -490,15 +522,15 @@ function init() {
 
     })
 
-    rear = formData.backSLotChB === "on" ? 1 : 0;
+    rear = backSLotChB === true ? 1 : 0;
 
 
     if (selectedNode instanceof go.Node) {
       var type = selectedNode.data.category;
       if (type === "board") {
         selectedNode.data.rear = rear;
-        formData.backSLotChB = "off";
-        isbackMode = formData.displayBackModeChB === "on" ? true : false;
+        backSLotChB = false;
+        isbackMode = displayBackModeChB;
         displayBackMode(isbackMode);
       }
     };
@@ -516,7 +548,6 @@ function init() {
     let height = parseInt(data.height * diagramHeight / 900);
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
-
     myDiagram.model.setDataProperty(data, "location", location);
   }
 
@@ -693,29 +724,31 @@ function init() {
       if (type === "board") {
         // Get the node's location, width, and height
         //var key = node.data.key;
-        var text = node.data.text;
+        let text = node.data.text;
         let parts = text.split(':');
         let slotIndex = parts[0];
         let indexOnSlot = parts[1];
 
-        var loc = node.location;
-        var width = node.data.width;
-        var height = node.data.height;
-        var x = loc.x;
-        var y = loc.y;
+        let loc = node.location;
+        let width = node.data.width;
+        let height = node.data.height;
+        let x = loc.x;
+        let y = loc.y;
 
-        var data = {
-          slotIndex: slotIndex,
-          indexOnSlot: indexOnSlot,
-          X: x,
-          Y: y,
-          width: width,
-          height: height
-        };
+        let bacKslotChecked = node.data.rear;
 
-        // Send the location, width, and height to the popup window
-        popupWindow.postMessage(data, "*");
-        console.log(data);
+
+        document.getElementById('slotIndex').value = slotIndex;
+        document.getElementById('indexOnSlot').value = indexOnSlot;
+        document.getElementById('X').value = x;
+        document.getElementById('Y').value = y;
+        document.getElementById('width').value = width;
+        document.getElementById('height').value = height;
+        document.getElementById('backSLotChB').checked = bacKslotChecked;
+
+        // // Send the location, width, and height to the popup window
+        // popupWindow.postMessage(data, "*");
+        // console.log(data);
       }
     }
   }

@@ -14,158 +14,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"
     integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
-
-  <style>
-    html,
-    body {
-      margin: 0;
-      overflow: hidden;
-      height: 100%;
-    }
-
-    #sample {
-      padding: 10px;
-    }
-
-    /* Add some custom styles for the navbar */
-    .navbar-brand {
-      font-weight: bold;
-    }
-
-    /* Optional: Customize the background color of the navbar */
-    .navbar-custom {
-      background-color: #343a40;
-    }
-
-    #myDiagramDiv {
-      background-color: #e0e0e0;
-      max-width: 2000px;
-      height: 900px;
-      border: solid 1px black;
-      /* resize: both; */
-      overflow: auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    #ul,
-    #ull {
-
-      position: absolute;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      padding: 10px;
-    }
-
-    #ul li,
-    #ull li {
-      list-style-type: none;
-      margin: 5px 0;
-    }
-
-    .dropdown-menu .dropdown-item {
-      display: block;
-    }
-
-    #ul li,
-    #ull li {
-      cursor: pointer;
-      display: block;
-      padding: 8px 0;
-    }
-
-
-    #sidebar {
-      height: 100%;
-      width: 0;
-      position: fixed;
-      top: 0;
-      right: 0;
-      background-color: #343a40;
-      overflow-x: hidden;
-      transition: 0.5s;
-      padding-top: 60px;
-      padding-right: 30px;
-      z-index: 2;
-    }
-
-    #sidebar a {
-      padding: 8px 8px 8px 32px;
-      text-decoration: none;
-      font-size: 18px;
-      color: white;
-      display: block;
-      transition: 0.3s;
-    }
-
-    #sidebar a:hover {
-      color: #007bff;
-    }
-
-    #sidebar .close-btn {
-      position: absolute;
-      top: 10px;
-      /* Adjusted top position */
-      right: 10px;
-      /* Adjusted right position */
-      font-size: 20px;
-      color: white;
-      text-decoration: none;
-      z-index: 4;
-      /* Added z-index value */
-    }
-
-    #autoDistributionForm {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      /* Adjust the z-index value based on your needs */
-      background-color: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      /* Adjust the alpha value for transparency */
-      z-index: 9998;
-      /* Set z-index lower than the form */
-      display: none;
-    }
-
-    #autoResizeForm {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      background-color: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    #overlay2 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 9998;
-      display: none;
-    }
-  </style>
+<link rel="stylesheet" href="./css/style.css"/>
+ 
 </head>
 
 <body>
@@ -254,8 +104,10 @@
 
   <div id="sidebar">
     <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+    <a id="configureSlotLink" class="nav-link">Configure Slot</a>
     <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
     <a id="autoResizeLink" class="nav-link">Auto Resize</a>
+    <a id="addSlotLink" class="nav-link">Add Slot</a>
     <!-- Add more links as needed -->
   </div>
 
@@ -298,14 +150,15 @@
           <hr class="my-2">
         </div>
 
-        <div class="mb-3">
-          <label for="horizontal" class="form-label">Horizontal</label>
-          <input type="number" class="form-control" id="horizontal" name="horizontal" value="10" required>
-        </div>
-
-        <div class="mb-3">
-          <label for="vertical" class="form-label">Vertical</label>
-          <input type="number" class="form-control" id="vertical" name="vertical" value="10" required>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="horizontal" class="form-label">Horizontal</label>
+            <input type="number" class="form-control" id="horizontal" name="horizontal" value="10" required>
+          </div>
+          <div class="col">
+            <label for="vertical" class="form-label">Vertical</label>
+            <input type="number" class="form-control" id="vertical" name="vertical" value="10" required>
+          </div>
         </div>
 
         <!-- Distribution Section -->
@@ -314,33 +167,35 @@
           <hr class="my-2">
         </div>
 
-        <div class="mb-3">
-          <label for="rowsCount" class="form-label">Rows</label>
-          <input type="number" class="form-control" id="rowsCount" name="rowsCount" value="2" required>
-        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="rowsCount" class="form-label">Rows</label>
+            <input type="number" class="form-control" id="rowsCount" name="rowsCount" value="2" required>
+          </div>
 
-        <div class="mb-3">
-          <label for="startPoint" class="form-label">Start Point</label>
-          <select class="form-select" id="startPoint" name="startPoint" required>
-            <option value="top-left" selected>Top-Left</option>
-            <option value="top-right">Top-Right</option>
-            <option value="bottom-left">Bottom-Left</option>
-            <option value="bottom-right">Bottom-Right</option>
-          </select>
-        </div>
+          <div class="col">
+            <label for="startPoint" class="form-label">Start Point</label>
+            <select class="form-select" id="startPoint" name="startPoint" required>
+              <option value="top-left" selected>Top-Left</option>
+              <option value="top-right">Top-Right</option>
+              <option value="bottom-left">Bottom-Left</option>
+              <option value="bottom-right">Bottom-Right</option>
+            </select>
+          </div>
 
-        <div class="mb-3">
-          <label for="direction" class="form-label">Direction</label>
-          <select class="form-select" id="direction" name="direction" required>
-            <option value="horizontal" selected>Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
+          <div class="col">
+            <label for="direction" class="form-label">Direction</label>
+            <select class="form-select" id="direction" name="direction" required>
+              <option value="horizontal" selected>Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
         </div>
 
         <!-- Buttons -->
         <div class="mb-3">
           <button type="submit" class="btn btn-success">Apply</button>
-          <button id="closeAutoDist" type="button" class="btn btn-danger close">Close</button>
+          <button id="closeAutoDist" type="button" class="btn btn-secondary">Close</button>
         </div>
       </div>
     </form>
@@ -349,59 +204,195 @@
 
   <div id="autoResizeSidebar" style="display: none;">
     <form id="autoResizeForm" class="mt-4">
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Size</label>
-        <div class="col-sm-10">
-          <hr>
-        </div>
+      <div class="mb-4">
+        <h4>Size</h4>
+        <hr class="my-2">
       </div>
 
-      <div class="form-col">
-        <div class="form-group row">
+      <div class="row mb-3">
+        <div class="col">
           <label for="width1" class="col-sm-2 col-form-label">Width</label>
-          <div class="col-sm-10">
-            <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
-          </div>
+          <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
         </div>
-        <div class="form-group row">
-          <label for="height" class="col-sm-2 col-form-label">Height</label>
-          <div class="col-sm-10">
-            <input type="number" class="form-control" id="height1" name="height1" step="0.00000000000000001" required>
-          </div>
-        </div>
-      </div>
 
-      <div class="form-group row">
-        <div class="col-sm-10 offset-sm-2">
-          <button type="submit" class="btn btn-primary">Apply</button>
-          <button id="close" class="btn btn-primary">Close</button>
+        <div class="col">
+          <label for="height1" class="col-sm-2 col-form-label">Height</label>
+          <input type="number" class="form-control" id="height1" name="height1" step="0.00000000000000001" required>
+        </div>
+
+        <div class="form-group row">
+          <div class="col">
+            <button type="submit" class="btn btn-success">Apply</button>
+            <button id="close" class="btn btn-secondary">Close</button>
+          </div>
         </div>
       </div>
     </form>
   </div>
 
+  <div id="addSlotSideBarr" style="display:none">
+    <form id="addSlotForm" class="mt-4">
+      <div class="mb-4">
+        <h4>Add Slot</h4>
+        <hr class="my-2">
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="addSlotIndex" class="col-form-label">Choose slot index</label>
+          <input type="number" class="form-control" id="addSlotIndex" name="addSlotIndex" required>
+        </div>
+
+        <div class="col">
+          <label for="addIndexOnSlot" class="col-form-label">Choose index on slot</label>
+          <input type="number" class="form-control" id="addIndexOnSlot" name="addIndexOnSlot" required>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+          <div id="added" class="row mb-3" style="display:none">
+            <div style="color:red">Added</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons on the same row -->
+      <div class="row mb-3">
+        <div class="col">
+          <button type="submit" class="btn btn-success">Ok</button>
+          <button id="cancel" type="reset" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+
+  <div id="cssb" style="display: none">
+    <form id="configureSlotForm" class="mt-4">
+      <div class="row mb-3">
+
+        <div class="col">
+          <div>Configure Slot</div>
+          <input type="checkbox" class="form-check-input" id="backSLotChB">
+          <label class="form-check-label">Back Slot</label>
+
+        </div>
+
+
+        <div class="col">
+          <div>Display Mode</div>
+
+          <input type="checkbox" id="displayBackModeChB" name="displayBackModeChB" class="form-check-input">
+          <label class="form-check-label">Back Mode</label>
+        </div>
+
+      </div>
+
+
+      <div class="row mb-3">
+        <div class="col">
+
+          <label for="slotIndex">Choose slot index:</label>
+          <input type="number" class="form-control" id="slotIndex" name="slotIndex">
+
+        </div>
+
+        <div class="col">
+          <label for="indexOnSlot">Choose index on slot:</label>
+          <input type="number" class="form-control" id="indexOnSlot" name="indexOnSlot">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+
+          <label for="X">X</label>
+          <input type="number" class="form-control" id="X" name="X" step="0.00000000000000001">
+        </div>
+
+        <div class="col">
+          <label for="Y">Y</label>
+          <input type="number" class="form-control" id="Y" name="Y" step="0.00000000000000001">
+        </div>
+      </div>
+
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="width">Width</label>
+          <input type="number" class="form-control" id="width" name="width" step="0.00000000000000001">
+
+        </div>
+        <div class="col">
+          <label for="height">Height</label>
+          <input type="number" class="form-control" id="height" name="height" step="0.00000000000000001">
+        </div>
+      </div>
+
+
+      <div class="row mb-3">
+        <div class="col">
+          <button type="submit" class="btn btn-success">Apply</button>
+          <button id="cancell" type="reset" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+    </form>
+
+
+  </div>
+
+
+
   <div id="sample">
     <div id="myDiagramDiv" style="border:1px solid black;"></div>
   </div>
 
+
+  <!-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      let displayModeForm = document.getElementById('displayModeForm');
+      displayModeForm.addEventListener('change', function (event) {
+
+        if (event.target.type === "checkbox") {
+
+          displayModeForm.submit();
+        }
+      });
+    });
+  </script> -->
   <script>
-    function showForm() {
-      document.getElementById('overlay').style.display = 'block';
+
+    function hideAutoDist() {
+      document.getElementById("autoDistributionSidebar").style.display = "none";
     }
 
-    function hideForm() {
-      document.getElementById('overlay').style.display = 'none';
-    }
-  </script>
 
-  <script>
-    function showForm2() {
-      document.getElementById('overlay2').style.display = 'block';
+    let closeAutoDist = document.getElementById("closeAutoDist");
+    closeAutoDist.addEventListener("click", hideAutoDist);
+
+    function hideNodeSize() {
+      document.getElementById("autoResizeSidebar").style.display = "none";
+    }
+    let close = document.getElementById("close");
+    close.addEventListener("click", hideNodeSize);
+
+
+    function hideAddSlot() {
+      document.getElementById("addSlotSideBarr").style.display = "none";
     }
 
-    function hideForm2() {
-      document.getElementById('overlay2').style.display = 'none';
+    let closeAddSlot = document.getElementById("cancel");
+    closeAddSlot.addEventListener("click", hideAddSlot);
+
+    function hideConfigureSlot() {
+      document.getElementById("cssb").style.display = "none";
     }
+
+    let closeConfigureSlot = document.getElementById("cancell");
+    closeConfigureSlot.addEventListener("click", hideConfigureSlot);
   </script>
 
 
@@ -423,6 +414,16 @@
       autoResizeSidebar.style.display = autoResizeSidebar.style.display === 'block' ? 'none' : 'block';
     }
 
+    function toggleAddSlotSidebar() {
+      var addSlotSidebar = document.getElementById('addSlotSideBarr');
+      addSlotSidebar.style.display = addSlotSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleConfigureSlotSidebar() {
+      var configureSlotSidebar = document.getElementById('cssb');
+      configureSlotSidebar.style.display = configureSlotSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
     // Event listener for Auto Distribution link
     document.getElementById("autoDistributionLink").addEventListener("click", function (event) {
       event.preventDefault();
@@ -430,11 +431,25 @@
     });
 
 
-    // Event listener for Auto Distribution link
+    // Event listener for Auto Resize link
     document.getElementById("autoResizeLink").addEventListener("click", function (event) {
       event.preventDefault();
       toggleAutoResizeSidebar();
     });
+
+    // Event listener for add Slot link
+    document.getElementById("addSlotLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleAddSlotSidebar();
+    });
+
+    // Event listener for configure Slot link
+    document.getElementById("configureSlotLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleConfigureSlotSidebar();
+    });
+
+
     document.addEventListener("DOMContentLoaded", function () {
       // Your existing DOMContentLoaded logic
     });
