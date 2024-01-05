@@ -15,67 +15,8 @@
   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"
     integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
 
-  <style>
-    html,
-    body {
-      margin: 0;
-      overflow: hidden;
-      height: 100%;
-    }
+  <link rel="stylesheet" href="../BoardDesigner001/css/style.css">
 
-    #sample {
-      padding: 10px;
-    }
-
-    /* Add some custom styles for the navbar */
-    .navbar-brand {
-      font-weight: bold;
-    }
-
-    /* Optional: Customize the background color of the navbar */
-    .navbar-custom {
-      background-color: #343a40;
-    }
-
-    #myDiagramDiv {
-      background-color: #e0e0e0;
-      max-width: 2000px;
-      height: 900px;
-      border: solid 1px black;
-      /* resize: both; */
-      overflow: auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    #ul,
-    #ull {
-
-      position: absolute;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      padding: 10px;
-    }
-
-    #ul li,
-    #ull li {
-      list-style-type: none;
-      margin: 5px 0;
-    }
-
-    .dropdown-menu .dropdown-item {
-      display: block;
-    }
-
-    #ul li,
-    #ull li {
-      cursor: pointer;
-      display: block;
-      padding: 8px 0;
-    }
-  </style>
 </head>
 
 <body>
@@ -86,7 +27,7 @@
 
 
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container">
+    <div>
 
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,17 +43,11 @@
             </a>
 
             <ul id="ul" class="dropdown-menu" aria-labelledby="servicesDropdown" style="display: none">
-
-
               <li class="dropdown-item" id="alignXSelected">Align horizontally the selected ports </li>
 
-
               <li class="dropdown-item" id="alignYSelected">Align vertically the selected ports</li>
-
               <li class="dropdown-item" id="setWidthSelected">Set the same width</li>
-
               <li class="dropdown-item" id="setHeightSelected"> Set the same height</li>
-
               <li class="dropdown-item" id="calculateVerticalDistance">Vertical distance: Define the same distance
                 between successive
                 port</li>
@@ -139,15 +74,15 @@
               <li class="dropdown-item" id="BoardType">
 
 
-                <a id="selectType" href="./index.html" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false" style="color: black; text-decoration: none;">
+                <a id="selectType" href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
                   board type
                 </a>
               </li>
               <li class="dropdown-item" id="shelfType">
 
-                <a id="selectType" href="../BoardDesigner001/index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
-                  aria-expanded="false" style="color: black; text-decoration: none;">
+                <a id="selectType" href="../BoardDesigner001/index.html" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" style="color: black; text-decoration: none;">
                   shelf type
                 </a>
 
@@ -157,29 +92,331 @@
           </li>
 
 
+
         </ul>
       </div>
     </div>
   </nav>
 
-  <div id="sample">
-    <div id="myDiagramDiv" style="border:1px solid black;"></div>
-    <button id="addBackround" class="btn btn-primary"> 
-      Add Background
-    </button>
 
-    <button id="removeBackround" class="btn btn-primary"> 
-      Remove Background
-    </button>
+  <!-- Add a button/icon to trigger the side menu -->
+  <button class="btn btn-secondary d-lg-none" onclick="toggleSidebar()">Open Menu</button>
 
-    <div id = "showBacks" style="display: none; margin:auto; width:auto">
-      <b> select a backround </b>
-      <img id="back1" src="./backgrounds/back1.jpg" style= "height:200px; width:200px"/>
-      <img id="back2" src="./backgrounds/back2.jpg" style= "height:200px; width:200px"/>
-     
-    </div>
+  <div id="sidebar">
+    <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+    <a id="configureSlotLink" class="nav-link">Configure</a>
+    <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
+    <a id="autoResizeLink" class="nav-link">Auto Resize</a>
+    <a id="addBackgroundLink" class="nav-link">Add Background</a>
+
+    <!-- Add more links as needed -->
   </div>
 
+  <!-- Auto Distribution Sidebar -->
+  <div id="autoDistributionSidebar" style="display: none;">
+
+    <form id="autoDistributionForm" class="mt-4">
+      <div>
+        <!-- Margins Section -->
+        <div class="mb-4">
+          <h4>Margins</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginLeft" class="form-label">Left</label>
+            <input type="number" class="form-control" id="marginLeft" name="marginLeft" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginRight" class="form-label">Right</label>
+            <input type="number" class="form-control" id="marginRight" name="marginRight" value="30" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginTop" class="form-label">Top</label>
+            <input type="number" class="form-control" id="marginTop" name="marginTop" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginBottom" class="form-label">Bottom</label>
+            <input type="number" class="form-control" id="marginBottom" name="marginBottom" value="30" required>
+          </div>
+        </div>
+
+        <!-- Spacing Section -->
+        <div class="mb-4">
+          <h4>Spacing</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="horizontal" class="form-label">Horizontal</label>
+            <input type="number" class="form-control" id="horizontal" name="horizontal" value="10" required>
+          </div>
+          <div class="col">
+            <label for="vertical" class="form-label">Vertical</label>
+            <input type="number" class="form-control" id="vertical" name="vertical" value="10" required>
+          </div>
+        </div>
+
+        <!-- Distribution Section -->
+        <div class="mb-4">
+          <h4>Distribution</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="rowsCount" class="form-label">Rows</label>
+            <input type="number" class="form-control" id="rowsCount" name="rowsCount" value="2" required>
+          </div>
+
+          <div class="col">
+            <label for="startPoint" class="form-label">Start Point</label>
+            <select class="form-select" id="startPoint" name="startPoint" required>
+              <option value="top-left" selected>Top-Left</option>
+              <option value="top-right">Top-Right</option>
+              <option value="bottom-left">Bottom-Left</option>
+              <option value="bottom-right">Bottom-Right</option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label for="direction" class="form-label">Direction</label>
+            <select class="form-select" id="direction" name="direction" required>
+              <option value="horizontal" selected>Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+          <button type="submit" class="btn btn-success">Apply</button>
+          <button id="closeAutoDist" type="button" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <div id="autoResizeSidebar" style="display: none;">
+    <form id="autoResizeForm" class="mt-4">
+      <div class="mb-4">
+        <h4>Size</h4>
+        <hr class="my-2">
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="width1" class="col-sm-2 col-form-label">Width</label>
+          <input type="number" class="form-control" id="width1" name="width1" step="0.00000000000000001" required>
+        </div>
+
+        <div class="col">
+          <label for="height1" class="col-sm-2 col-form-label">Height</label>
+          <input type="number" class="form-control" id="height1" name="height1" step="0.00000000000000001" required>
+        </div>
+
+        <div class="form-group row">
+          <div class="col">
+            <button type="submit" class="btn btn-success">Apply</button>
+            <button id="close" class="btn btn-secondary">Close</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="cssb" style="display: none">
+    <form id="configureSlotForm" class="mt-4">
+
+      <div class="row mb-3">
+        <div class="col">
+
+          <label for="slotIndex">Choose slot index:</label>
+          <input type="number" class="form-control" id="slotIndex" name="slotIndex">
+
+        </div>
+
+        <div class="col">
+          <label for="indexOnSlot">Choose index on slot:</label>
+          <input type="number" class="form-control" id="indexOnSlot" name="indexOnSlot">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+
+          <label for="X">X</label>
+          <input type="number" class="form-control" id="X" name="X" step="0.00000000000000001">
+        </div>
+
+        <div class="col">
+          <label for="Y">Y</label>
+          <input type="number" class="form-control" id="Y" name="Y" step="0.00000000000000001">
+        </div>
+      </div>
+
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="width">Width</label>
+          <input type="number" class="form-control" id="width" name="width" step="0.00000000000000001">
+
+        </div>
+        <div class="col">
+          <label for="height">Height</label>
+          <input type="number" class="form-control" id="height" name="height" step="0.00000000000000001">
+        </div>
+      </div>
+
+
+      <div class="row mb-3">
+        <div class="col">
+          <button type="submit" class="btn btn-success">Apply</button>
+          <button id="cancell" type="reset" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+    </form>
+
+
+  </div>
+
+  <div id="backgroundSideBar" style="display: none">
+    <div id="backgroundSideForm" class="mt-4">
+      <h3>Choose Image</h3>
+      <div class="row mb-3">
+        <div class="col">
+
+
+          <img id="back1" src="./backgrounds/back1.jpg" style="height:400px; width:400px" />
+          <img id="back2" src="./backgrounds/back2.jpg" style="height:400px; width:400px" />
+          <img id="back3" src="./backgrounds/back3.PNG" style="height:400px; width:400px" />
+
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+          <button id="cancelll" type="reset" class="btn btn-success">Save</button>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <div id="sample">
+    <div id="myDiagramDiv" style="border:1px solid black;"></div>
+
+  </div>
+
+
+
+  <script>
+
+    function hideAutoDist() {
+      document.getElementById("autoDistributionSidebar").style.display = "none";
+    }
+
+
+    let closeAutoDist = document.getElementById("closeAutoDist");
+    closeAutoDist.addEventListener("click", hideAutoDist);
+
+    function hideNodeSize() {
+      document.getElementById("autoResizeSidebar").style.display = "none";
+    }
+    let close = document.getElementById("close");
+    close.addEventListener("click", hideNodeSize);
+
+
+    function hideConfigureSlot() {
+      document.getElementById("cssb").style.display = "none";
+    }
+
+    let closeConfigureSlot = document.getElementById("cancell");
+    closeConfigureSlot.addEventListener("click", hideConfigureSlot);
+
+    function hideBackground() {
+      document.getElementById("backgroundSideBar").style.display = "none";
+    }
+
+    let backgroundSideBar = document.getElementById("cancelll");
+    backgroundSideBar.addEventListener("click", hideBackground);
+
+  </script>
+
+
+  <script>
+    // Toggle the sidebar menu
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
+    }
+
+    // Toggle the Auto Distribution sidebar
+    function toggleAutoDistributionSidebar() {
+      var autoDistributionSidebar = document.getElementById('autoDistributionSidebar');
+      autoDistributionSidebar.style.display = autoDistributionSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleAutoResizeSidebar() {
+      var autoResizeSidebar = document.getElementById('autoResizeSidebar');
+      autoResizeSidebar.style.display = autoResizeSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+
+    function toggleConfigureSlotSidebar() {
+      var configureSlotSidebar = document.getElementById('cssb');
+      configureSlotSidebar.style.display = configureSlotSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleBackgroundSideBar() {
+      var backgroundSidebar = document.getElementById('backgroundSideBar');
+      backgroundSidebar.style.display = backgroundSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+
+
+
+    // Event listener for Auto Distribution link
+    document.getElementById("autoDistributionLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleAutoDistributionSidebar();
+    });
+
+
+    // Event listener for Auto Resize link
+    document.getElementById("autoResizeLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleAutoResizeSidebar();
+    });
+
+
+
+    // Event listener for configure Slot link
+    document.getElementById("configureSlotLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleConfigureSlotSidebar();
+    });
+
+    document.getElementById("addBackgroundLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleBackgroundSideBar();
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Your existing DOMContentLoaded logic
+    });
+  </script>
 
 
   <!-- Bootstrap JS (optional, but required for modal functionality) -->

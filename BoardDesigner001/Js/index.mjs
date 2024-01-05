@@ -3,31 +3,12 @@
 import { $, myDiagram } from "./Diagram.mjs";
 
 
-let popupWindow;
 
 function init() {
 
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
-
-
-  function createConfigNewSlotDialog() {
-    // Specify the URL and other options for the popup window
-    var popupOptions = 'width=600,height=800,scrollbars=yes';
-
-    // Check if the popup already exists and is not closed
-    if (popupWindow && !popupWindow.closed) {
-      // If it is, just focus on it
-      popupWindow.focus();
-    } else {
-      // If not, open a new popup window with the specified URL and options
-      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
-    }
-  }
-
-  createConfigNewSlotDialog();
-
 
 
 
@@ -378,60 +359,9 @@ function init() {
     selectedNode = e.subject.first();
   });
 
-  window.addEventListener('message', function (event) {
-    // Optional: Check the origin of the data!
-    // if (event.origin !== "http://example.com:8080")
-    //     return;
-
-    // The data sent from the popup
-    if (event.source.name === "Popup") {
-      const data = event.data;
-      if (data.formId == 'form0') {
-
-        slotIndex = parseInt(data.slotIndex);
-        indexOnSlot = parseInt(data.indexOnSlot);
-        X = parseFloat(data.X, 10);
-        Y = parseFloat(data.Y, 10);
-        width = parseFloat(data.width, 10);
-        height = parseFloat(data.height, 10);
-
-        console.log("received message");
-        // Use the data
-        console.log(data);
-
-
-
-        updateAttributesFromFields(data);
-
-      } else if (data.formId == 'form1') {
-
-        //if form1
-        width1 = parseFloat(data.width1, 10);
-        height1 = parseFloat(data.height1, 10);
-        autoResizePorts();
-      } else if (data.formId == 'form2') {
-        addSlotIndex = parseInt(data.addSlotIndex);
-        addIndexOnSlot = parseInt(data.addIndexOnSlot);
-        checkIndex();
-      } else if (data.formId == 'autoDistributionForm') {
-
-
-      } else if (data.formId == 'displayBackMode') {
-
-        isbackMode = data.displayBackModeChB === "on" ? true : false;
-        displayBackMode(isbackMode);
-
-      }
-
-    }
-
-    console.log(event.source.name);
-
-  }, false);
 
   document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
     event.preventDefault();
-
 
     top = parseInt(document.getElementById("marginTop").value);
     right = parseInt(document.getElementById("marginRight").value);
@@ -534,8 +464,6 @@ function init() {
         displayBackMode(isbackMode);
       }
     };
-
-
   }
 
   function updateBoardTypePortFromModel(data, x, y) {
@@ -746,9 +674,6 @@ function init() {
         document.getElementById('height').value = height;
         document.getElementById('backSLotChB').checked = bacKslotChecked;
 
-        // // Send the location, width, and height to the popup window
-        // popupWindow.postMessage(data, "*");
-        // console.log(data);
       }
     }
   }

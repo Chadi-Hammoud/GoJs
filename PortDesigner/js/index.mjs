@@ -2,7 +2,7 @@
 import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
 
 
-let popupWindow;
+
 
 function init() {
 
@@ -13,21 +13,7 @@ function init() {
   let divWidth = 2000;
   let divHeight = 900;
 
-  function createConfigNewSlotDialog() {
-    // Specify the URL and other options for the popup window
-    var popupOptions = 'width=600,height=800,scrollbars=yes';
 
-    // Check if the popup already exists and is not closed
-    if (popupWindow && !popupWindow.closed) {
-      // If it is, just focus on it
-      popupWindow.focus();
-    } else {
-      // If not, open a new popup window with the specified URL and options
-      popupWindow = window.open('./html/popup.html', 'Popup', popupOptions);
-    }
-  }
-
-  createConfigNewSlotDialog();
 
 
 
@@ -140,32 +126,32 @@ function init() {
   let indexSlot = 0;
   let parts = [];
 
-function modifyPart(src, backWidth, backHeight) {
-  let part = $(go.Part, {
-    locationSpot: go.Spot.Center,
-    layerName: "Background",
-    position: new go.Point(-10, -10),
-    selectable: false,
-    pickable: false,
-    movable: false,
-  }, 
-  $(go.Picture, src || "", {
-    background: "white",
-    stretch: go.GraphObject.Fill,
-    width: backWidth + 20,
-    height: backHeight + 20,
-  }));
+  function modifyPart(src, backWidth, backHeight) {
+    let part = $(go.Part, {
+      locationSpot: go.Spot.Center,
+      layerName: "Background",
+      position: new go.Point(-10, -10),
+      selectable: false,
+      pickable: false,
+      movable: false,
+    },
+      $(go.Picture, src || "", {
+        background: "white",
+        stretch: go.GraphObject.Fill,
+        width: backWidth + 20,
+        height: backHeight + 20,
+      }));
 
-  if (parts.length > 0) {
-    // Clear existing parts
-    parts.forEach(existingPart => myDiagram.remove(existingPart));
-    parts.length = 0;
+    if (parts.length > 0) {
+      // Clear existing parts
+      parts.forEach(existingPart => myDiagram.remove(existingPart));
+      parts.length = 0;
+    }
+
+    parts.push(part);
+    myDiagram.add(part); // Add the new part to the diagram
+    return part;
   }
-
-  parts.push(part);
-  myDiagram.add(part); // Add the new part to the diagram
-  return part;
-}
 
 
   function addPort() {
@@ -215,11 +201,12 @@ function modifyPart(src, backWidth, backHeight) {
       tempVal += dis;
       defaultValue++;
     }
+
     let src;
-    document.getElementById("addBackround").addEventListener("click", e => {
-      document.getElementById("showBacks").style.display = "block";
+ 
       let back = document.getElementById("back1");
       let back1 = document.getElementById("back2");
+      let back2 = document.getElementById("back3");
 
       back.addEventListener("click", event => {
 
@@ -237,12 +224,14 @@ function modifyPart(src, backWidth, backHeight) {
         myDiagram.redraw(part);
       });
 
-    });
+      back2.addEventListener("click", event => {
 
-    document.getElementById("removeBackround").addEventListener("click", e=> {
-      let part = modifyPart(src, backWidth, backHeight);
-      myDiagram.remove(part); 
-    });
+        let part = modifyPart(src, backWidth, backHeight);
+        myDiagram.remove(part);
+      });
+
+   
+
 
 
     let part = modifyPart(src, backWidth, backHeight);
@@ -284,61 +273,44 @@ function modifyPart(src, backWidth, backHeight) {
 
 
 
-  window.addEventListener('message', function (event) {
-    // Optional: Check the origin of the data!
-    // if (event.origin !== "http://example.com:8080")
-    //     return;
+  document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
+    event.preventDefault();
 
-    // The data sent from the popup
-    if (event.source.name === "Popup") {
-      const data = event.data;
-      if (data.formId == 'form0') {
+    top = parseInt(document.getElementById("marginTop").value);
+    right = parseInt(document.getElementById("marginRight").value);
+    bottom = parseInt(document.getElementById("marginBottom").value);
+    left = parseInt(document.getElementById("marginLeft").value);
 
-        slotIndex = parseInt(data.slotIndex);
-        indexOnSlot = parseInt(data.indexOnSlot);
-        X = parseFloat(data.X, 10);
-        Y = parseFloat(data.Y, 10);
-        width = parseFloat(data.width, 10);
-        height = parseFloat(data.height, 10);
+    horizontal = parseInt(document.getElementById("horizontal").value);
+    vertical = parseInt(document.getElementById("vertical").value);
+    rows = parseInt(document.getElementById("rowsCount").value);
 
-        console.log("received message");
-        // Use the data
-        console.log(data);
-        updateAttributesFromFields();
-
-      } else if (data.formId == 'form1') {
-
-        //if form1
-        width1 = parseFloat(data.width1, 10);
-        height1 = parseFloat(data.height1, 10);
-        autoResizePorts();
-      } else if (data.formId == 'form2') {
-        addSlotIndex = parseInt(data.addSlotIndex);
-        addIndexOnSlot = parseInt(data.addIndexOnSlot);
-        checkIndex();
-      } else if (data.formId == 'form3') {
-        top = parseInt(data.marginTop);
-        right = parseInt(data.marginRight);
-        bottom = parseInt(data.marginBottom);
-        left = parseInt(data.marginLeft);
-
-        horizontal = parseInt(data.horizontal);
-        vertical = parseInt(data.vertical);
-        rows = parseInt(data.rowsCount);
-
-        distribution = data.direction;
-        startPoint = data.startPoint;
+    distribution = document.getElementById("direction").value;
+    startPoint = document.getElementById("startPoint").value;
 
 
-        autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+    autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+  });
 
-      }
+  document.querySelector('#autoResizeForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    width1 = parseFloat(document.getElementById("width1").value, 10);
+    height1 = parseFloat(document.getElementById("height1").value, 10);
+    autoResizePorts();
+  });
 
-    }
+  document.querySelector('#configureSlotForm').addEventListener("submit", function (event) {
+    event.preventDefault();
+    slotIndex = parseInt(document.getElementById("slotIndex").value);
+    indexOnSlot = parseInt(document.getElementById("indexOnSlot").value);
+    X = parseFloat(document.getElementById("X").value, 10);
+    Y = parseFloat(document.getElementById("Y").value, 10);
+    width = parseFloat(document.getElementById("width").value, 10);
+    height = parseFloat(document.getElementById("height").value, 10);
 
-    console.log(event.source.name);
+    updateAttributesFromFields();
 
-  }, false);
+  });
 
 
 
@@ -489,29 +461,27 @@ function modifyPart(src, backWidth, backHeight) {
       if (type === "board") {
         // Get the node's location, width, and height
         //var key = node.data.key;
-        var text = node.data.text;
+        let text = node.data.text;
         let parts = text.split(':');
         let slotIndex = parts[0];
         let indexOnSlot = parts[1];
 
-        var loc = node.location;
-        var width = node.data.width;
-        var height = node.data.height;
-        var x = loc.x;
-        var y = loc.y;
+        let loc = node.location;
+        let width = node.data.width;
+        let height = node.data.height;
+        let x = loc.x;
+        let y = loc.y;
 
-        var data = {
-          slotIndex: slotIndex,
-          indexOnSlot: indexOnSlot,
-          X: x,
-          Y: y,
-          width: width,
-          height: height
-        };
+        let bacKslotChecked = node.data.rear;
 
-        // Send the location, width, and height to the popup window
-        popupWindow.postMessage(data, "*");
-        console.log(data);
+
+        document.getElementById('slotIndex').value = slotIndex;
+        document.getElementById('indexOnSlot').value = indexOnSlot;
+        document.getElementById('X').value = x;
+        document.getElementById('Y').value = y;
+        document.getElementById('width').value = width;
+        document.getElementById('height').value = height;
+
       }
     }
   }
