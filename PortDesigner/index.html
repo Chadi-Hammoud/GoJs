@@ -64,25 +64,52 @@
 
           </li>
 
-          <li class="nav-item dropdown" id="servicesDropdown">
-            <a id="selectType" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+          <li class="nav-item dropdown" id="telecomDropDown">
+            <a id="telecomActions" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Telecom Actions
+            </a>
+
+            <ul id="ulll" class="dropdown-menu" aria-labelledby="telecomDropDown" style="display: none">
+              <li class="dropdown-item" id="putPortOnBoard">
+
+
+                <a role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
+                  Put Port On Baord
+                </a>
+              </li>
+
+              <li class="dropdown-item" id="putSlotOnMotherBoard">
+                <a role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
+                  Put Slot On Mother Board
+                </a>
+              </li>
+
+
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown" id="selectTypeDropDown">
+            <a id="selectType" class="nav-link dropdown-toggle" href="" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
               Select Type
             </a>
 
-            <ul id="ull" class="dropdown-menu" aria-labelledby="servicesDropdown" style="display: none">
+            <ul id="ull" class="dropdown-menu" aria-labelledby="selectTypeDropDown" style="display: none">
               <li class="dropdown-item" id="BoardType">
 
 
-                <a id="selectType" href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                <a href="../PortDesigner/index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
                   aria-expanded="false" style="color: black; text-decoration: none;">
                   board type
                 </a>
               </li>
               <li class="dropdown-item" id="shelfType">
 
-                <a id="selectType" href="../BoardDesigner001/index.html" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false" style="color: black; text-decoration: none;">
+                <a href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
                   shelf type
                 </a>
 
@@ -99,8 +126,7 @@
   </nav>
 
 
-  <!-- Add a button/icon to trigger the side menu -->
-  <button class="btn btn-secondary d-lg-none" onclick="toggleSidebar()">Open Menu</button>
+
 
   <div id="sidebar">
     <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
@@ -423,59 +449,81 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      let actionsDropdownMenu = document.getElementById("ul");
-      let selectTypeDropdownMenu = document.getElementById("ull");
+  document.addEventListener("DOMContentLoaded", function () {
+  let actionsDropdownMenu = document.getElementById("ul");
+  let selectTypeDropdownMenu = document.getElementById("ull");
+  let telecomActionsMenu = document.getElementById("ulll");
 
-      let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
-      let typesItems = document.querySelectorAll("#ull .dropdown-item");
+  let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
+  let typesItems = document.querySelectorAll("#ull .dropdown-item");
+  let telecomActionsItems = document.querySelectorAll("#ulll .dropdown-item");
 
-      // Function to hide the dropdown menus
-      function hideDropdownMenus() {
-        actionsDropdownMenu.style.display = "none";
-        selectTypeDropdownMenu.style.display = "none";
-      }
+  // Function to hide the dropdown menus
+  function hideDropdownMenus() {
+  actionsDropdownMenu.style.display = "none";
+  selectTypeDropdownMenu.style.display = "none";
+  telecomActionsMenu.style.display = "none";
+  }
 
-      // Event listener for Actions dropdown
-      let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
-      actionsDropdownMenuButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        actionsDropdownMenu.style.display = (actionsDropdownMenu.style.display === "block") ? "none" : "block";
-        // Hide the other dropdown menu
-        selectTypeDropdownMenu.style.display = "none";
-      });
+  // Event listener for Actions dropdown
+  let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
+  actionsDropdownMenuButton.addEventListener("click", function (event) {
+  event.preventDefault();
+  actionsDropdownMenu.style.display = (actionsDropdownMenu.style.display === "block") ? "none" : "block";
+  // Hide the other dropdown menu
+  selectTypeDropdownMenu.style.display = "none";
+  telecomActionsMenu.style.display = "none";
+  });
 
-      // Event listener for Select Type dropdown
-      let selectTypeDropdownMenuButton = document.getElementById("selectType");
-      selectTypeDropdownMenuButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        selectTypeDropdownMenu.style.display = (selectTypeDropdownMenu.style.display === "block") ? "none" : "block";
-        // Hide the other dropdown menu
-        actionsDropdownMenu.style.display = "none";
-      });
+  let telecomActionsMenuButton = document.getElementById("telecomActions");
+  telecomActionsMenuButton.addEventListener("click", function (event) {
+  event.preventDefault();
+  telecomActionsMenu.style.display = (telecomActionsMenu.style.display === "block") ? "none" : "block";
+  // Hide the other dropdown menus
+  actionsDropdownMenu.style.display = "none";
+  selectTypeDropdownMenu.style.display = "none";
+  });
 
-      // Event listeners for Actions dropdown items
-      actionsDropdownItems.forEach(function (item) {
-        item.addEventListener("click", function () {
-          hideDropdownMenus();
-        });
-      });
 
-      // Event listeners for Select Type dropdown items
-      typesItems.forEach(function (item) {
-        item.addEventListener("click", function () {
-          hideDropdownMenus();
-        });
-      });
+  // Event listener for Select Type dropdown
+  let selectTypeDropdownMenuButton = document.getElementById("selectType");
+  selectTypeDropdownMenuButton.addEventListener("click", function (event) {
+  event.preventDefault();
+  selectTypeDropdownMenu.style.display = (selectTypeDropdownMenu.style.display === "block") ? "none" : "block";
+  // Hide the other dropdown menu
+  actionsDropdownMenu.style.display = "none";
+  telecomActionsMenu.style.display = "none";
+  });
 
-      // Close dropdowns when clicking outside of them
-      document.addEventListener("click", function (event) {
-        if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
-          !event.target.closest("#ull") && !event.target.closest("#selectType")) {
-          hideDropdownMenus();
-        }
-      });
-    });
+  // Event listeners for Actions dropdown items
+  actionsDropdownItems.forEach(function (item) {
+  item.addEventListener("click", function () {
+  hideDropdownMenus();
+  });
+  });
+
+  // Event listeners for Select Type dropdown items
+  typesItems.forEach(function (item) {
+  item.addEventListener("click", function () {
+  hideDropdownMenus();
+  });
+  });
+
+  telecomActionsItems.forEach(function (item) {
+  item.addEventListener("click", function () {
+  hideDropdownMenus();
+  });
+  });
+
+  // Close dropdowns when clicking outside of them
+  document.addEventListener("click", function (event) {
+  if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
+  !event.target.closest("#ull") && !event.target.closest("#telecomActions") &&
+  !event.target.closest("#ulll")&& !event.target.closest("#selectType")) {
+  hideDropdownMenus();
+  }
+  });
+  });
   </script>
 
 </body>

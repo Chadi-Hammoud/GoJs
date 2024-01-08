@@ -2,6 +2,8 @@
 import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
 
 
+import { boardType } from "./BoardType.mjs";
+import { motherBoard } from "./MotherBoardTypeSlot.mjs";
 
 
 function init() {
@@ -200,37 +202,38 @@ function init() {
       }
       tempVal += dis;
       defaultValue++;
+
     }
 
     let src;
- 
-      let back = document.getElementById("back1");
-      let back1 = document.getElementById("back2");
-      let back2 = document.getElementById("back3");
 
-      back.addEventListener("click", event => {
+    let back = document.getElementById("back1");
+    let back1 = document.getElementById("back2");
+    let back2 = document.getElementById("back3");
 
-        src = back.currentSrc;
+    back.addEventListener("click", event => {
 
-        let part = modifyPart(src, backWidth, backHeight);
-        myDiagram.redraw(part);
-      });
+      src = back.currentSrc;
 
-      back1.addEventListener("click", event => {
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.redraw(part);
+    });
 
-        src = back1.currentSrc;
+    back1.addEventListener("click", event => {
 
-        let part = modifyPart(src, backWidth, backHeight);
-        myDiagram.redraw(part);
-      });
+      src = back1.currentSrc;
 
-      back2.addEventListener("click", event => {
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.redraw(part);
+    });
 
-        let part = modifyPart(src, backWidth, backHeight);
-        myDiagram.remove(part);
-      });
+    back2.addEventListener("click", event => {
 
-   
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.remove(part);
+    });
+
+
 
 
 
@@ -503,5 +506,220 @@ function init() {
 }
 
 
-window.addEventListener('DOMContentLoaded', init);
+document.getElementById("putPortOnBoard").addEventListener("click", init);
+
+
+
+document.getElementById("putSlotOnMotherBoard").addEventListener("click", function (event) {
+  // Check if the links are already appended
+  if (!document.getElementById('addSlotLink') || !document.getElementById('removeSlotLink')) {
+    let addSlot = document.createElement('a');
+    let removeSlot = document.createElement('a');
+
+
+    addSlot.textContent = 'Add Slot';
+    addSlot.id = 'addSlotLink'; // Set a unique id for identification
+
+
+    removeSlot.textContent = 'Remove Slot';
+    removeSlot.id = 'removeSlotLink'; // Set a unique id for identification
+
+    let sideBarDiv = document.getElementById('sidebar');
+
+    sideBarDiv.appendChild(addSlot);
+    sideBarDiv.appendChild(removeSlot);
+
+
+
+    let id = boardType.getBoardKey();
+    let ports = boardType.getPorts();
+
+    myDiagram.model.nodeDataArray = [];
+    myDiagram.redraw();
+
+
+    console.log("Links appended.");
+  } else {
+    console.log("Links are already present.");
+  }
+
+  document.getElementById("addSlotLink").addEventListener("click", createPanel);
+});
+
+
+function createPanel() {
+
+
+  if (!document.getElementById('IndexOnSlotForm')) {
+    // <div id="autoDistributionSidebar" style="display: none;">
+    let indexOnSlotSidebar = document.createElement('div');
+    indexOnSlotSidebar.id = 'indexOnSlotSidebar';
+    indexOnSlotSidebar.style.display = 'block';
+
+
+
+    let form = document.createElement('form');
+    form.id = 'IndexOnSlotForm';
+    form.className = 'mt-4';
+    form.style.position = 'fixed';
+    form.style.top = '50%';
+    form.style.left = '50%';
+    form.style.transform = 'translate(-50%, -50%)';
+    form.style.zIndex = '9999';
+    form.style.backgroundColor = 'white';
+    form.style.padding = '20px';
+    form.style.border = '1px solid #ccc';
+    form.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+
+    // Create global div
+    let globalDiv = document.createElement('div');
+
+    // Create title div
+    let titleDiv = document.createElement('div');
+    titleDiv.className = 'mb-3';
+
+    // Create h4 element for the title
+    let h4 = document.createElement('h4');
+    h4.textContent = 'Index On Slot';
+
+    // Create hr element
+    let hr = document.createElement('hr');
+    hr.className = 'my-2';
+
+    titleDiv.appendChild(h4);
+    titleDiv.appendChild(hr);
+
+    // Create inputs div
+    let inputsDiv = document.createElement('div');
+    inputsDiv.className = 'row mb-3';
+
+    // Create col div
+    let colDiv = document.createElement('div');
+    colDiv.className = 'col';
+
+    // Create input field for index on slot
+    let indexOnSlotInput = document.createElement('input');
+    indexOnSlotInput.type = 'number';
+    indexOnSlotInput.id = 'indexOnSlot';
+    indexOnSlotInput.placeholder = 'Enter Index On Slot';
+    indexOnSlotInput.className = 'form-control';
+    indexOnSlotInput.setAttribute('required', 'required');
+    colDiv.appendChild(indexOnSlotInput);
+    indexOnSlotInput.required = true;
+
+    inputsDiv.append(colDiv);
+    globalDiv.appendChild(titleDiv);
+    globalDiv.appendChild(inputsDiv);
+
+    // Create button group div
+    let buttonGroupDiv = document.createElement('div');
+    buttonGroupDiv.className = 'mb-3';
+
+    // Create Apply button
+    let applyButton = document.createElement('button');
+    applyButton.type = 'submit';
+    applyButton.className = 'btn btn-success';
+    applyButton.textContent = 'Apply';
+    buttonGroupDiv.appendChild(applyButton);
+
+    // Create Close button
+    let closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.id = 'closeAutoDist';
+    closeButton.className = 'btn btn-secondary';
+    closeButton.textContent = 'Close';
+    buttonGroupDiv.appendChild(closeButton);
+
+    globalDiv.appendChild(buttonGroupDiv);
+
+    form.appendChild(globalDiv);
+
+    // Create Apply button event listener
+    applyButton.addEventListener('submit', function (event) {
+      event.preventDefault();
+      addMotherBoardSlot();
+    });
+
+    closeButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      closeForm();
+    });
+
+
+
+    // Append the div to the document body or another desired location
+    document.body.appendChild(indexOnSlotSidebar);
+    indexOnSlotSidebar.appendChild(form);
+
+    console.log('Form appended.');
+    return;
+  } else {
+    console.log('Form is already present.');
+  }
+}
+
+// Function to handle form submission
+function addMotherBoardSlot() {
+
+
+
+
+  // BoardTypePortPanel boardTypePortPanel = addBoardTypePort(mbs);
+
+  let retVal = document.getElementById('indexOnSlot').value;
+  let indexOnSlot = null;
+  try {
+    indexOnSlot = parseInt(retVal.trim());
+  }
+  catch (e) {
+    alert("enter a valid number");
+  }
+
+  for (motherBoard in boardType.getMotherBoardTypeSlots) {
+    if (indexOnSlot !== null && motherBoard.getIndexOnSlot() == indexOnSlot) {
+      indexOnSlot = null;
+      alert("The slot already exist");
+      break;
+    }
+    if (indexOnSlot !== null) {
+      return;
+    }
+
+    motherBoard.setBoardTypeId(boardType.getBoardKey != null ? boardType.getBoardKey : null);
+    motherBoard.setIndexOnSlot(indexOnSlot);
+    motherBoard.setXPercentage(5.0);
+    motherBoard.setYPercentage(5.0);
+    motherBoard.setWidthPercentage(30.0);
+    motherBoard.setHeightPercentage(30.0)
+
+    boardType.getMotherBoardTypeSlots.push(motherBoard);
+
+    //darw here
+  }
+
+
+
+
+  closeForm();
+}
+
+// Function to close the form
+function closeForm() {
+  let form = document.getElementById('IndexOnSlotForm');
+  if (form) {
+    form.remove(); // Remove the form from the DOM
+    console.log('Form closed.');
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 

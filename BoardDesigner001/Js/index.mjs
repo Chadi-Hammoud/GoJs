@@ -11,7 +11,6 @@ function init() {
   let isVertical = prompt("is vertical?, v ");
 
 
-
   myDiagram.nodeTemplateMap.add("board",
     $(go.Node, "Auto",
       new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -694,5 +693,8 @@ function init() {
 
 }
 
-window.addEventListener('DOMContentLoaded', init);
+
+
+document.getElementById("putSlotOnBoard").addEventListener("click", init);
+
 
