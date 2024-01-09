@@ -2,7 +2,7 @@
 
 import { $, myDiagram } from "./Diagram.mjs";
 
-import { slotDesigner } from "./slotDesigner.mjs";
+import { slotDesigner } from "../../CabinetDesigner/Js/NodeTemplate.mjs"; 
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 function init() {
@@ -176,14 +176,14 @@ function init() {
 
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
-      var textBlock = node.findObject('boardTextblock');
+      let textBlock = node.findObject('boardTextblock');
 
       if (nodeText === textBlock.text) {
         // Start a transaction
         myDiagram.startTransaction('update properties');
 
-        var key = node.key;
-        var data = myDiagram.model.findNodeDataForKey(key);
+        let key = node.key;
+        let data = myDiagram.model.findNodeDataForKey(key);
         let location = `${X} ${Y}`;
 
         myDiagram.model.setDataProperty(data, "width", width);
@@ -202,7 +202,7 @@ function init() {
 
 
     if (selectedNode instanceof go.Node) {
-      var type = selectedNode.data.category;
+      let type = selectedNode.data.category;
       if (type === "slot") {
         selectedNode.data.rear = rear;
         backSLotChB = false;
@@ -213,9 +213,9 @@ function init() {
   }
 
   function updateBoardTypePortFromModel(data, x, y) {
-    var viewportBounds = myDiagram.viewportBounds;
-    var diagramWidth = viewportBounds.width;
-    var diagramHeight = viewportBounds.height;
+    let viewportBounds = myDiagram.viewportBounds;
+    let diagramWidth = viewportBounds.width;
+    let diagramHeight = viewportBounds.height;
 
     let location = `${parseInt(x * diagramWidth / 2000)} ${parseInt(y * diagramHeight / 900)}`;
     let width = parseInt(data.width * diagramWidth / 2000);
@@ -231,8 +231,8 @@ function init() {
       // Start a transaction
       myDiagram.startTransaction('update size');
 
-      var key = node.key;
-      var data = myDiagram.model.findNodeDataForKey(key);
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
       let parts = data.location.split(' ');
       x = parts[0];
       y = parts[1];
@@ -255,7 +255,7 @@ function init() {
     let nodeExists = false;
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
-      var textBlock = node.findObject('boardTextblock');
+      let textBlock = node.findObject('boardTextblock');
       if (nodeText === textBlock.text) {
         // A node with the same text exists
         nodeExists = true;
@@ -289,9 +289,9 @@ function init() {
 
   }
 
-  var viewportBounds = myDiagram.viewportBounds;
-  var diagramWidth = viewportBounds.width;
-  var diagramHeight = viewportBounds.height;
+  let viewportBounds = myDiagram.viewportBounds;
+  let diagramWidth = viewportBounds.width;
+  let diagramHeight = viewportBounds.height;
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
     let xPercentage = ((parseFloat((x * 2000) / diagramWidth)));
@@ -314,8 +314,8 @@ function init() {
       // Iterate over all nodes
       myDiagram.nodes.each(function (node) {
 
-        var key = node.key;
-        var data = myDiagram.model.findNodeDataForKey(key);
+        let key = node.key;
+        let data = myDiagram.model.findNodeDataForKey(key);
 
         let x = 0, y = 0;
 
@@ -357,8 +357,8 @@ function init() {
 
     myDiagram.nodes.each(function (node) {
 
-      var key = node.key;
-      var data = myDiagram.model.findNodeDataForKey(key);
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
 
       let bacKS = data.rear;
 
@@ -390,14 +390,14 @@ function init() {
 
 
   function nodeMoved(e) {
-    var node = e.subject.first();
+    let node = e.subject.first();
 
     // If a node is selected
     if (node instanceof go.Node) {
-      var type = node.data.category;
+      let type = node.data.category;
       if (type === "slot") {
         // Get the node's location, width, and height
-        //var key = node.data.key;
+        //let key = node.data.key;
         let text = node.data.text;
         let parts = text.split(':');
         let slotIndex = parts[0];

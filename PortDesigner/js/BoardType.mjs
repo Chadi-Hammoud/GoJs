@@ -1,5 +1,5 @@
 import { myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
-import { motherBoard } from "./MotherBoardTypeSlot.mjs";
+
 
 class BoardType {
     static nextId = 1;

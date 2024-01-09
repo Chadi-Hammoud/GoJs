@@ -4,14 +4,13 @@ import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
 import { boardType } from "./BoardType.mjs";
 import { motherBoard } from "./MotherBoardTypeSlot.mjs";
 
-import { slotDesigner } from "../../BoardDesigner001/Js/slotDesigner.mjs";
-import { portDesigner } from "./portDesigner.mjs";
+import { slotDesigner, portDesigner } from "../../CabinetDesigner/Js/NodeTemplate.mjs";
+
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 myDiagram.nodeTemplateMap.add(portDesigner);
 
 function init() {
-
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
@@ -219,14 +218,14 @@ function init() {
 
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
-      var textBlock = node.findObject('boardTextblock');
+      let textBlock = node.findObject('boardTextblock');
 
       if (nodeText === textBlock.text) {
         // Start a transaction
         myDiagram.startTransaction('update properties');
 
-        var key = node.key;
-        var data = myDiagram.model.findNodeDataForKey(key);
+        let key = node.key;
+        let data = myDiagram.model.findNodeDataForKey(key);
         let location = `${X} ${Y}`;
 
         myDiagram.model.setDataProperty(data, "width", width);
@@ -244,9 +243,9 @@ function init() {
   }
 
   function updateBoardTypePortFromModel(data, x, y) {
-    var viewportBounds = myDiagram.viewportBounds;
-    var diagramWidth = viewportBounds.width;
-    var diagramHeight = viewportBounds.height;
+    let viewportBounds = myDiagram.viewportBounds;
+    let diagramWidth = viewportBounds.width;
+    let diagramHeight = viewportBounds.height;
 
     let location = `${parseInt(x * diagramWidth / divWidth)} ${parseInt(y * diagramHeight / divHeight)}`;
     let width = parseInt(data.width * diagramWidth / divWidth);
@@ -263,8 +262,8 @@ function init() {
       // Start a transaction
       myDiagram.startTransaction('update size');
 
-      var key = node.key;
-      var data = myDiagram.model.findNodeDataForKey(key);
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
       let parts = data.location.split(' ');
       x = parts[0];
       y = parts[1];
@@ -282,9 +281,9 @@ function init() {
 
   }
 
-  var viewportBounds = myDiagram.viewportBounds;
-  var diagramWidth = viewportBounds.width;
-  var diagramHeight = viewportBounds.height;
+  let viewportBounds = myDiagram.viewportBounds;
+  let diagramWidth = viewportBounds.width;
+  let diagramHeight = viewportBounds.height;
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
     let xPercentage = ((parseFloat((x * divWidth) / diagramWidth)));
@@ -298,6 +297,7 @@ function init() {
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
   }
+
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
     if (borderCount > 0) {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(borderCount) / nbRows));
@@ -307,8 +307,8 @@ function init() {
       // Iterate over all nodes
       myDiagram.nodes.each(function (node) {
 
-        var key = node.key;
-        var data = myDiagram.model.findNodeDataForKey(key);
+        let key = node.key;
+        let data = myDiagram.model.findNodeDataForKey(key);
 
         let x = 0, y = 0;
 
@@ -351,14 +351,14 @@ function init() {
 
 
   function nodeMoved(e) {
-    var node = e.subject.first();
+    let node = e.subject.first();
 
     // If a node is selected
     if (node instanceof go.Node) {
-      var type = node.data.category;
+      let type = node.data.category;
       if (type === "port") {
         // Get the node's location, width, and height
-        //var key = node.data.key;
+        //let key = node.data.key;
         let text = node.data.text;
         let parts = text.split(':');
         let slotIndex = parts[0];
@@ -453,6 +453,7 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
   }
 
   document.getElementById("addSlotLink").addEventListener("click", createPanel);
+  document.getElementById("removeSlotLink").addEventListener("click", removeMotherBoardSlot);
 });
 
 
@@ -568,7 +569,6 @@ function createPanel() {
 // Function to handle form submission
 function addMotherBoardSlot() {
 
-
   let retVal = document.getElementById("indexOnSlott").value;
   let indexOnSlot = null;
   try {
@@ -610,14 +610,24 @@ function addMotherBoardSlot() {
     visible: true,
     rear: null || 0,
   });
-
-
-
-
-
   closeForm();
 }
 
+
+function removeMotherBoardSlot() {
+
+  let slot = myDiagram.selection.first(); // Get the first selected node
+
+  if (slot) {
+    myDiagram.startTransaction("deleteSlot");
+    myDiagram.model.removeNodeData(slot.data);
+    myDiagram.commitTransaction("deleteSlot");
+  }
+  let index = boardType.getMotherBoardTypeSlots().findIndex(item => item === motherBoard);
+  if (index !== -1) {
+    boardType.getMotherBoardTypeSlots().splice(index, 1);
+  }
+}
 // Function to close the form
 function closeForm() {
   let form = document.getElementById('IndexOnSlotForm');
