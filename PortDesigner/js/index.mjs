@@ -506,7 +506,20 @@ function init() {
 }
 
 
-document.getElementById("putPortOnBoard").addEventListener("click", init);
+document.getElementById("putPortOnBoard").addEventListener("click", function (event) {
+
+  init();
+  let sideBar = document.getElementById('sidebar');
+  let addSlotLink = document.getElementById('addSlotLink');
+  let removeSlotLink = document.getElementById('removeSlotLink');
+
+  if (addSlotLink && removeSlotLink) {
+    sideBar.removeChild(addSlotLink);
+    sideBar.removeChild(removeSlotLink);
+  }
+
+
+});
 
 
 
