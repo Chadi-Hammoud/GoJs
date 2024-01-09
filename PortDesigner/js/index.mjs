@@ -1,10 +1,14 @@
 
 import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
 
-
 import { boardType } from "./BoardType.mjs";
 import { motherBoard } from "./MotherBoardTypeSlot.mjs";
 
+import { slotDesigner } from "../../BoardDesigner001/Js/slotDesigner.mjs";
+import { portDesigner } from "./portDesigner.mjs";
+
+myDiagram.nodeTemplateMap.add(slotDesigner);
+myDiagram.nodeTemplateMap.add(portDesigner);
 
 function init() {
 
@@ -16,113 +20,6 @@ function init() {
   let divHeight = 900;
 
 
-
-
-
-
-  myDiagram.nodeTemplateMap.add("board",
-    $(go.Node, "Auto",
-      new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
-      new go.Binding("visible", "visible", null, null),
-      new go.Binding("rear", "rear", null, null),
-
-      {
-        resizable: true,
-        resizeObjectName: "PANEL",
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        selectionAdorned: false,
-        resizeAdornmentTemplate: $(go.Adornment, "Spot",
-          $(go.Placeholder),
-          $(go.Shape, // the handle
-            {
-              alignment: go.Spot.TopLeft,
-              cursor: "nw-resize",
-              desiredSize: new go.Size(6, 6),
-              fill: "transparent",
-              stroke: "transparent",
-
-            }),
-          $(go.Shape, // the handle
-            {
-              alignment: go.Spot.TopRight,
-              cursor: "ne-resize",
-              desiredSize: new go.Size(6, 6),
-              fill: "transparent",
-              stroke: "transparent"
-            }),
-        ),
-
-
-      },
-
-      $(go.Panel, "Vertical",
-        new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
-        new go.Binding("marginTop", "marginTop").makeTwoWay(),
-        new go.Binding("marginRight", "marginRight").makeTwoWay(),
-        new go.Binding("marginBottom", "marginBottom").makeTwoWay(),
-
-        new go.Binding("width", "width", null, null),
-        new go.Binding("height", "height", null, null),
-
-        {
-          name: "PANEL",
-        },
-        $(go.Panel, "Horizontal",
-          new go.Binding("width", "width", null, null),
-          { height: 18 },
-          $(go.Shape, "Rectangle",
-            {
-              fill: "black",
-              width: 10,
-            }
-          ),
-          $(go.Panel, "Auto",
-            $(go.Shape, "Rectangle",
-              new go.Binding("width", "width", v => v - 20),
-              {
-                fill: "white",
-                stretch: go.GraphObject.Fill,
-              }
-            ),
-            $(go.TextBlock, "",
-              {
-                name: "boardTextblock",
-                margin: 2,
-                alignment: go.Spot.Left,
-              },
-              new go.Binding("text", "text").makeTwoWay()
-            )
-          ),
-          $(go.Shape, "Rectangle",
-            {
-              fill: "black",
-              width: 10,
-            }
-          )
-        ),
-
-        $(go.Picture, {
-          background: "white",
-          name: "PANEL",
-          stretch: go.GraphObject.Fill,
-        },
-          new go.Binding("source", "source"),
-          new go.Binding("fill", "color"),
-          new go.Binding("height", "height", null, null),
-        ),
-      ),
-    ),
-
-  );
-
-
-
-
-
-
-
-
-  // Clear existing nodes
   myDiagram.model = new go.GraphLinksModel();
 
   let indexSlot = 0;
@@ -158,8 +55,6 @@ function init() {
 
   function addPort() {
     let defaultValue = (startIndex === NaN ? startIndex : 0);
-
-
     let tempVal = 0.0;
     let backWidth = 0;
     let backHeight = 0;
@@ -171,7 +66,7 @@ function init() {
         backWidth = divWidth;
         myDiagram.model.addNodeData({
           key: `port${defaultValue}`,
-          category: "board",
+          category: "port",
           width: divWidth,
           height: dis,
           text: `${defaultValue}:${indexSlot}`,
@@ -188,7 +83,7 @@ function init() {
 
         myDiagram.model.addNodeData({
           key: `port${startIndex}`,
-          category: "board",
+          category: "port",
           width: dis,
           height: divHeight,
           text: `${defaultValue}:${indexSlot}`,
@@ -461,7 +356,7 @@ function init() {
     // If a node is selected
     if (node instanceof go.Node) {
       var type = node.data.category;
-      if (type === "board") {
+      if (type === "port") {
         // Get the node's location, width, and height
         //var key = node.data.key;
         let text = node.data.text;
@@ -522,7 +417,8 @@ document.getElementById("putPortOnBoard").addEventListener("click", function (ev
 });
 
 
-
+let id;
+let ports;
 document.getElementById("putSlotOnMotherBoard").addEventListener("click", function (event) {
   // Check if the links are already appended
   if (!document.getElementById('addSlotLink') || !document.getElementById('removeSlotLink')) {
@@ -544,8 +440,8 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
 
 
-    let id = boardType.getBoardKey();
-    let ports = boardType.getPorts();
+    id = boardType.getBoardKey();
+    ports = boardType.getPorts();
 
     myDiagram.model.nodeDataArray = [];
     myDiagram.redraw();
@@ -561,7 +457,6 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
 
 function createPanel() {
-
 
   if (!document.getElementById('IndexOnSlotForm')) {
     // <div id="autoDistributionSidebar" style="display: none;">
@@ -613,7 +508,7 @@ function createPanel() {
     // Create input field for index on slot
     let indexOnSlotInput = document.createElement('input');
     indexOnSlotInput.type = 'number';
-    indexOnSlotInput.id = 'indexOnSlot';
+    indexOnSlotInput.id = 'indexOnSlott';
     indexOnSlotInput.placeholder = 'Enter Index On Slot';
     indexOnSlotInput.className = 'form-control';
     indexOnSlotInput.setAttribute('required', 'required');
@@ -629,7 +524,7 @@ function createPanel() {
     buttonGroupDiv.className = 'mb-3';
 
     // Create Apply button
-    let applyButton = document.createElement('button');
+    let applyButton = document.createElement('input');
     applyButton.type = 'submit';
     applyButton.className = 'btn btn-success';
     applyButton.textContent = 'Apply';
@@ -638,7 +533,7 @@ function createPanel() {
     // Create Close button
     let closeButton = document.createElement('button');
     closeButton.type = 'button';
-    closeButton.id = 'closeAutoDist';
+    closeButton.id = 'closeIndext';
     closeButton.className = 'btn btn-secondary';
     closeButton.textContent = 'Close';
     buttonGroupDiv.appendChild(closeButton);
@@ -647,22 +542,21 @@ function createPanel() {
 
     form.appendChild(globalDiv);
 
+    // Append the div to the document body or another desired location
+    document.body.appendChild(indexOnSlotSidebar);
+    indexOnSlotSidebar.appendChild(form);
+
     // Create Apply button event listener
-    applyButton.addEventListener('submit', function (event) {
-      event.preventDefault();
+    applyButton.addEventListener("click", (e) => {
+      e.preventDefault(); // Prevent the default form submission
       addMotherBoardSlot();
+
     });
 
     closeButton.addEventListener('click', function (event) {
       event.preventDefault();
       closeForm();
     });
-
-
-
-    // Append the div to the document body or another desired location
-    document.body.appendChild(indexOnSlotSidebar);
-    indexOnSlotSidebar.appendChild(form);
 
     console.log('Form appended.');
     return;
@@ -675,11 +569,7 @@ function createPanel() {
 function addMotherBoardSlot() {
 
 
-
-
-  // BoardTypePortPanel boardTypePortPanel = addBoardTypePort(mbs);
-
-  let retVal = document.getElementById('indexOnSlot').value;
+  let retVal = document.getElementById("indexOnSlott").value;
   let indexOnSlot = null;
   try {
     indexOnSlot = parseInt(retVal.trim());
@@ -697,18 +587,30 @@ function addMotherBoardSlot() {
     if (indexOnSlot !== null) {
       return;
     }
-
-    motherBoard.setBoardTypeId(boardType.getBoardKey != null ? boardType.getBoardKey : null);
-    motherBoard.setIndexOnSlot(indexOnSlot);
-    motherBoard.setXPercentage(5.0);
-    motherBoard.setYPercentage(5.0);
-    motherBoard.setWidthPercentage(30.0);
-    motherBoard.setHeightPercentage(30.0)
-
-    boardType.getMotherBoardTypeSlots.push(motherBoard);
-
-    //darw here
   }
+
+  motherBoard.setBoardTypeId(boardType.getBoardKey != null ? boardType.getBoardKey : null);
+  motherBoard.setIndexOnSlot(indexOnSlot);
+  motherBoard.setXPercentage(5.0);
+  motherBoard.setYPercentage(5.0);
+  motherBoard.setWidthPercentage(100.0);
+  motherBoard.setHeightPercentage(100.0)
+
+  boardType.getMotherBoardTypeSlots().push(motherBoard);
+
+
+
+  myDiagram.model.addNodeData({
+    key: `slot${motherBoard.getBoardTypeId()}`,
+    category: "slot",
+    width: motherBoard.getWidthPercentage(),
+    height: motherBoard.getHeightPercentage(),
+    text: `${indexOnSlot}`,
+    location: `${motherBoard.getXPercentage()} ${motherBoard.getYPercentage()}`,
+    visible: true,
+    rear: null || 0,
+  });
+
 
 
 

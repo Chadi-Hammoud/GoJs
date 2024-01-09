@@ -30,7 +30,7 @@ class BoardType {
     }
 
     getMotherBoardTypeSlots(){
-        return motherBoardTypeSlots;
+        return this.motherBoardTypeSlots;
     }
 
     setMotherBoardTypeSlots(motherBoardTypeSlots){

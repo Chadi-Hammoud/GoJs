@@ -1,8 +1,9 @@
 
 class MotherBoardTypeSlot {
-    static nextId = 1;
+    static MotherBoardTypeSlotId = 1;
 
     constructor() {
+        this.MotherBoardTypeSlotId++;
         this.boardKey;
         this.indexOnSlot;
         this.XPercentage;
@@ -10,6 +11,10 @@ class MotherBoardTypeSlot {
         this.WidthPercentage;
         this.HeightPercentage;
 
+    }
+
+    getBoardTypeId(){
+        return this.boardKey;
     }
 
     setBoardTypeId(boardTypeId) {
@@ -35,6 +40,20 @@ class MotherBoardTypeSlot {
     }
     setHeightPercentage(HeightPercentage) {
         this.HeightPercentage = HeightPercentage;
+    }
+
+
+    getXPercentage() {
+       return this.XPercentage;
+    }
+    getYPercentage() {
+        return this.YPercentage ;
+    }
+    getWidthPercentage() {
+        return  this.WidthPercentage ;
+    }
+    getHeightPercentage() {
+        return this.HeightPercentage ;
     }
 
 }
