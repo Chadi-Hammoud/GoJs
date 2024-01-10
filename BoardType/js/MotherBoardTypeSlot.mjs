@@ -59,7 +59,8 @@ class MotherBoardTypeSlot {
 }
 
 
-let motherBoard = new MotherBoardTypeSlot();
 
-export { motherBoard };
+
+
+export { MotherBoardTypeSlot };
 

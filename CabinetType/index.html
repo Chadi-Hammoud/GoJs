@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+  <meta name="description" content="Use the TableLayout extension to arrange nodes in a tabular or grid-like form." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"
+    integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../ShelfType/css/style.css" />
+
+</head>
+
+<body>
+
+
+  <script id="code" type="module" src="./Js/Diagram.mjs"></script>
+  <script id="code" type="module" src="./Js/index.mjs"></script>
+  <script id="code1" type="module" src="./Js/actions.mjs"></script>
+
+
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+
+          <li class="nav-item dropdown" id="servicesDropdown">
+            <a id="ActionsDropDown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Actions
+            </a>
+
+            <ul id="ul" class="dropdown-menu" aria-labelledby="servicesDropdown" style="display: none">
+              <li class="dropdown-item" id="alignXSelected">Align horizontally the selected ports </li>
+
+              <li class="dropdown-item" id="alignYSelected">Align vertically the selected ports</li>
+              <li class="dropdown-item" id="setWidthSelected">Set the same width</li>
+              <li class="dropdown-item" id="setHeightSelected"> Set the same height</li>
+              <li class="dropdown-item" id="calculateVerticalDistance">Vertical distance: Define the same distance
+                between successive
+                port</li>
+              <li class="dropdown-item" id="calculateHorizontalDistance">Horizontal distance: Define the same
+                distance between
+                successive ports selected</li>
+              <li class="dropdown-item" id="setNextHorizontalSelected">The second is the Next Horizontal
+              </li>
+              <li class="dropdown-item" id="setNextVerticalSelected"> The second is the Next Vertical</li>
+              <li class="dropdown-item" id="revertSelected">Revert selected</li>
+              <li class="dropdown-item" id="removeAction"> Remove Action</li>
+
+            </ul>
+
+          </li>
+
+          <li class="nav-item dropdown" id="telecomDropDown">
+            <a id="telecomActions" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Cabinet Actions
+            </a>
+
+            <ul id="ulll" class="dropdown-menu" aria-labelledby="telecomDropDown" style="display: none">
+              <li class="dropdown-item" id="putSlotOnShelf">
+
+
+                <a   role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
+                  Put Space On Cabinet
+                </a>
+              </li>
+
+
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown" id="selectTypeDropDown">
+            <a id="selectType" class="nav-link dropdown-toggle" href="" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Select Type
+            </a>
+
+            <ul id="ull" class="dropdown-menu" aria-labelledby="selectTypeDropDown" style="display: none">
+              <li class="dropdown-item" id="BoardType">
+
+
+                <a  href="../BoardType/index.html" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" style="color: black; text-decoration: none;">
+                  board type
+                </a>
+              </li>
+              <li class="dropdown-item" id="shelfType">
+
+                <a href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
+                  shelf type
+                </a>
+
+              </li>
+
+              <li class="dropdown-item" id="cabinetType">
+
+                <a href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
+                  cabinet type
+                </a>
+
+              </li>
+
+            </ul>
+          </li>
+
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+
+
+
+  <div id="sidebar">
+    <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+    <a id="PropertiesLink" class="nav-link">Properties</a>
+
+    <!-- Add more links as needed -->
+  </div>
+
+ 
+  <div id="propertiesSideBar" style="display: none;">
+
+    <form id="propertiesForm" class="mt-4">
+      <div>
+        <!-- Margins Section -->
+        <div class="mb-4">
+          <h4>Margins</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginLeft" class="form-label">Left</label>
+            <input type="number" class="form-control" id="marginLeft" name="marginLeft" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginRight" class="form-label">Right</label>
+            <input type="number" class="form-control" id="marginRight" name="marginRight" value="30" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="marginTop" class="form-label">Top</label>
+            <input type="number" class="form-control" id="marginTop" name="marginTop" value="30" required>
+          </div>
+          <div class="col">
+            <label for="marginBottom" class="form-label">Bottom</label>
+            <input type="number" class="form-control" id="marginBottom" name="marginBottom" value="30" required>
+          </div>
+        </div>
+
+        <!-- Spacing Section -->
+        <div class="mb-4">
+          <h4>Spacing</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="horizontal" class="form-label">Horizontal</label>
+            <input type="number" class="form-control" id="horizontal" name="horizontal" value="10" required>
+          </div>
+          <div class="col">
+            <label for="vertical" class="form-label">Vertical</label>
+            <input type="number" class="form-control" id="vertical" name="vertical" value="10" required>
+          </div>
+        </div>
+
+        <!-- Distribution Section -->
+        <div class="mb-4">
+          <h4>Distribution</h4>
+          <hr class="my-2">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <label for="rowsCount" class="form-label">Rows</label>
+            <input type="number" class="form-control" id="rowsCount" name="rowsCount" value="2" required>
+          </div>
+
+          <div class="col">
+            <label for="startPoint" class="form-label">Start Point</label>
+            <select class="form-select" id="startPoint" name="startPoint" required>
+              <option value="top-left" selected>Top-Left</option>
+              <option value="top-right">Top-Right</option>
+              <option value="bottom-left">Bottom-Left</option>
+              <option value="bottom-right">Bottom-Right</option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label for="direction" class="form-label">Direction</label>
+            <select class="form-select" id="direction" name="direction" required>
+              <option value="horizontal" selected>Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+          <button type="submit" class="btn btn-success">Apply</button>
+          <button id="closeProperties" type="button" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+ 
+
+
+
+  <div id="sample">
+    <div id="myDiagramDiv" style="border:1px solid black;"></div>
+  </div>
+
+
+  <script>
+
+    function hideProperties() {
+      document.getElementById("propertiesSideBar").style.display = "none";
+    }
+
+
+    let closeProperties = document.getElementById("closeProperties");
+    closeProperties.addEventListener("click", hideProperties);
+
+
+  </script>
+
+
+  <script>
+    // Toggle the sidebar menu
+    function toggleSidebar() {
+      let sidebar = document.getElementById('sidebar');
+      sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
+    }
+
+    // Toggle the Auto Distribution sidebar
+    function tooglePropertiesSideBar() {
+      let propertiesSidebar = document.getElementById('propertiesSideBar');
+      propertiesSidebar.style.display = propertiesSidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Event listener for Auto Distribution link
+    document.getElementById("PropertiesLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      tooglePropertiesSideBar();
+    });
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Your existing DOMContentLoaded logic
+    });
+  </script>
+
+
+  <!-- Bootstrap JS (optional, but required for modal functionality) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+ 
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+      let actionsDropdownMenu = document.getElementById("ul");
+      let selectTypeDropdownMenu = document.getElementById("ull");
+      let telecomActionsMenu = document.getElementById("ulll");
+
+      let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
+      let typesItems = document.querySelectorAll("#ull .dropdown-item");
+      let telecomActionsItems = document.querySelectorAll("#ulll .dropdown-item");
+
+      // Function to hide the dropdown menus
+      function hideDropdownMenus() {
+        actionsDropdownMenu.style.display = "none";
+        selectTypeDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      }
+
+      // Event listener for Actions dropdown
+      let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
+      actionsDropdownMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        actionsDropdownMenu.style.display = (actionsDropdownMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menu
+        selectTypeDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      });
+
+      let telecomActionsMenuButton = document.getElementById("telecomActions");
+      telecomActionsMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        telecomActionsMenu.style.display = (telecomActionsMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menus
+        actionsDropdownMenu.style.display = "none";
+        selectTypeDropdownMenu.style.display = "none";
+      });
+
+
+      // Event listener for Select Type dropdown
+      let selectTypeDropdownMenuButton = document.getElementById("selectType");
+      selectTypeDropdownMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        selectTypeDropdownMenu.style.display = (selectTypeDropdownMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menu
+        actionsDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      });
+
+      // Event listeners for Actions dropdown items
+      actionsDropdownItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
+
+      // Event listeners for Select Type dropdown items
+      typesItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
+
+      telecomActionsItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
+
+      // Close dropdowns when clicking outside of them
+      document.addEventListener("click", function (event) {
+        if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
+          !event.target.closest("#ull") && !event.target.closest("#telecomActions") &&
+          !event.target.closest("#ulll")&& !event.target.closest("#selectType")) {
+          hideDropdownMenus();
+        }
+      });
+    });
+  </script>
+
+
+
+
+
+
+</body>
+
+</html>

@@ -2,21 +2,87 @@
 import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 import { boardType } from "./BoardType.mjs";
-import { motherBoard } from "./MotherBoardTypeSlot.mjs";
+import { MotherBoardTypeSlot } from "./MotherBoardTypeSlot.mjs";
 
 import { slotDesigner, portDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
+
+import { autoDistributionNodes, autoResizePorts, nodeMoved } from "./functions.mjs";
 
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 myDiagram.nodeTemplateMap.add(portDesigner);
+
+let motherSlots;
+let divWidth;
+let divHeight;
+
+let slotIndex;
+let indexOnSlot;
+let X;
+let Y;
+let width;
+let height;
+
+let width1;
+let height1;
+
+let addSlotIndex;
+let addIndexOnSlot;
+
+let top;
+let left;
+let right;
+let bottom;
+
+
+let horizontal;
+let vertical;
+let rows;
+
+let distribution;
+let startPoint;
+
+
+function autoDiPanel() {
+  top = parseInt(document.getElementById("marginTop").value);
+  right = parseInt(document.getElementById("marginRight").value);
+  bottom = parseInt(document.getElementById("marginBottom").value);
+  left = parseInt(document.getElementById("marginLeft").value);
+
+  horizontal = parseInt(document.getElementById("horizontal").value);
+  vertical = parseInt(document.getElementById("vertical").value);
+  rows = parseInt(document.getElementById("rowsCount").value);
+
+  distribution = document.getElementById("direction").value;
+  startPoint = document.getElementById("startPoint").value;
+
+}
+
+function autoRPanel(){
+  width1 = parseFloat(document.getElementById("width1").value, 10);
+  height1 = parseFloat(document.getElementById("height1").value, 10);
+}
+
+function configPanel(){
+  slotIndex = parseInt(document.getElementById("slotIndex").value);
+  indexOnSlot = parseInt(document.getElementById("indexOnSlot").value);
+  X = parseFloat(document.getElementById("X").value, 10);
+  Y = parseFloat(document.getElementById("Y").value, 10);
+  width = parseFloat(document.getElementById("width").value, 10);
+  height = parseFloat(document.getElementById("height").value, 10);
+}
+
 
 function init() {
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
 
-  let divWidth = 2000;
-  let divHeight = 900;
+  divWidth = 2000;
+  divHeight = 900;
+
+  window.divWidth = divWidth;
+  window.divHeight = divHeight;
 
 
   myDiagram.model = new go.GraphLinksModel();
@@ -34,7 +100,7 @@ function init() {
       movable: false,
     },
       $(go.Picture, src || "", {
-       
+
         stretch: go.GraphObject.Fill,
         width: backWidth + 20,
         height: backHeight + 20,
@@ -141,70 +207,26 @@ function init() {
 
 
 
-  let slotIndex;
-  let indexOnSlot;
-  let X;
-  let Y;
-  let width;
-  let height;
-
-  let width1;
-  let height1;
-
-  let addSlotIndex;
-  let addIndexOnSlot;
-
-  let top;
-  let left;
-  let right;
-  let bottom;
-
-
-  let horizontal;
-  let vertical;
-  let rows;
-
-  let distribution;
-  let startPoint;
-
 
 
 
   document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    top = parseInt(document.getElementById("marginTop").value);
-    right = parseInt(document.getElementById("marginRight").value);
-    bottom = parseInt(document.getElementById("marginBottom").value);
-    left = parseInt(document.getElementById("marginLeft").value);
-
-    horizontal = parseInt(document.getElementById("horizontal").value);
-    vertical = parseInt(document.getElementById("vertical").value);
-    rows = parseInt(document.getElementById("rowsCount").value);
-
-    distribution = document.getElementById("direction").value;
-    startPoint = document.getElementById("startPoint").value;
-
-
+    autoDiPanel();
     autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
   });
 
+
   document.querySelector('#autoResizeForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    width1 = parseFloat(document.getElementById("width1").value, 10);
-    height1 = parseFloat(document.getElementById("height1").value, 10);
+    autoRPanel();
     autoResizePorts();
   });
 
   document.querySelector('#configureSlotForm').addEventListener("submit", function (event) {
     event.preventDefault();
-    slotIndex = parseInt(document.getElementById("slotIndex").value);
-    indexOnSlot = parseInt(document.getElementById("indexOnSlot").value);
-    X = parseFloat(document.getElementById("X").value, 10);
-    Y = parseFloat(document.getElementById("Y").value, 10);
-    width = parseFloat(document.getElementById("width").value, 10);
-    height = parseFloat(document.getElementById("height").value, 10);
-
+    configPanel();
     updateAttributesFromFields();
 
   });
@@ -402,7 +424,7 @@ function init() {
 
 
 document.getElementById("putPortOnBoard").addEventListener("click", function (event) {
-
+  document.getElementById("addBackgroundLink").style.display = "block";
   init();
   let sideBar = document.getElementById('sidebar');
   let addSlotLink = document.getElementById('addSlotLink');
@@ -420,7 +442,9 @@ document.getElementById("putPortOnBoard").addEventListener("click", function (ev
 let id;
 let ports;
 document.getElementById("putSlotOnMotherBoard").addEventListener("click", function (event) {
-  // Check if the links are already appended
+
+  document.getElementById("addBackgroundLink").style.display = "none";
+
   if (!document.getElementById('addSlotLink') || !document.getElementById('removeSlotLink')) {
     let addSlot = document.createElement('a');
     let removeSlot = document.createElement('a');
@@ -566,7 +590,8 @@ function createPanel() {
   }
 }
 
-// Function to handle form submission
+// Function to handle form submission\
+let slots = new Set();
 function addMotherBoardSlot() {
 
   let retVal = document.getElementById("indexOnSlott").value;
@@ -578,17 +603,20 @@ function addMotherBoardSlot() {
     alert("enter a valid number");
   }
 
-  for (motherBoard in boardType.getMotherBoardTypeSlots) {
-    if (indexOnSlot !== null && motherBoard.getIndexOnSlot() == indexOnSlot) {
+  for (let motherBoardTypeSlot of slots) {
+    if (indexOnSlot !== null && motherBoardTypeSlot.indexOnSlot == indexOnSlot) {
       indexOnSlot = null;
       alert("The slot already exist");
+      closeForm();
       break;
     }
-    if (indexOnSlot !== null) {
-      return;
-    }
+
+  }
+  if (indexOnSlot === null) {
+    return;
   }
 
+  let motherBoard = new MotherBoardTypeSlot();
   motherBoard.setBoardTypeId(boardType.getBoardKey != null ? boardType.getBoardKey : null);
   motherBoard.setIndexOnSlot(indexOnSlot);
   motherBoard.setXPercentage(5.0);
@@ -596,7 +624,14 @@ function addMotherBoardSlot() {
   motherBoard.setWidthPercentage(100.0);
   motherBoard.setHeightPercentage(100.0)
 
-  boardType.getMotherBoardTypeSlots().push(motherBoard);
+
+  slots.add(motherBoard);
+  boardType.setMotherBoardTypeSlots(slots);
+
+  motherSlots = boardType.getMotherBoardTypeSlots().size;
+  window.motherSlots = motherSlots;
+
+
 
 
 
@@ -615,18 +650,27 @@ function addMotherBoardSlot() {
 
 
 function removeMotherBoardSlot() {
-
   let slot = myDiagram.selection.first(); // Get the first selected node
+
+  for (let motherBoardTypeSlot of slots) {
+    if (indexOnSlot !== null && slot) {
+      motherBoardTypeSlot.indexOnSlot = null;
+      boardType.getMotherBoardTypeSlots().delete(slot);
+      
+      closeForm();
+      break;
+    }
+
+  }
 
   if (slot) {
     myDiagram.startTransaction("deleteSlot");
     myDiagram.model.removeNodeData(slot.data);
     myDiagram.commitTransaction("deleteSlot");
   }
-  let index = boardType.getMotherBoardTypeSlots().findIndex(item => item === motherBoard);
-  if (index !== -1) {
-    boardType.getMotherBoardTypeSlots().splice(index, 1);
-  }
+
+
+
 }
 // Function to close the form
 function closeForm() {
@@ -639,9 +683,31 @@ function closeForm() {
 
 
 
+document.querySelector('#autoDistributionForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  autoDiPanel();
+  autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+});
+
+document.querySelector('#autoResizeForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  autoRPanel();
+  autoResizePorts();
+});
 
 
 
+
+
+myDiagram.addDiagramListener("ChangedSelection", function (e) {
+  nodeMoved(e);
+});
+
+
+// Add a listener for the SelectionChanged event
+myDiagram.addDiagramListener("SelectionMoved", function (e) {
+  nodeMoved(e);
+});
 
 
 

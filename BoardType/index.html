@@ -67,7 +67,7 @@
           <li class="nav-item dropdown" id="telecomDropDown">
             <a id="telecomActions" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
-              Telecom Actions
+              Board Actions
             </a>
 
             <ul id="ulll" class="dropdown-menu" aria-labelledby="telecomDropDown" style="display: none">
@@ -111,6 +111,15 @@
                 <a href="../ShelfType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                   style="color: black; text-decoration: none;">
                   shelf type
+                </a>
+
+              </li>
+
+              <li class="dropdown-item" id="cabinetType">
+
+                <a href="../CabinetType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
+                  cabinet type
                 </a>
 
               </li>
@@ -263,13 +272,13 @@
       <div class="row mb-3">
         <div class="col">
 
-          <label for="slotIndex">Choose slot index:</label>
+          <label id = "forSlotIndex" for="slotIndex">Choose slot index:</label>
           <input type="number" class="form-control" id="slotIndex" name="slotIndex">
 
         </div>
 
         <div class="col">
-          <label for="indexOnSlot">Choose index on slot:</label>
+          <label id = "forIndexOnSlot" for="indexOnSlot">Choose index on slot:</label>
           <input type="number" class="form-control" id="indexOnSlot" name="indexOnSlot">
         </div>
       </div>

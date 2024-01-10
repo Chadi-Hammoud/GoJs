@@ -1,5 +1,5 @@
 import { myDiagram } from "../../ShelfType/Js/Diagram.mjs";
-
+import { MotherBoardTypeSlot } from "./MotherBoardTypeSlot.mjs";
 
 class BoardType {
     static nextId = 1;
@@ -10,7 +10,7 @@ class BoardType {
             ports: this.getPorts()
         };
 
-        this.motherBoardTypeSlots = [];
+        this.motherBoardTypeSlots = new Set();
     }
 
     getBoardKey() {
