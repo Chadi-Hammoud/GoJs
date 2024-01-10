@@ -178,12 +178,11 @@ let slotDesigner = myDiagram.nodeTemplateMap.add("slot",
         ),
 
         $(go.Picture, {
-          background: "white",
+         
           name: "PANEL",
           stretch: go.GraphObject.Fill,
         },
           new go.Binding("source", "source"),
-          new go.Binding("fill", "color"),
           new go.Binding("height", "height", null, null),
         ),
       ),

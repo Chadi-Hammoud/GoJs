@@ -34,7 +34,7 @@ function init() {
       movable: false,
     },
       $(go.Picture, src || "", {
-        background: "white",
+       
         stretch: go.GraphObject.Fill,
         width: backWidth + 20,
         height: backHeight + 20,
