@@ -2,7 +2,7 @@
 
 import { $, myDiagram } from "./Diagram.mjs";
 
-import { slotDesigner } from "../../CabinetDesigner/Js/NodeTemplate.mjs"; 
+import { slotDesigner } from "../../CabinetType/Js/NodeTemplate.mjs"; 
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 function init() {

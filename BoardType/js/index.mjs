@@ -1,10 +1,10 @@
 
-import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
+import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 import { boardType } from "./BoardType.mjs";
 import { motherBoard } from "./MotherBoardTypeSlot.mjs";
 
-import { slotDesigner, portDesigner } from "../../CabinetDesigner/Js/NodeTemplate.mjs";
+import { slotDesigner, portDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
 
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
@@ -71,7 +71,7 @@ function init() {
           text: `${defaultValue}:${indexSlot}`,
           location: `0 ${tempVal}`,
           visible: true,
-          source: "http://127.0.0.1:5500/PortDesigner/images/port.svg",
+          source: "http://127.0.0.1:5500/BoardType/images/port.svg",
         });
 
         backHeight += dis;
@@ -88,7 +88,7 @@ function init() {
           text: `${defaultValue}:${indexSlot}`,
           location: `${tempVal} 0`,
           visible: true,
-          source: "http://127.0.0.1:5500/PortDesigner/images/port.svg",
+          source: "http://127.0.0.1:5500/BoardType/images/port.svg",
         });
 
         backWidth += dis;

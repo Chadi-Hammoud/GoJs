@@ -1,5 +1,5 @@
 
-import { $, myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
+import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 let slotDesigner = myDiagram.nodeTemplateMap.add("slot",
     $(go.Node, "Auto",

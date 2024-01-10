@@ -1,4 +1,4 @@
-import { myDiagram } from "../../BoardDesigner001/Js/Diagram.mjs";
+import { myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 
 class BoardType {
