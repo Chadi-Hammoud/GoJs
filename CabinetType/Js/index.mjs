@@ -95,8 +95,8 @@ function init() {
         spaces.caption = caption;
         cabinetType.getCabinetTypeSpaces().add(spaces);
 
-        if (spaces.fromRu > ct.numberRu || spaces.toRu > ct.numberRu) {
-            alert("The number entered is bigger than the number of RU!!");
+        if (spaces.fromRu > ct.numberRu || spaces.toRu > ct.numberRu || spaces.fromRu < 0 || spaces.toRu < 0) {
+            alert("Invalid number");
             return;
         }
         myDiagram.model.addNodeData({
@@ -144,12 +144,12 @@ function init() {
 
             listOfSpaces += `${node.data.fromRu} : ${node.data.text}<br>`;
         });
-    
+
         // Update the content of the "listOfSpaces" element
         document.getElementById("listOfSpaces").innerHTML = listOfSpaces;
     }
 
-   
+
 
     document.getElementById("removeSpaceLink").addEventListener("click", function (e) {
         e.preventDefault();
@@ -204,6 +204,63 @@ function init() {
         nodeMoved(e);
     });
 
+    let f; let t; let xP; let yP; let wP; let hP; let cap;
+    document.querySelector('#propertiesForm').addEventListener("submit", function (event) {
+        event.preventDefault();
+        f = isNaN(parseInt(document.getElementById("fromRu").value)) ? 0 : spaces.fromRu === NaN ? 0 : parseInt(document.getElementById("fromRu").value);
+        t = isNaN(parseInt(document.getElementById("toRu").value)) ? 0 : spaces.toRu === NaN ? 0 : parseInt(document.getElementById("toRu").value);
+        
+        if (!checkRUs(f, t, ct, spaces)) {
+            alert("choose the from and to Ru between the convenable one, and be sure it is exist into one space only");
+            return;
+        }
+        if (spaces.fromRu > ct.numberRu || spaces.toRu > ct.numberRu || spaces.fromRu < 0 || spaces.toRu < 0) {
+            alert("Invalid number");
+            return;
+        }
+        
+        xP = isNaN(parseFloat(document.getElementById("XPercentage").value, 10)) ? 0 : spaces.xPercentage === NaN ? 0 : parseFloat(document.getElementById("XPercentage").value, 10);
+        yP = isNaN(parseFloat(document.getElementById("YPercentage").value, 10)) ? 0 : spaces.yPercentage === NaN ? 0 : parseFloat(document.getElementById("YPercentage").value, 10);
+        wP = isNaN(parseFloat(document.getElementById("widthPercentage").value, 10)) ? 0 : spaces.widthPercentage === NaN ? 0 : parseFloat(document.getElementById("widthPercentage").value, 10);
+        hP = isNaN(parseFloat(document.getElementById("heightPercentage").value, 10)) ? 0 : spaces.heightPercentage === NaN ? 0 : parseFloat(document.getElementById("heightPercentage").value, 10);
+        cap = document.getElementById("caption").value === "" ? "" : document.getElementById("caption").value === "" ? "" : document.getElementById("caption").value;
+        
+
+        updateAttributesFromFields();
+
+    });
+
+    function updateAttributesFromFields() {
+        // Start a transaction
+        myDiagram.startTransaction('update properties');
+
+        let key = myDiagram.selection.first().data.key;
+        let data = myDiagram.model.findNodeDataForKey(key);
+        let location = `${xP} ${yP}`;
+
+        spaces.fromRu = f
+        spaces.toRu = t;
+        spaces.xPercentage = xP;
+        spaces.yPercentage = yP;
+        spaces.widthPercentage = wP;
+        spaces.heightPercentage = hP;
+        spaces.caption = cap;
+
+
+
+        document.getElementById("addSpacesSideBar").style.display = "none";
+        myDiagram.model.setDataProperty(data, "width", wP);
+        myDiagram.model.setDataProperty(data, "height", hP);
+        myDiagram.model.setDataProperty(data, "location", location);
+        myDiagram.model.setDataProperty(data, "text", cap);
+        myDiagram.model.setDataProperty(data, "fromRu", f);
+        myDiagram.model.setDataProperty(data, "toRu", t);
+
+        // Commit the transaction
+        myDiagram.commitTransaction('update properties');
+
+        listItems();
+    }
 
 }
 
