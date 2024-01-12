@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +8,16 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
     <style>
-        #resizableDiv {
+        #myDiagramDiv {
             position: absolute;
-            width: 480px;
-            height: 320px;
-            min-width: 480px;
-            min-height: 320px ;
+            width: 450px;
+            height: 290px;
+            min-width: 450px;
+            min-height: 290px;
             overflow: hidden;
-            border: 1px solid #ccc;
+            background-color: #e0e0e0;
         }
 
         #header {
@@ -36,16 +38,22 @@
             padding: 5px;
         }
 
-        #close, #maximize, #minimize {
+        #close,
+        #maximize,
+        #minimize {
             cursor: pointer;
             margin-left: 5px;
             display: inline-block;
         }
     </style>
 </head>
+
 <body>
 
-    <div id="resizableDiv">
+    <script id="code1" type="module" src="../ShelfType/Js/Diagram.mjs"></script>
+    <script id="code" type="module" src="./Js/test.mjs"></script>
+
+    <div id="myDiagramDiv">
         <div id="header">
             <div id="buttons">
                 <span id="maximize">□</span>
@@ -67,52 +75,53 @@
             divHeight = ui.size.height;
             console.log('New width: ' + divWidth);
             console.log('New height: ' + divHeight);
-            // Call your function from another file here, passing divWidth and divHeight as needed
-            // yourFunctionInAnotherFile(divWidth, divHeight);
+           
+            init(divWidth, divHeight);
         }
 
         function handleMaximize() {
             if (isMaximized) {
                 // Restore the div to its original dimensions and position
-                $("#resizableDiv").width(originalWidth).height(originalHeight);
-                $("#resizableDiv").css({ top: originalTop, left: originalLeft });
+                $("#myDiagramDiv").width(originalWidth).height(originalHeight);
+                $("#myDiagramDiv").css({ top: originalTop, left: originalLeft });
             } else {
                 // Maximize the div to fit the screen starting from (0,0)
                 divWidth = window.innerWidth - 20; // Adjust as needed
                 divHeight = window.innerHeight - 20; // Adjust as needed
-                originalWidth = $("#resizableDiv").width();
-                originalHeight = $("#resizableDiv").height();
-                originalTop = $("#resizableDiv").position().top;
-                originalLeft = $("#resizableDiv").position().left;
+                originalWidth = $("#myDiagramDiv").width();
+                originalHeight = $("#myDiagramDiv").height();
+                originalTop = $("#myDiagramDiv").position().top;
+                originalLeft = $("#myDiagramDiv").position().left;
 
-                $("#resizableDiv").width(divWidth).height(divHeight);
-                $("#resizableDiv").css({ top: 0, left: 0 });
+                $("#myDiagramDiv").width(divWidth).height(divHeight);
+                $("#myDiagramDiv").css({ top: 0, left: 0 });
             }
 
             isMaximized = !isMaximized;
         }
 
-        $(function() {
+        $(function () {
             // Center the div on the screen
             let screenWidth = window.innerWidth;
             let screenHeight = window.innerHeight;
-            let div = $("#resizableDiv");
+            let div = $("#myDiagramDiv");
             div.css({
                 top: (screenHeight - div.height()) / 2,
                 left: (screenWidth - div.width()) / 2
             });
 
-            $("#resizableDiv").resizable({
+            $("#myDiagramDiv").resizable({
                 handles: 'e, s, w, n, se, sw, ne, nw',
                 resize: handleResize
-            }).draggable(); // Make the div resizable and draggable
+            })
 
             // Handle maximize button click
-            $("#maximize").on("click", function() {
+            $("#maximize").on("click", function () {
                 handleMaximize();
             });
         });
     </script>
 
 </body>
+
 </html>
