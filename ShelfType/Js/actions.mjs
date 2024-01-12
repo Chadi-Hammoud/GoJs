@@ -102,7 +102,7 @@ function revertSelectedHandler(e) {
   // If a node is selected
   if (node instanceof go.Node) {
     var type = node.data.category;
-    if (type === "board") {
+    if (type === "board" || type === "slot" || type === "port"  ) {
       destination = node.data.key;
 
       destinationData = myDiagram.model.findNodeDataForKey(destination);

@@ -101,15 +101,15 @@
               <li class="dropdown-item" id="BoardType">
 
 
-                <a href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
-                  aria-expanded="false" style="color: black; text-decoration: none;">
+                <a href="./index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  style="color: black; text-decoration: none;">
                   board type
                 </a>
               </li>
               <li class="dropdown-item" id="shelfType">
 
-                <a href="../ShelfType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  style="color: black; text-decoration: none;">
+                <a href="../ShelfType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
                   shelf type
                 </a>
 
@@ -117,8 +117,8 @@
 
               <li class="dropdown-item" id="cabinetType">
 
-                <a href="../CabinetType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  style="color: black; text-decoration: none;">
+                <a href="../CabinetType/index.html" role="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" style="color: black; text-decoration: none;">
                   cabinet type
                 </a>
 
@@ -139,10 +139,14 @@
 
   <div id="sidebar">
     <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+    <a id="showDiagramLink" class="nav-link">Show Diagram</a>
+    <a id="closeDiagramLink" class="nav-link">Close Diagram</a>
     <a id="configureSlotLink" class="nav-link">Configure</a>
     <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
     <a id="autoResizeLink" class="nav-link">Auto Resize</a>
     <a id="addBackgroundLink" class="nav-link">Add Background</a>
+
+
 
     <!-- Add more links as needed -->
   </div>
@@ -272,13 +276,13 @@
       <div class="row mb-3">
         <div class="col">
 
-          <label id = "forSlotIndex" for="slotIndex">Choose slot index:</label>
+          <label id="forSlotIndex" for="slotIndex">Choose slot index:</label>
           <input type="number" class="form-control" id="slotIndex" name="slotIndex">
 
         </div>
 
         <div class="col">
-          <label id = "forIndexOnSlot" for="indexOnSlot">Choose index on slot:</label>
+          <label id="forIndexOnSlot" for="indexOnSlot">Choose index on slot:</label>
           <input type="number" class="form-control" id="indexOnSlot" name="indexOnSlot">
         </div>
       </div>
@@ -349,9 +353,14 @@
 
 
   <div id="sample">
-    <div id="myDiagramDiv" style="border:1px solid black;"></div>
+    <dialog id="dialog" style="height: auto; width: 2000px;">
+      <div id="myDiagramDiv" style="border:1px solid black;"></div>
 
+    </dialog>
   </div>
+
+
+
 
 
 
@@ -449,7 +458,7 @@
 
 
     document.addEventListener("DOMContentLoaded", function () {
-      // Your existing DOMContentLoaded logic
+
     });
   </script>
 
@@ -458,81 +467,106 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-  document.addEventListener("DOMContentLoaded", function () {
-  let actionsDropdownMenu = document.getElementById("ul");
-  let selectTypeDropdownMenu = document.getElementById("ull");
-  let telecomActionsMenu = document.getElementById("ulll");
+    document.addEventListener("DOMContentLoaded", function () {
+      let actionsDropdownMenu = document.getElementById("ul");
+      let selectTypeDropdownMenu = document.getElementById("ull");
+      let telecomActionsMenu = document.getElementById("ulll");
 
-  let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
-  let typesItems = document.querySelectorAll("#ull .dropdown-item");
-  let telecomActionsItems = document.querySelectorAll("#ulll .dropdown-item");
+      let actionsDropdownItems = document.querySelectorAll("#ul .dropdown-item");
+      let typesItems = document.querySelectorAll("#ull .dropdown-item");
+      let telecomActionsItems = document.querySelectorAll("#ulll .dropdown-item");
 
-  // Function to hide the dropdown menus
-  function hideDropdownMenus() {
-  actionsDropdownMenu.style.display = "none";
-  selectTypeDropdownMenu.style.display = "none";
-  telecomActionsMenu.style.display = "none";
-  }
+      // Function to hide the dropdown menus
+      function hideDropdownMenus() {
+        actionsDropdownMenu.style.display = "none";
+        selectTypeDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      }
 
-  // Event listener for Actions dropdown
-  let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
-  actionsDropdownMenuButton.addEventListener("click", function (event) {
-  event.preventDefault();
-  actionsDropdownMenu.style.display = (actionsDropdownMenu.style.display === "block") ? "none" : "block";
-  // Hide the other dropdown menu
-  selectTypeDropdownMenu.style.display = "none";
-  telecomActionsMenu.style.display = "none";
-  });
+      // Event listener for Actions dropdown
+      let actionsDropdownMenuButton = document.getElementById("ActionsDropDown");
+      actionsDropdownMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        actionsDropdownMenu.style.display = (actionsDropdownMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menu
+        selectTypeDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      });
 
-  let telecomActionsMenuButton = document.getElementById("telecomActions");
-  telecomActionsMenuButton.addEventListener("click", function (event) {
-  event.preventDefault();
-  telecomActionsMenu.style.display = (telecomActionsMenu.style.display === "block") ? "none" : "block";
-  // Hide the other dropdown menus
-  actionsDropdownMenu.style.display = "none";
-  selectTypeDropdownMenu.style.display = "none";
-  });
+      let telecomActionsMenuButton = document.getElementById("telecomActions");
+      telecomActionsMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        telecomActionsMenu.style.display = (telecomActionsMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menus
+        actionsDropdownMenu.style.display = "none";
+        selectTypeDropdownMenu.style.display = "none";
+      });
 
 
-  // Event listener for Select Type dropdown
-  let selectTypeDropdownMenuButton = document.getElementById("selectType");
-  selectTypeDropdownMenuButton.addEventListener("click", function (event) {
-  event.preventDefault();
-  selectTypeDropdownMenu.style.display = (selectTypeDropdownMenu.style.display === "block") ? "none" : "block";
-  // Hide the other dropdown menu
-  actionsDropdownMenu.style.display = "none";
-  telecomActionsMenu.style.display = "none";
-  });
+      // Event listener for Select Type dropdown
+      let selectTypeDropdownMenuButton = document.getElementById("selectType");
+      selectTypeDropdownMenuButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        selectTypeDropdownMenu.style.display = (selectTypeDropdownMenu.style.display === "block") ? "none" : "block";
+        // Hide the other dropdown menu
+        actionsDropdownMenu.style.display = "none";
+        telecomActionsMenu.style.display = "none";
+      });
 
-  // Event listeners for Actions dropdown items
-  actionsDropdownItems.forEach(function (item) {
-  item.addEventListener("click", function () {
-  hideDropdownMenus();
-  });
-  });
+      // Event listeners for Actions dropdown items
+      actionsDropdownItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
 
-  // Event listeners for Select Type dropdown items
-  typesItems.forEach(function (item) {
-  item.addEventListener("click", function () {
-  hideDropdownMenus();
-  });
-  });
+      // Event listeners for Select Type dropdown items
+      typesItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
 
-  telecomActionsItems.forEach(function (item) {
-  item.addEventListener("click", function () {
-  hideDropdownMenus();
-  });
-  });
+      telecomActionsItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+          hideDropdownMenus();
+        });
+      });
 
-  // Close dropdowns when clicking outside of them
-  document.addEventListener("click", function (event) {
-  if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
-  !event.target.closest("#ull") && !event.target.closest("#telecomActions") &&
-  !event.target.closest("#ulll")&& !event.target.closest("#selectType")) {
-  hideDropdownMenus();
-  }
-  });
-  });
+      // Close dropdowns when clicking outside of them
+      document.addEventListener("click", function (event) {
+        if (!event.target.closest("#ul") && !event.target.closest("#ActionsDropDown") &&
+          !event.target.closest("#ull") && !event.target.closest("#telecomActions") &&
+          !event.target.closest("#ulll") && !event.target.closest("#selectType")) {
+          hideDropdownMenus();
+        }
+      });
+
+
+      function showDialog() {
+        let dialog = document.getElementById("dialog");
+        dialog.show();
+      }
+
+      // Event listener for triggering the display of the dialog
+      let showDialogButton = document.getElementById("showDiagramLink");
+      if (showDialogButton) {
+        showDialogButton.addEventListener("click", showDialog);
+      }
+
+      // Function to hide the dialog
+      function hideDialog() {
+        let dialog = document.getElementById("dialog");
+        dialog.close();
+      }
+
+      // Event listener for the dialog close button
+      let closeDiagramLink = document.getElementById("closeDiagramLink");
+      if (closeDiagramLink) {
+        closeDiagramLink.addEventListener("click", hideDialog);
+      }
+
+    });
   </script>
 
 </body>

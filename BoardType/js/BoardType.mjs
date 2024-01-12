@@ -5,16 +5,24 @@ class BoardType {
     static nextId = 1;
 
     constructor() {
-        this.board = {
+        this._board = {
             id: BoardType.nextId++,
             ports: this.getPorts()
         };
 
-        this.motherBoardTypeSlots = new Set();
+        this._motherBoardTypeSlots = new Set();
     }
 
-    getBoardKey() {
-        return this.board.id;
+    get boardKey() {
+        return this._board.id;
+    }
+
+    get motherBoardTypeSlots() {
+        return this._motherBoardTypeSlots;
+    }
+
+    set motherBoardTypeSlots(motherBoardTypeSlots) {
+        this._motherBoardTypeSlots = motherBoardTypeSlots;
     }
 
     getPorts() {
@@ -28,16 +36,7 @@ class BoardType {
 
         return ports;
     }
-
-    getMotherBoardTypeSlots(){
-        return this.motherBoardTypeSlots;
-    }
-
-    setMotherBoardTypeSlots(motherBoardTypeSlots){
-        this.motherBoardTypeSlots = motherBoardTypeSlots;
-    }
 }
 
-let boardType = new BoardType();
 
-export {boardType};
+export { BoardType };

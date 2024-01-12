@@ -1,20 +1,24 @@
 
 import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
-import { boardType } from "./BoardType.mjs";
+import { BoardType } from "./BoardType.mjs";
 import { MotherBoardTypeSlot } from "./MotherBoardTypeSlot.mjs";
 
 import { slotDesigner, portDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
 
-import { autoDistributionNodes, autoResizePorts, nodeMoved } from "./functions.mjs";
 
+let boardType = new BoardType();
+let motherBoard = new MotherBoardTypeSlot();
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 myDiagram.nodeTemplateMap.add(portDesigner);
 
+
+
+let divWidth = 2000;
+let divHeight = 900;
+
 let motherSlots;
-let divWidth;
-let divHeight;
 
 let slotIndex;
 let indexOnSlot;
@@ -58,12 +62,12 @@ function autoDiPanel() {
 
 }
 
-function autoRPanel(){
+function autoRPanel() {
   width1 = parseFloat(document.getElementById("width1").value, 10);
   height1 = parseFloat(document.getElementById("height1").value, 10);
 }
 
-function configPanel(){
+function configPanel() {
   slotIndex = parseInt(document.getElementById("slotIndex").value);
   indexOnSlot = parseInt(document.getElementById("indexOnSlot").value);
   X = parseFloat(document.getElementById("X").value, 10);
@@ -73,13 +77,41 @@ function configPanel(){
 }
 
 
+let parts = [];
+
+function modifyPart(src, backWidth, backHeight) {
+  let part = $(go.Part, {
+    locationSpot: go.Spot.Center,
+    layerName: "Background",
+    position: new go.Point(-10, -10),
+    selectable: false,
+    pickable: false,
+    movable: false,
+  },
+    $(go.Picture, src || "", {
+
+      stretch: go.GraphObject.Fill,
+      width: backWidth + 20,
+      height: backHeight + 20,
+    }));
+
+  if (parts.length > 0) {
+    // Clear existing parts
+    parts.forEach(existingPart => myDiagram.remove(existingPart));
+    parts.length = 0;
+  }
+
+  parts.push(part);
+  myDiagram.add(part); // Add the new part to divWidtautothe diagram
+  return part;
+}
+
 function init() {
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
   let isVertical = prompt("is vertical?, v ");
 
-  divWidth = 2000;
-  divHeight = 900;
+
 
   window.divWidth = divWidth;
   window.divHeight = divHeight;
@@ -88,34 +120,7 @@ function init() {
   myDiagram.model = new go.GraphLinksModel();
 
   let indexSlot = 0;
-  let parts = [];
 
-  function modifyPart(src, backWidth, backHeight) {
-    let part = $(go.Part, {
-      locationSpot: go.Spot.Center,
-      layerName: "Background",
-      position: new go.Point(-10, -10),
-      selectable: false,
-      pickable: false,
-      movable: false,
-    },
-      $(go.Picture, src || "", {
-
-        stretch: go.GraphObject.Fill,
-        width: backWidth + 20,
-        height: backHeight + 20,
-      }));
-
-    if (parts.length > 0) {
-      // Clear existing parts
-      parts.forEach(existingPart => myDiagram.remove(existingPart));
-      parts.length = 0;
-    }
-
-    parts.push(part);
-    myDiagram.add(part); // Add the new part to the diagram
-    return part;
-  }
 
 
   function addPort() {
@@ -439,6 +444,11 @@ document.getElementById("putPortOnBoard").addEventListener("click", function (ev
 });
 
 
+
+
+
+
+
 let id;
 let ports;
 document.getElementById("putSlotOnMotherBoard").addEventListener("click", function (event) {
@@ -464,7 +474,7 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
 
 
-    id = boardType.getBoardKey();
+    id = boardType.boardKey;
     ports = boardType.getPorts();
 
     myDiagram.model.nodeDataArray = [];
@@ -478,6 +488,9 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   document.getElementById("addSlotLink").addEventListener("click", createPanel);
   document.getElementById("removeSlotLink").addEventListener("click", removeMotherBoardSlot);
+
+  let part = modifyPart("", 0, 0);
+  myDiagram.remove(part);
 });
 
 
@@ -596,15 +609,16 @@ function addMotherBoardSlot() {
 
   let retVal = document.getElementById("indexOnSlott").value;
   let indexOnSlot = null;
-  try {
-    indexOnSlot = parseInt(retVal.trim());
-  }
-  catch (e) {
+  
+  indexOnSlot = parseInt(retVal.trim());
+  if(isNaN(indexOnSlot)){
     alert("enter a valid number");
+    return;
   }
 
-  for (let motherBoardTypeSlot of slots) {
-    if (indexOnSlot !== null && motherBoardTypeSlot.indexOnSlot == indexOnSlot) {
+
+  for (let motherBoardTypeSlot of  boardType.motherBoardTypeSlots) {
+    if (indexOnSlot !== null && motherBoardTypeSlot.indexOnSlot === indexOnSlot) {
       indexOnSlot = null;
       alert("The slot already exist");
       closeForm();
@@ -616,19 +630,19 @@ function addMotherBoardSlot() {
     return;
   }
 
-  let motherBoard = new MotherBoardTypeSlot();
-  motherBoard.setBoardTypeId(boardType.getBoardKey != null ? boardType.getBoardKey : null);
-  motherBoard.setIndexOnSlot(indexOnSlot);
-  motherBoard.setXPercentage(5.0);
-  motherBoard.setYPercentage(5.0);
-  motherBoard.setWidthPercentage(100.0);
-  motherBoard.setHeightPercentage(100.0)
+
+  motherBoard.BoardTypeId = (boardType.boardKey != null ? boardType.boardKey : null);
+  motherBoard.indexOnSlot = (indexOnSlot);
+  motherBoard.XPercentage = (5.0);
+  motherBoard.YPercentage = (5.0);
+  motherBoard.WidthPercentage = (100.0);
+  motherBoard.HeightPercentage = (100.0);
 
 
   slots.add(motherBoard);
-  boardType.setMotherBoardTypeSlots(slots);
+  boardType.motherBoardTypeSlots = (slots);
 
-  motherSlots = boardType.getMotherBoardTypeSlots().size;
+  motherSlots = boardType.motherBoardTypeSlots.size;
   window.motherSlots = motherSlots;
 
 
@@ -636,12 +650,12 @@ function addMotherBoardSlot() {
 
 
   myDiagram.model.addNodeData({
-    key: `slot${motherBoard.getBoardTypeId()}`,
+    key: `slot${motherBoard.BoardTypeId}`,
     category: "slot",
-    width: motherBoard.getWidthPercentage(),
-    height: motherBoard.getHeightPercentage(),
+    width: motherBoard.WidthPercentage,
+    height: motherBoard.HeightPercentage,
     text: `${indexOnSlot}`,
-    location: `${motherBoard.getXPercentage()} ${motherBoard.getYPercentage()}`,
+    location: `${motherBoard.XPercentage} ${motherBoard.YPercentage}`,
     visible: true,
     rear: null || 0,
   });
@@ -652,11 +666,11 @@ function addMotherBoardSlot() {
 function removeMotherBoardSlot() {
   let slot = myDiagram.selection.first(); // Get the first selected node
 
-  for (let motherBoardTypeSlot of slots) {
+  for (let motherBoardTypeSlot of boardType.motherBoardTypeSlots) {
     if (indexOnSlot !== null && slot) {
       motherBoardTypeSlot.indexOnSlot = null;
-      boardType.getMotherBoardTypeSlots().delete(slot);
-      
+      boardType.motherBoardTypeSlots.delete(slot);
+
       closeForm();
       break;
     }
@@ -708,6 +722,147 @@ myDiagram.addDiagramListener("ChangedSelection", function (e) {
 myDiagram.addDiagramListener("SelectionMoved", function (e) {
   nodeMoved(e);
 });
+
+
+function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
+
+  let viewportBounds = myDiagram.viewportBounds;
+  let diagramWidthMother = viewportBounds.width;
+  let diagramHeightMother = viewportBounds.height;
+  if (window.motherSlots > 0) {
+    let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(window.motherSlots) / nbRows));
+    let portWidth = parseInt((diagramWidthMother - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
+    let portHeight = parseInt((diagramHeightMother - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
+    let i = 0;
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
+
+      let x = 0, y = 0;
+
+      // default calculation for top left
+      let columnIndex = distribution === "horizontal" ? parseInt(((i % nbColumns) + 1)) : parseInt(((i / nbRows) + 1));
+      let rowIndex = distribution === "horizontal" ? parseInt(((i / nbColumns) + 1)) : parseInt(((i % nbRows) + 1));
+
+      if ("top-right" === startPoint) {
+        columnIndex = nbColumns - columnIndex + 1;
+      }
+      else if ("bottom-left" === startPoint) {
+        rowIndex = nbRows - rowIndex + 1;
+      }
+      else if ("bottom-right" === startPoint) {
+        columnIndex = nbColumns - columnIndex + 1;
+        rowIndex = nbRows - rowIndex + 1;
+      }
+
+      x = left + (columnIndex - 1) * (portWidth + horizontal);
+      y = top + (rowIndex - 1) * (portHeight + vertical);
+
+
+      updateBoardTypePort(x, y, portWidth, portHeight, data);
+
+      i++;
+      node.updateTargetBindings();
+
+    });
+  }
+
+}
+
+function autoDistributionNodes(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
+
+  applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
+
+}
+
+function updateBoardTypePort(x, y, portWidth, portHeight, data) {
+
+  let viewportBounds = myDiagram.viewportBounds;
+  let diagramWidthMother = viewportBounds.width;
+  let diagramHeightMother = viewportBounds.height;
+  let xPercentage = ((parseFloat((x * divWidth) / diagramWidthMother)));
+  let yPercentage = ((parseFloat(y * divHeight) / diagramHeightMother));
+  let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidthMother));
+  let heightPercentage = ((parseFloat(portHeight * divHeight) / diagramHeightMother));
+
+  let location = `${xPercentage} ${yPercentage}`;
+  myDiagram.model.setDataProperty(data, "location", location);
+  myDiagram.model.setDataProperty(data, "width", widthPercentage);
+  myDiagram.model.setDataProperty(data, "height", heightPercentage);
+
+}
+
+
+function autoResizePorts() {
+  let x, y;
+  myDiagram.nodes.each(function (node) {
+    // Start a transaction
+    myDiagram.startTransaction('update size');
+
+    let key = node.key;
+    let data = myDiagram.model.findNodeDataForKey(key);
+    let parts = data.location.split(' ');
+    x = parts[0];
+    y = parts[1];
+    myDiagram.model.setDataProperty(data, "width", width1);
+    myDiagram.model.setDataProperty(data, "height", height1);
+
+    updateBoardTypePortFromModel(data, x, y);
+
+    console.log(data);
+    node.updateTargetBindings();
+    // Commit the transaction
+    myDiagram.commitTransaction('update size');
+
+  });
+
+}
+
+function updateBoardTypePortFromModel(data, x, y) {
+  let viewportBounds = myDiagram.viewportBounds;
+  let diagramWidthMother = viewportBounds.width;
+  let diagramHeightMother = viewportBounds.height;
+
+  let location = `${parseInt(x * diagramWidthMother / divWidth)} ${parseInt(y * diagramHeightMother / divHeight)}`;
+  let width = parseInt(data.width * diagramHeightMother / divWidth);
+  let height = parseInt(data.height * diagramHeightMother / divHeight);
+  myDiagram.model.setDataProperty(data, "width", width);
+  myDiagram.model.setDataProperty(data, "height", height);
+
+  myDiagram.model.setDataProperty(data, "location", location);
+}
+
+
+function nodeMoved(e) {
+  let node = e.subject.first();
+
+  // If a node is selected
+  if (node instanceof go.Node) {
+    let type = node.data.category;
+    if (type === "slot") {
+
+      let loc = node.location;
+      let width = node.data.width;
+      let height = node.data.height;
+      let x = loc.x;
+      let y = loc.y;
+
+      document.getElementById('slotIndex').style.display = "none";
+      document.getElementById('indexOnSlot').style.display = "none";
+
+      document.getElementById('forSlotIndex').style.display = "none";
+      document.getElementById('forIndexOnSlot').style.display = "none";
+
+      document.getElementById('X').value = x;
+      document.getElementById('Y').value = y;
+      document.getElementById('width').value = width;
+      document.getElementById('height').value = height;
+
+    }
+  }
+}
 
 
 

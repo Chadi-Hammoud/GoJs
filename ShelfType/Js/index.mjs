@@ -2,9 +2,10 @@
 
 import { $, myDiagram } from "./Diagram.mjs";
 
-import { slotDesigner } from "../../CabinetType/Js/NodeTemplate.mjs"; 
+import { slotDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
+let nodeExists = false;
 function init() {
 
   let borderCount = parseInt(prompt("number of slots"));
@@ -250,9 +251,10 @@ function init() {
 
   }
 
+
   function checkIndex() {
     let nodeText = addSlotIndex + ":" + addIndexOnSlot;
-    let nodeExists = false;
+
     // Iterate over all nodes
     myDiagram.nodes.each(function (node) {
       let textBlock = node.findObject('boardTextblock');
@@ -267,12 +269,14 @@ function init() {
 
   function addNode(nodeExists) {
     if (!nodeExists) {
+      document.getElementById("added").innerHTML = "added";
+      let bckSlot = document.getElementById('bslot').checked
       // Start a transaction
       myDiagram.startTransaction('checkIndex');
 
-      // Add a new node
+      let key = `port${startIndex}`;
       myDiagram.model.addNodeData({
-        key: `port${startIndex}`,
+        key: key,
         category: "slot",
         width: 120,
         height: 120,
@@ -281,11 +285,22 @@ function init() {
         visible: true,
         rear: null || 0,
       });
+
+      if(bckSlot){
+        let data = myDiagram.model.findNodeDataForKey(key);
+        myDiagram.model.setDataProperty(data, "rear", 1);
+      }
       //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 120, text: `${addSlotIndex}:${addIndexOnSlot}` });
       startIndex++;
+
+      borderCount += 1;
       // Commit the transaction
       myDiagram.commitTransaction('checkIndex');
+    }else{
+      document.getElementById("added").innerHTML = "this slot index is already exist, please choose another one";
+
     }
+    document.getElementById("added").style.color = "red";
 
   }
 
