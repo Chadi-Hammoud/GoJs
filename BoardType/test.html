@@ -1,29 +1,118 @@
-<div id="indexOnSlotSidebar" style="display: block;">
-    <form id="IndexOnSlotForm" class="mt-4"
-        style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background-color: white; padding: 20px; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-        <div>
-            <div class="mb-3">
-                <h4>Index On Slot</h4>
-                <hr class="my-2">
-            </div>
-            <div class="row mb-3">
-                <div class="col">
-                    <input type="number" id="indexOnSlot" placeholder="Enter Index On Slot" class="form-control"
-                        required="required">
-                </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resizable and Movable Div</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        #resizableDiv {
+            position: absolute;
+            width: 480px;
+            height: 320px;
+            min-width: 480px;
+            min-height: 320px ;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            padding: 5px;
+            cursor: move;
+            user-select: none;
+        }
+
+        #buttons {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 5px;
+        }
+
+        #close, #maximize, #minimize {
+            cursor: pointer;
+            margin-left: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="resizableDiv">
+        <div id="header">
+            <div id="buttons">
+                <span id="maximize">□</span>
+                <span id="minimize">-</span>
             </div>
         </div>
-        <div class="mb-3">
-            <input type="submit" class="btn btn-success" value="Apply">
-            <button type="button" id="closeAutoDist" class="btn btn-secondary">Close</button>
-        </div>
-    </form>
-</div>
+        <!-- Content goes here -->
+    </div>
 
+    <script>
+        let divWidth;
+        let divHeight;
+        let originalWidth;
+        let originalHeight;
+        let isMaximized = false;
 
-<script>
-    document.getElementById("IndexOnSlotForm").addEventListener("submit", (e) => {
-        let x = document.getElementById("indexOnSlot").value;
-        console.log(x);
-    });
-</script>
+        function handleResize(event, ui) {
+            divWidth = ui.size.width;
+            divHeight = ui.size.height;
+            console.log('New width: ' + divWidth);
+            console.log('New height: ' + divHeight);
+            // Call your function from another file here, passing divWidth and divHeight as needed
+            // yourFunctionInAnotherFile(divWidth, divHeight);
+        }
+
+        function handleMaximize() {
+            if (isMaximized) {
+                // Restore the div to its original dimensions and position
+                $("#resizableDiv").width(originalWidth).height(originalHeight);
+                $("#resizableDiv").css({ top: originalTop, left: originalLeft });
+            } else {
+                // Maximize the div to fit the screen starting from (0,0)
+                divWidth = window.innerWidth - 20; // Adjust as needed
+                divHeight = window.innerHeight - 20; // Adjust as needed
+                originalWidth = $("#resizableDiv").width();
+                originalHeight = $("#resizableDiv").height();
+                originalTop = $("#resizableDiv").position().top;
+                originalLeft = $("#resizableDiv").position().left;
+
+                $("#resizableDiv").width(divWidth).height(divHeight);
+                $("#resizableDiv").css({ top: 0, left: 0 });
+            }
+
+            isMaximized = !isMaximized;
+        }
+
+        $(function() {
+            // Center the div on the screen
+            let screenWidth = window.innerWidth;
+            let screenHeight = window.innerHeight;
+            let div = $("#resizableDiv");
+            div.css({
+                top: (screenHeight - div.height()) / 2,
+                left: (screenWidth - div.width()) / 2
+            });
+
+            $("#resizableDiv").resizable({
+                handles: 'e, s, w, n, se, sw, ne, nw',
+                resize: handleResize
+            }).draggable(); // Make the div resizable and draggable
+
+            // Handle maximize button click
+            $("#maximize").on("click", function() {
+                handleMaximize();
+            });
+        });
+    </script>
+
+</body>
+</html>
