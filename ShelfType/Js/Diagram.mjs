@@ -1,5 +1,6 @@
 import * as go from "../../node_modules/gojs/release/go.mjs";
 
+
 let $ = go.GraphObject.make;
 // let currentLayout = makeLayout(isVertical === 'v');
 

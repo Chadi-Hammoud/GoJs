@@ -1,28 +1,28 @@
 import { Shelf } from "./Shelf.mjs";
 
-class ShelfType extends Shelf{
+class ShelfType extends Shelf {
 
-    constructor(){
+    constructor() {
         super();
-        this._id;
+        this._id = super._id
         this._shelfTypeSlots = new Set();
     }
 
-    get id(){
+    get id() {
         return this._id;
     }
-    set id(id){
+    set id(id) {
         this._id = id;
     }
 
-    getShelfTypeSlots(){
+    getShelfTypeSlots() {
         return this._shelfTypeSlots;
 
-    } 
+    }
 
-    setShelfTypeSlots(shelfTypeSlots){
+    setShelfTypeSlots(shelfTypeSlots) {
         this._shelfTypeSlots = shelfTypeSlots;
     }
 }
 
-export {ShelfType};
+export { ShelfType };

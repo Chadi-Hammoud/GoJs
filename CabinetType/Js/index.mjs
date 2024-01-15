@@ -9,7 +9,6 @@ import { CabinetTypeSpace } from "./CabinetTypeSpace.mjs";
 myDiagram.nodeTemplateMap.add(cabinetDesigner);
 
 let caption; let fromRu; let toRu;
-let shelfCount;
 let numberRu;
 let startedRuIndex;
 let cabinetType;
@@ -261,6 +260,8 @@ function init() {
 
         listItems();
     }
+
+
 
 }
 
