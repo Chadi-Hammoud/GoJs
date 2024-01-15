@@ -3,13 +3,21 @@
 import { $, myDiagram } from "./Diagram.mjs";
 
 import { slotDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
+import { Shelf } from "./Shelf.mjs";
+import { ShelfTypeSlot } from "./ShelfTypeSlot.mjs";
+import { ShelfType } from "./ShelfType.mjs";
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 let nodeExists = false;
+
+let shelfTypeSlot = new ShelfTypeSlot();
+let shelfType = new ShelfType();
+let shelf = new Shelf();
 function init() {
 
   let borderCount = parseInt(prompt("number of slots"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
+  let slotStartingIndex = parseInt(prompt("slot starting index"));
   let isVertical = prompt("is vertical?, v ");
 
 
@@ -18,56 +26,90 @@ function init() {
 
   let indexSlot = 0;
 
-  function addSlot() {
-
-
-    let defaultValue = (startIndex === NaN ? startIndex : 0);
-
-    // for (let i = 1; i <= borderCount; i++) {
-    //   addSlot();
-    // }
-    let tempVal = 0.0;
-    for (let i = 1; i <= borderCount; i++) {
-
-      let dis = 900.0 / borderCount
-      if (isVertical !== 'v') {
-
-        //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
-        myDiagram.model.addNodeData({
-          key: `port${defaultValue}`,
-          category: "slot",
-          width: 2000,
-          height: dis,
-          text: `${defaultValue}:${indexSlot}`,
-          location: `0 ${tempVal}`,
-          visible: true,
-          rear: null || 0,
-        });
 
 
 
-      } else {
-        dis = 2000.0 / borderCount
-        myDiagram.model.addNodeData({
-          key: `port${startIndex}`,
-          category: "slot",
-          width: dis,
-          height: 900,
-          text: `${defaultValue}:${indexSlot}`,
-          location: `${tempVal} 0`,
-          visible: true,
-          rear: null || 0,
-        });
-        //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
-      }
-      tempVal += dis;
-      defaultValue++;
-    }
+  // let defaultValue = (startIndex === NaN ? startIndex : 0);
 
-    // fitNodesOnScreen();
+  let tempVal = 0.0;
+  shelfType.slotStartingIndex = slotStartingIndex;
+  let defaultValue = (isNaN(shelfType.slotStartingIndex) ? 0 : shelfType.slotStartingIndex);
+  shelfTypeSlot.rearShelf = null || 0;
+
+  shelfType.numberOfSlot = borderCount;
+
+  let numberSlot = parseInt(shelfType.numberOfSlot);
+  let tempArr = [numberSlot];
+  for (let i = 0; i < numberSlot; i++) {
+
+    tempArr[i] = addSlot(shelfType, i + defaultValue ,0, 0, false)
   }
 
-  addSlot();
+  // fitNodesOnScreen();
+
+  function addSlot(shelfType, slot, indexOnSlot, rearShelf, withRepaint) {
+
+    let dis = 900.0 / borderCount;
+
+    shelfTypeSlot.shelfTypeId = (shelf !== null ? shelf.id : NaN);
+    if (isVertical !== 'v') {
+      shelfTypeSlot.widthPercentage = 2000;
+      shelfTypeSlot.heightPercentage = dis;
+      shelfTypeSlot.xPercentage = 0.0;
+      shelfTypeSlot.yPercentage = tempVal;
+     
+
+     
+      //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 120, height: 300, text: `${startIndex}:${indexSlot}` });
+      myDiagram.model.addNodeData({
+        key: `port${shelfTypeSlot.shelfTypeId}`,
+        category: "slot",
+        width: shelfTypeSlot.widthPercentage,
+        height: shelfTypeSlot.heightPercentage,
+        text: `${shelfTypeSlot.shelfTypeId}:${indexSlot}`,
+        location: `${shelfTypeSlot.xPercentage} ${shelfTypeSlot.yPercentage}`,
+        slot: shelfTypeSlot.slot,
+        visible: true,
+        rear: shelfTypeSlot.rearShelf,
+        indexOnSlot : shelfTypeSlot.indexOnSlot,
+      });
+
+
+    } else {
+      dis = 2000.0 / borderCount;
+
+      shelfTypeSlot.widthPercentage = dis;
+      shelfTypeSlot.heightPercentage = 900;
+      shelfTypeSlot.xPercentage = tempVal;
+      shelfTypeSlot.yPercentage = 0.0;
+      shelfTypeSlot.slot = slot;
+
+
+      myDiagram.model.addNodeData({
+        key: `port${shelfTypeSlot.shelfTypeId}`,
+        category: "slot",
+        width: dis,
+        height: 900,
+        text: `${shelfTypeSlot.shelfTypeId}:${indexSlot}`,
+        location: `${shelfTypeSlot.xPercentage} ${shelfTypeSlot.yPercentage}`,
+        slot: shelfTypeSlot.slot,
+        visible: true,
+        rear: null || 0,
+        rear: shelfTypeSlot.rearShelf,
+        indexOnSlot : shelfTypeSlot.indexOnSlot,
+      });
+      //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
+    }
+
+    shelfTypeSlot.rearShelf = rearShelf;
+    shelfTypeSlot.indexOnSlot = indexOnSlot;
+    shelfTypeSlot.slot = slot;
+    shelfType.getShelfTypeSlots().add(shelfTypeSlot);
+    
+    tempVal += dis;
+  }
+
+
 
 
 
@@ -286,7 +328,7 @@ function init() {
         rear: null || 0,
       });
 
-      if(bckSlot){
+      if (bckSlot) {
         let data = myDiagram.model.findNodeDataForKey(key);
         myDiagram.model.setDataProperty(data, "rear", 1);
       }
@@ -296,7 +338,7 @@ function init() {
       borderCount += 1;
       // Commit the transaction
       myDiagram.commitTransaction('checkIndex');
-    }else{
+    } else {
       document.getElementById("added").innerHTML = "this slot index is already exist, please choose another one";
 
     }

@@ -3,6 +3,7 @@ import { Shelf } from "./Shelf.mjs";
 class ShelfType extends Shelf{
 
     constructor(){
+        super();
         this._id;
         this._shelfTypeSlots = new Set();
     }
@@ -14,12 +15,12 @@ class ShelfType extends Shelf{
         this._id = id;
     }
 
-    get shelfTypeSlots(){
+    getShelfTypeSlots(){
         return this._shelfTypeSlots;
 
     } 
 
-    set shelfTypeSlots(shelfTypeSlots){
+    setShelfTypeSlots(shelfTypeSlots){
         this._shelfTypeSlots = shelfTypeSlots;
     }
 }

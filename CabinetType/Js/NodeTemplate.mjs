@@ -1,4 +1,5 @@
 
+import { Binding } from "gojs";
 import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 
@@ -104,6 +105,8 @@ let slotDesigner = myDiagram.nodeTemplateMap.add("slot",
     new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
     new go.Binding("visible", "visible", null, null),
     new go.Binding("rear", "rear", null, null),
+    new go,Binding("indexOnSlot", "indexOnSlot", null, null),
+    new go,Binding("slot", "slot", null, null),
 
     {
       resizable: true,
