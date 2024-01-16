@@ -535,12 +535,18 @@ function init() {
         myDiagram.model.setDataProperty(node.data, "height", height);
         myDiagram.model.setDataProperty(node.data, "location", loc);
 
-        shelfTypeSlot.heightPercentage = parseFloat(document.getElementById('height').value);
-        shelfTypeSlot.widthPercentage = parseFloat(document.getElementById('width').value);
-        shelfTypeSlot.xPercentage = parseFloat(document.getElementById('X').value);
-        shelfTypeSlot.yPercentage = parseFloat(document.getElementById('Y').value);
+        let slotText;
+        for(let slot of shelfType.getShelfTypeSlots()){
+          slotText =  `${slot.slot}:${slot.indexOnSlot}` ;
+          if(slotText === text){
+            shelfTypeSlot.xPercentage = x;
+            shelfTypeSlot.yPercentage = y;
+            shelfTypeSlot.widthPercentage = width;
+            shelfTypeSlot.heightPercentage = height;
+          }
+        }
         
-        console.log("Updated shelfTypeSlot:", shelfTypeSlot);
+     
       }
       displayData();
     }
