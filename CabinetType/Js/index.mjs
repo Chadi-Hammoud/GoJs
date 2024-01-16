@@ -8,6 +8,7 @@ import { CabinetTypeSpace } from "./CabinetTypeSpace.mjs";
 
 myDiagram.nodeTemplateMap.add(cabinetDesigner);
 
+let shelfCount 
 let caption; let fromRu; let toRu;
 let numberRu;
 let startedRuIndex;
@@ -47,7 +48,7 @@ function init() {
 
         let TORU = parseInt(fr + tr);
 
-        cabinetType = ct;
+      
         caption = document.getElementById("captionn").value;
         fromRu = parseInt(document.getElementById("fromRuu").value) === null ? 0 : parseInt(document.getElementById("fromRuu").value);
         toRu = parseInt(document.getElementById("toRuu").value) === null ? 0 : parseInt(document.getElementById("toRuu").value);
@@ -57,7 +58,7 @@ function init() {
             alert("choose the from and to Ru between the convenable one, and be sure it is exist into one space only");
             return;
         }
-        addSpaces(cabinetType, fromRu, toRu, caption);
+        addSpaces(ct, fromRu, toRu, caption);
 
         document.getElementById("addSpacesSideBar").style.display = "none";
 
@@ -65,12 +66,12 @@ function init() {
 
     let s = new Set();
     let listOfSpaces;
-    function checkRUs(fromRU, toRU, cabinetType, sps) {
+    function checkRUs(fromRU, toRU, ct, sps) {
         myDiagram.nodes.each(function (node) {
             s.add(node);
         });
 
-        for (let spaces of cabinetType.getCabinetTypeSpaces()) {
+        for (let spaces of ct.getCabinetTypeSpaces()) {
             if (spaces === sps || (spaces.key == null && (spaces === sps)))
                 continue;
             if ((fromRU <= spaces.toRu && fromRU >= spaces.fromRu) || (toRU <= spaces.toRu && toRU >= spaces.fromRu))
@@ -81,9 +82,9 @@ function init() {
         return true;
     }
 
-    function addSpaces(cabinetType, fromRu, toRu, caption) {
+    function addSpaces(ct, fromRu, toRu, caption) {
         spaces = new CabinetTypeSpace();
-        let cabType = cabinetType.id;
+        let cabType = ct.id;
         spaces.cabinetTypeId = isNaN(cabType)  ? cabType : NaN;
         spaces.fromRu = fromRu
         spaces.toRu = toRu;
@@ -92,7 +93,7 @@ function init() {
         spaces.widthPercentage = 300.0;
         spaces.heightPercentage = 300.0;
         spaces.caption = caption;
-        cabinetType.getCabinetTypeSpaces().add(spaces);
+        ct.getCabinetTypeSpaces().add(spaces);
 
         if (spaces.fromRu > ct.numberRu || spaces.toRu > ct.numberRu || spaces.fromRu < 0 || spaces.toRu < 0) {
             alert("Invalid number");
@@ -121,14 +122,17 @@ function init() {
             return;
         }
         let toRemove = [];
-        for (let spaces of cabinetType.getCabinetTypeSpaces()) {
-
-            if (spaces.fromRU === space.data.fromRU) {
+        let fromRU;
+ 
+        for (let spaces of ct.getCabinetTypeSpaces()) {
+            fromRU = space.data.fromRU;
+            if (spaces.fromRU === fromRU) {
                 toRemove.push(spaces);
             }
+
         }
 
-        let cabinetSpaces = cabinetType.getCabinetTypeSpaces();
+        let cabinetSpaces = ct.getCabinetTypeSpaces();
         removeAll(cabinetSpaces, toRemove);
 
         myDiagram.startTransaction("delete space");
@@ -171,11 +175,14 @@ function init() {
                 let fromRU = node.data.fromRu;
                 let toRu = node.data.toRu;
 
-                let loc = node.location;
+                let loc = node.data.location;
                 let widthPercentage = node.data.width;
                 let heightPercentage = node.data.height;
-                let XPercentage = loc.x;
-                let YPercentage = loc.y;
+
+                let locPart = loc.split(' ');
+
+                let x = locPart[0];
+                let y = locPart[1];
 
 
 
@@ -183,10 +190,22 @@ function init() {
                 document.getElementById('caption').value = caption;
                 document.getElementById('fromRu').value = fromRU;
                 document.getElementById('toRu').value = toRu;
-                document.getElementById('XPercentage').value = XPercentage;
-                document.getElementById('YPercentage').value = YPercentage;
+                document.getElementById('XPercentage').value = x;
+                document.getElementById('YPercentage').value = y;
                 document.getElementById('widthPercentage').value = widthPercentage;
                 document.getElementById('heightPercentage').value = heightPercentage;
+
+          
+                for (let s of ct.getCabinetTypeSpaces()) {
+
+                  if (s.fromRu  === fromRU && s.toRu === toRu)  {
+                    spaces.xPercentage = x;
+                    spaces.yPercentage = y;
+                    spaces.widthPercentage = widthPercentage;
+                    spaces.heightPercentage = heightPercentage;
+                    break;
+                  }
+                }
 
 
             }
@@ -271,3 +290,4 @@ function init() {
 document.getElementById("putSpaceOnCabinet").addEventListener("click", init);
 
 
+export {ct, spaces}

@@ -25,13 +25,10 @@ let dataToSave = {
     },
 
 };
-
-
 let jsonString = JSON.stringify(dataToSave, null, 2);
+console.log(jsonString);
 
 
-
-    console.log(jsonString);
 })
 
 

@@ -10,7 +10,8 @@ import { ShelfType } from "./ShelfType.mjs";
 myDiagram.nodeTemplateMap.add(slotDesigner);
 let nodeExists = false;
 
-
+let divWidth = 2000;
+let divHeight = 900;
 let shelfType = new ShelfType();
 let shelf = new Shelf();
 let shelfTypeSlot;
@@ -410,10 +411,10 @@ function init() {
     let diagramWidth = viewportBounds.width;
     let diagramHeight = viewportBounds.height;
 
-    let xPercentage = ((parseFloat((x * 2000) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * 900) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * 2000) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * 900) / diagramHeight));
+    let xPercentage = ((parseFloat((x * divWidth) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * divHeight) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * divHeight) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);

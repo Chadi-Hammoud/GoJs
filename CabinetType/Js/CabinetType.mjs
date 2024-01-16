@@ -64,7 +64,7 @@ class CabinetType {
 
     // Getters and setters for numberRu
     get numberRu() {
-        return this._numberRu; Ru
+        return this._numberRu;
     }
 
     set numberRu(value) {

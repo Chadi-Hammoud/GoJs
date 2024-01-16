@@ -790,6 +790,7 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
     let viewportBounds = myDiagram.viewportBounds;
     let diagramWidthMother = viewportBounds.width;
     let diagramHeightMother = viewportBounds.height;
+    
     let xPercentage = ((parseFloat((x * divWidth) / diagramWidthMother)));
     let yPercentage = ((parseFloat(y * divHeight) / diagramHeightMother));
     let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidthMother));
