@@ -133,12 +133,13 @@
 
   <div id="sidebar">
     <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
-    <a id="showDiagramLink" class="nav-link">Show Diagram</a>
-    <a id="closeDiagramLink" class="nav-link">Close Diagram</a>
+    <a id="showDiagramLink" class="nav-link">Show/hide Diaolg</a>
+
     <a id="configureSlotLink" class="nav-link">Configure Slot</a>
     <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
     <a id="autoResizeLink" class="nav-link">Auto Resize</a>
     <a id="addSlotLink" class="nav-link">Add Slot</a>
+    <a id="removeSlotLink" class="nav-link">Remove Slot</a>
     <a id="dsiplayJsonData" class="nav-link">Display Json Data</a>
     <!-- Add more links as needed -->
   </div>
@@ -285,7 +286,7 @@
 
         <div class="col">
           <label for="bslot" class="form-check-label">Choose index on slot</label>
-          <input type="checkBox" class="form-check-input" id="bslot" name="bslot" >
+          <input type="checkBox" class="form-check-input" id="bslot" name="bslot">
         </div>
       </div>
 
@@ -316,7 +317,7 @@
         <div class="col">
           <div>Configure Slot</div>
           <input type="checkbox" class="form-check-input" id="backSLotChB">
-          <label  for ="backSLotChB" class="form-check-label">Back Slot</label>
+          <label for="backSLotChB" class="form-check-label">Back Slot</label>
 
         </div>
 
@@ -325,7 +326,7 @@
           <div>Display Mode</div>
 
           <input type="checkbox" id="displayBackModeChB" name="displayBackModeChB" class="form-check-input">
-          <label for ="displayBackModeChB" class="form-check-label">Back Mode</label>
+          <label for="displayBackModeChB" class="form-check-label">Back Mode</label>
         </div>
 
       </div>
@@ -574,28 +575,22 @@
     });
 
 
-    function showDialog() {
+    function toggleDialog() {
       let dialog = document.getElementById("dialog");
-      dialog.show();
+      if (dialog.open) {
+        dialog.close();
+      } else {
+        dialog.show();
+      }
     }
 
     // Event listener for triggering the display of the dialog
-    let showDialogButton = document.getElementById("showDiagramLink");
-    if (showDialogButton) {
-      showDialogButton.addEventListener("click", showDialog);
+    let showDiagramButton = document.getElementById("showDiagramLink");
+    if (showDiagramButton) {
+      showDiagramButton.addEventListener("click", toggleDialog);
     }
 
-    // Function to hide the dialog
-    function hideDialog() {
-      let dialog = document.getElementById("dialog");
-      dialog.close();
-    }
 
-    // Event listener for the dialog close button
-    let closeDiagramLink = document.getElementById("closeDiagramLink");
-    if (closeDiagramLink) {
-      closeDiagramLink.addEventListener("click", hideDialog);
-    }
   </script>
 
 

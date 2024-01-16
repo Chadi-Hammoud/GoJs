@@ -139,8 +139,8 @@
 
   <div id="sidebar">
     <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
-    <a id="showDiagramLink" class="nav-link">Show Diagram</a>
-    <a id="closeDiagramLink" class="nav-link">Close Diagram</a>
+    <a id="showDiagramLink" class="nav-link">Show/hide Dialog</a>
+
     <a id="configureSlotLink" class="nav-link">Configure</a>
     <a id="autoDistributionLink" class="nav-link">Auto Distribution</a>
     <a id="autoResizeLink" class="nav-link">Auto Resize</a>
@@ -543,27 +543,19 @@
       });
 
 
-      function showDialog() {
+      function toggleDialog() {
         let dialog = document.getElementById("dialog");
-        dialog.show();
+        if (dialog.open) {
+          dialog.close();
+        } else {
+          dialog.show();
+        }
       }
 
       // Event listener for triggering the display of the dialog
-      let showDialogButton = document.getElementById("showDiagramLink");
-      if (showDialogButton) {
-        showDialogButton.addEventListener("click", showDialog);
-      }
-
-      // Function to hide the dialog
-      function hideDialog() {
-        let dialog = document.getElementById("dialog");
-        dialog.close();
-      }
-
-      // Event listener for the dialog close button
-      let closeDiagramLink = document.getElementById("closeDiagramLink");
-      if (closeDiagramLink) {
-        closeDiagramLink.addEventListener("click", hideDialog);
+      let showDiagramButton = document.getElementById("showDiagramLink");
+      if (showDiagramButton) {
+        showDiagramButton.addEventListener("click", toggleDialog);
       }
 
     });

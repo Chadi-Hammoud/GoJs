@@ -116,8 +116,25 @@ function init() {
 
   }
 
+  function removeSlot() {
+    let slot = myDiagram.selection.first(); // Get the first selected node
 
+    let slotText;
+    for (let slotOnShelf of shelfType.getShelfTypeSlots()) {
+      slotText = `${slotOnShelf.slot}:${slotOnShelf.indexOnSlot}`;
+      if (slotText === slot.data.text) {
+        shelfType.getShelfTypeSlots().delete(slotOnShelf);
+        break;
+      }
+    }
 
+    if (slot) {
+      myDiagram.startTransaction("deleteSlot");
+      myDiagram.model.removeNodeData(slot.data);
+      myDiagram.commitTransaction("deleteSlot");
+    }
+  }
+  document.getElementById("removeSlotLink").addEventListener("click", removeSlot);
 
 
   let slotIndex;
@@ -536,17 +553,17 @@ function init() {
         myDiagram.model.setDataProperty(node.data, "location", loc);
 
         let slotText;
-        for(let slot of shelfType.getShelfTypeSlots()){
-          slotText =  `${slot.slot}:${slot.indexOnSlot}` ;
-          if(slotText === text){
+        for (let slot of shelfType.getShelfTypeSlots()) {
+          slotText = `${slot.slot}:${slot.indexOnSlot}`;
+          if (slotText === text) {
             shelfTypeSlot.xPercentage = x;
             shelfTypeSlot.yPercentage = y;
             shelfTypeSlot.widthPercentage = width;
             shelfTypeSlot.heightPercentage = height;
           }
         }
-        
-     
+
+
       }
       displayData();
     }

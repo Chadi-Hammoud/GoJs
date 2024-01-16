@@ -14,7 +14,7 @@ let startedRuIndex;
 let cabinetType;
 
 let ct = new CabinetType();
-let spaces = new CabinetTypeSpace();
+let spaces;
 function init() {
 
     shelfCount = parseInt(prompt("number of shelves"));
@@ -82,9 +82,9 @@ function init() {
     }
 
     function addSpaces(cabinetType, fromRu, toRu, caption) {
-
-        let cabType = cabinetType._id;
-        spaces.cabinetTypeId = cabType !== null ? cabType : null;
+        spaces = new CabinetTypeSpace();
+        let cabType = cabinetType.id;
+        spaces.cabinetTypeId = isNaN(cabType)  ? cabType : NaN;
         spaces.fromRu = fromRu
         spaces.toRu = toRu;
         spaces.xPercentage = 0.0;
@@ -135,6 +135,7 @@ function init() {
         myDiagram.model.removeNodeData(space.data);
         myDiagram.commitTransaction("delete space");
     }
+    
 
 
     function listItems() {
