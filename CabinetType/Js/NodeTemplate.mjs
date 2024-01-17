@@ -200,7 +200,8 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
   $(go.Node, "Auto",
     new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
     new go.Binding("visible", "visible", null, null),
-   
+    new go.Binding("width", "width", null, null),
+    new go.Binding("height", "height", null, null),
 
     {
       resizable: true,
@@ -245,26 +246,28 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
       },
       $(go.Panel, "Horizontal",
         new go.Binding("width", "width", null, null),
-        { height: 18 },
+        { height: 16 },
         $(go.Shape, "Rectangle",
           {
             fill: "black",
-            width: 10,
+            width: 8,
           }
         ),
         $(go.Panel, "Auto",
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v - 20),
+            new go.Binding("width", "width", v => v - 18),
             {
               fill: "white",
-              stretch: go.GraphObject.Fill,
+              //stretch: go.GraphObject.Fill,
             }
           ),
           $(go.TextBlock, "",
+         // new go.Binding("height", "height", null, null),
             {
               name: "boardTextblock",
               margin: 2,
               alignment: go.Spot.Left,
+              height: 16,
             },
             new go.Binding("text", "text").makeTwoWay()
           )
@@ -277,13 +280,16 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
         )
       ),
 
-      $(go.Picture, {
-        background: "white",
-        name: "PANEL",
-        stretch: go.GraphObject.Fill,
-      },
-        new go.Binding("source", "source"),
+      $(go.Picture,
         new go.Binding("height", "height", null, null),
+        //new go.Binding("width", "width", null, null),
+        {
+          background: "white",
+          name: "PANEL",
+          stretch: go.GraphObject.Fill
+        },
+        new go.Binding("source", "source"),
+
       ),
     ),
   ),

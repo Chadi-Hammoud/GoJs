@@ -3,20 +3,26 @@ import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
 
 import { BoardType } from "./BoardType.mjs";
 import { MotherBoardTypeSlot } from "./MotherBoardTypeSlot.mjs";
+import { BoardTypePort } from "./BoardTypePort.mjs";
 
 import { slotDesigner, portDesigner } from "../../CabinetType/Js/NodeTemplate.mjs";
 
 
 let boardType = new BoardType();
 let motherBoard = new MotherBoardTypeSlot();
+let boardTypePort;
+
+
+
 
 myDiagram.nodeTemplateMap.add(slotDesigner);
 myDiagram.nodeTemplateMap.add(portDesigner);
 
 
 
-let divWidth = 2000;
-let divHeight = 900;
+let diagramWidth = 434;
+let diagramHeight = 261;
+
 
 let motherSlots;
 
@@ -109,12 +115,19 @@ function modifyPart(src, backWidth, backHeight) {
 function init() {
   let borderCount = parseInt(prompt("boards count"));
   let startIndex = parseInt(prompt("start Index, 0 or 1"));
-  let isVertical = prompt("is vertical?, v ");
+  // let isVertical = prompt("is vertical?, v ");
+
+  let compPerList = [];
+  for (let i = 0; i < borderCount; i++) {
+    boardTypePort = new BoardTypePort();
+
+    boardType.getBoardTypePort().add(boardTypePort);
+    compPerList.push(boardTypePort);
+  }
 
 
-
-  window.divWidth = divWidth;
-  window.divHeight = divHeight;
+  // window.divWidth = divWidth;
+  // window.divHeight = divHeight;
 
 
   myDiagram.model = new go.GraphLinksModel();
@@ -123,92 +136,145 @@ function init() {
 
 
 
-  function addPort() {
-    let defaultValue = (startIndex === NaN ? startIndex : 0);
-    let tempVal = 0.0;
-    let backWidth = 0;
-    let backHeight = 0;
-    for (let i = 1; i <= borderCount; i++) {
+  // function addPort() {
+  //   let defaultValue = (startIndex === NaN ? startIndex : 0);
+  //   let tempVal = 0.0;
+  //   let backWidth = 0;
+  //   let backHeight = 0;
+  //   for (let i = 1; i <= borderCount; i++) {
 
-      let dis = divHeight / borderCount
-      if (isVertical !== 'v') {
+  //     let dis = divHeight / borderCount
+  //     if (isVertical !== 'v') {
 
-        backWidth = divWidth;
-        myDiagram.model.addNodeData({
-          key: `port${defaultValue}`,
-          category: "port",
-          width: divWidth,
-          height: dis,
-          text: `${defaultValue}:${indexSlot}`,
-          location: `0 ${tempVal}`,
-          visible: true,
-          source: "http://127.0.0.1:5500/BoardType/images/port.svg",
-        });
+  //       backWidth = divWidth;
+  //       myDiagram.model.addNodeData({
+  //         key: `port${defaultValue}`,
+  //         category: "port",
+  //         width: divWidth,
+  //         height: dis,
+  //         text: `${defaultValue}:${indexSlot}`,
+  //         location: `0 ${tempVal}`,
+  //         visible: true,
+  //         source: "http://127.0.0.1:5500/BoardType/images/port.svg",
+  //       });
 
-        backHeight += dis;
+  //       backHeight += dis;
 
-      } else {
+  //     } else {
 
-        backHeight = divHeight;
+  //       backHeight = divHeight;
 
-        myDiagram.model.addNodeData({
-          key: `port${startIndex}`,
-          category: "port",
-          width: dis,
-          height: divHeight,
-          text: `${defaultValue}:${indexSlot}`,
-          location: `${tempVal} 0`,
-          visible: true,
-          source: "http://127.0.0.1:5500/BoardType/images/port.svg",
-        });
+  //       myDiagram.model.addNodeData({
+  //         key: `port${startIndex}`,
+  //         category: "port",
+  //         width: dis,
+  //         height: divHeight,
+  //         text: `${defaultValue}:${indexSlot}`,
+  //         location: `${tempVal} 0`,
+  //         visible: true,
+  //         source: "http://127.0.0.1:5500/BoardType/images/port.svg",
+  //       });
 
-        backWidth += dis;
-        //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
-      }
-      tempVal += dis;
-      defaultValue++;
+  //       backWidth += dis;
+  //       //myDiagram.model.addNodeData({ key: `port${startIndex}`, group: "shelfGroup", category: "board", width: 300, height: 120, text: `${startIndex}:${indexSlot}` });
+  //     }
+  //     tempVal += dis;
+  //     defaultValue++;
 
+  //   }
+
+  //   let src;
+
+  //   let back = document.getElementById("back1");
+  //   let back1 = document.getElementById("back2");
+  //   let back2 = document.getElementById("back3");
+
+  //   back.addEventListener("click", event => {
+
+  //     src = back.currentSrc;
+
+  //     let part = modifyPart(src, backWidth, backHeight);
+  //     myDiagram.redraw(part);
+  //   });
+
+  //   back1.addEventListener("click", event => {
+
+  //     src = back1.currentSrc;
+
+  //     let part = modifyPart(src, backWidth, backHeight);
+  //     myDiagram.redraw(part);
+  //   });
+
+  //   back2.addEventListener("click", event => {
+
+  //     let part = modifyPart(src, backWidth, backHeight);
+  //     myDiagram.remove(part);
+  //   });
+
+
+
+
+
+  //   let part = modifyPart(src, backWidth, backHeight);
+  //   myDiagram.redraw(part);
+
+
+  // }
+
+  let x = 0.0;
+  let dis = 1.0;
+
+  let length = (compPerList.length - 1);
+  let comWidth = (100.0 - length) / (length === 0 ? 1 : length);
+
+  for (let compPer of compPerList) {
+    if (compPer.xPercentage === undefined || compPer.yPercentage === undefined) {
+      x += dis;
+      compPer.widthPercentage = comWidth;
+      compPer.xPercentage = x;
+      compPer.yPercentage = 10.0;
+      compPer.heightPercentage = 80.0;
+      compPer.caption = `${startIndex}:${0}` ;
+      x += comWidth;
+      startIndex++;
     }
+    addBoardTypePort(compPer);
+    myDiagram.nodes.each(function (node) {
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
 
-    let src;
+      myDiagram.model.setDataProperty(data, "width", boardTypePort.widthPercentage);
+      myDiagram.model.setDataProperty(data, "height", boardTypePort.heightPercentage);
 
-    let back = document.getElementById("back1");
-    let back1 = document.getElementById("back2");
-    let back2 = document.getElementById("back3");
 
-    back.addEventListener("click", event => {
-
-      src = back.currentSrc;
-
-      let part = modifyPart(src, backWidth, backHeight);
-      myDiagram.redraw(part);
     });
-
-    back1.addEventListener("click", event => {
-
-      src = back1.currentSrc;
-
-      let part = modifyPart(src, backWidth, backHeight);
-      myDiagram.redraw(part);
-    });
-
-    back2.addEventListener("click", event => {
-
-      let part = modifyPart(src, backWidth, backHeight);
-      myDiagram.remove(part);
-    });
+  }
 
 
 
+  function addBoardTypePort(boardTypePort) {
+    boardTypePort.widthPercentage = (isNaN(boardTypePort.widthPercentage) ? 10 : boardTypePort.widthPercentage);
+    boardTypePort.heightPercentage = (isNaN(boardTypePort.heightPercentage) ? 10 : boardTypePort.heightPercentage);
+    boardTypePort.xPercentage = (isNaN(boardTypePort.xPercentage) ? 10 : boardTypePort.xPercentage);
+    boardTypePort.yPercentage = (isNaN(boardTypePort.yPercentage) ? 10 : boardTypePort.yPercentage);
+
+    myDiagram.model.addNodeData({
+      key: `port${startIndex}`,
+      category: "port",
+      width: boardTypePort.widthPercentage,
+      height: boardTypePort.heightPercentage,
+      text: `${boardTypePort.caption}`,
+      location: `${boardTypePort.xPercentage} ${boardTypePort.yPercentage}`,
+      visible: true,
+      source: "http://127.0.0.1:5500/BoardType/images/port.svg",
+
+    })
 
 
-    let part = modifyPart(src, backWidth, backHeight);
-    myDiagram.redraw(part);
 
 
   }
 
-  addPort();
 
 
 
@@ -253,12 +319,10 @@ function init() {
 
         let key = node.key;
         let data = myDiagram.model.findNodeDataForKey(key);
-        let location = `${X} ${Y}`;
 
-        myDiagram.model.setDataProperty(data, "width", width);
-        myDiagram.model.setDataProperty(data, "height", height);
-        myDiagram.model.setDataProperty(data, "location", location);
 
+
+        updateBoardTypePortFromModel(data, width, height, X, Y)
 
         node.updateTargetBindings();
         // Commit the transaction
@@ -269,17 +333,14 @@ function init() {
 
   }
 
-  function updateBoardTypePortFromModel(data, x, y) {
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidth = viewportBounds.width;
-    let diagramHeight = viewportBounds.height;
+  function updateBoardTypePortFromModel(data, newWidth, newHeight, x, y) {
 
-    let location = `${parseInt(x * diagramWidth / divWidth)} ${parseInt(y * diagramHeight / divHeight)}`;
-    let width = parseInt(data.width * diagramWidth / divWidth);
-    let height = parseInt(data.height * diagramHeight / divHeight);
+    let location = `${parseInt(x * diagramWidth / 100)} ${parseInt(y * diagramHeight / 100)}`;
+    let width = parseInt(newWidth * diagramWidth / 100);
+    let height = parseInt(newHeight * diagramHeight / 100);
+
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
-
     myDiagram.model.setDataProperty(data, "location", location);
   }
 
@@ -294,10 +355,8 @@ function init() {
       let parts = data.location.split(' ');
       x = parts[0];
       y = parts[1];
-      myDiagram.model.setDataProperty(data, "width", width1);
-      myDiagram.model.setDataProperty(data, "height", height1);
 
-      updateBoardTypePortFromModel(data, x, y);
+      updateBoardTypePortFromModel(data, width1, height1, x, y);
 
       console.log(data);
       node.updateTargetBindings();
@@ -308,35 +367,45 @@ function init() {
 
   }
 
-  let viewportBounds = myDiagram.viewportBounds;
-  let diagramWidth = viewportBounds.width;
-  let diagramHeight = viewportBounds.height;
+  document.getElementById("scale").addEventListener("click", function (e) {
+    var zoomFactor = myDiagram.scale;
+    console.log("Current Zoom Factor: " + zoomFactor);
+  });
+
+
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidth = viewportBounds.width;
-    let diagramHeight = viewportBounds.height;
 
-    let xPercentage = ((parseFloat((x * divWidth) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * divHeight) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * divHeight) / diagramHeight));
+
+
+    let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * 100) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * 100) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * 100) / diagramHeight));
+
 
     let location = `${xPercentage} ${yPercentage}`;
+
     myDiagram.model.setDataProperty(data, "location", location);
     myDiagram.model.setDataProperty(data, "width", widthPercentage);
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
+
+    // for (let compPer of compPerList) {
+    //   if (compPer.caption === data.text ) {
+    //     compPer.xPercentage = xPercentage
+    //     compPer.yPercentage = yPercentage
+    //     compPer.widthPercentage = widthPercentage
+    //     compPer.heightPercentage = heightPercentage;
+         
+    //   }
+    // }
 
   }
 
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidth = viewportBounds.width;
-    let diagramHeight = viewportBounds.height;
-
-    if (borderCount > 0) {
-      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(borderCount) / nbRows));
+    if (compPerList.length - 1 > 0) {
+      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length - 1) / nbRows));
       let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
       let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
@@ -365,6 +434,7 @@ function init() {
 
         x = left + (columnIndex - 1) * (portWidth + horizontal);
         y = top + (rowIndex - 1) * (portHeight + vertical);
+
 
 
         updateBoardTypePort(x, y, portWidth, portHeight, data);
@@ -400,21 +470,26 @@ function init() {
         let slotIndex = parts[0];
         let indexOnSlot = parts[1];
 
-        let loc = node.location;
+        let loc = node.data.location;
         let width = node.data.width;
         let height = node.data.height;
-        let x = loc.x;
-        let y = loc.y;
+        let locaPrt = loc.split(' ');
+        let x = locaPrt[0];
+        let y = locaPrt[1];
 
         let bacKslotChecked = node.data.rear;
 
 
         document.getElementById('slotIndex').value = slotIndex;
         document.getElementById('indexOnSlot').value = indexOnSlot;
-        document.getElementById('X').value = x;
+        document.getElementById('X').value = X;
         document.getElementById('Y').value = y;
         document.getElementById('width').value = width;
         document.getElementById('height').value = height;
+
+   
+
+    
 
       }
     }
@@ -422,7 +497,7 @@ function init() {
 
 
 
-
+ 
   // Add a listener for the ChangedSelection event
   myDiagram.addDiagramListener("ChangedSelection", function (e) {
     nodeMoved(e);
@@ -433,6 +508,8 @@ function init() {
   myDiagram.addDiagramListener("SelectionMoved", function (e) {
     nodeMoved(e);
   });
+
+
 
 }
 
@@ -664,7 +741,7 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
       height: motherBoard.HeightPercentage,
       text: `${indexOnSlot}`,
       location: `${motherBoard.XPercentage} ${motherBoard.YPercentage}`,
-      visible: true,
+      Fsible: true,
       rear: null || 0,
     });
     closeForm();
@@ -734,13 +811,11 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidthMother = viewportBounds.width;
-    let diagramHeightMother = viewportBounds.height;
+
     if (window.motherSlots > 0) {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(window.motherSlots) / nbRows));
-      let portWidth = parseInt((diagramWidthMother - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
-      let portHeight = parseInt((diagramHeightMother - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
+      let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
+      let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
       // Iterate over all nodes
       myDiagram.nodes.each(function (node) {
@@ -786,15 +861,10 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
   }
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidthMother = viewportBounds.width;
-    let diagramHeightMother = viewportBounds.height;
-    
-    let xPercentage = ((parseFloat((x * divWidth) / diagramWidthMother)));
-    let yPercentage = ((parseFloat(y * divHeight) / diagramHeightMother));
-    let widthPercentage = ((parseFloat(portWidth * divWidth) / diagramWidthMother));
-    let heightPercentage = ((parseFloat(portHeight * divHeight) / diagramHeightMother));
+    let xPercentage = ((parseFloat((x * diagramWidth) / 100)));
+    let yPercentage = ((parseFloat(y * diagramHeight) / 100));
+    let widthPercentage = ((parseFloat(portWidth * diagramWidth) / 100));
+    let heightPercentage = ((parseFloat(portHeight * diagramHeight) / 100));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
@@ -830,13 +900,11 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
   }
 
   function updateBoardTypePortFromModel(data, x, y) {
-    let viewportBounds = myDiagram.viewportBounds;
-    let diagramWidthMother = viewportBounds.width;
-    let diagramHeightMother = viewportBounds.height;
 
-    let location = `${parseInt(x * diagramWidthMother / divWidth)} ${parseInt(y * diagramHeightMother / divHeight)}`;
-    let width = parseInt(data.width * diagramHeightMother / divWidth);
-    let height = parseInt(data.height * diagramHeightMother / divHeight);
+
+    let location = `${parseInt(x * diagramWidth / divWidth)} ${parseInt(y * diagramHeight / 100)}`;
+    let width = parseInt(data.width * diagramHeight / divWidth);
+    let height = parseInt(data.height * diagramHeight / 100);
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
 

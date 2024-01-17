@@ -11,6 +11,7 @@ class BoardType {
         };
 
         this._motherBoardTypeSlots = new Set();
+        this._boardTypePort = new Set();
     }
 
     get boardKey() {
@@ -23,6 +24,14 @@ class BoardType {
 
     set motherBoardTypeSlots(motherBoardTypeSlots) {
         this._motherBoardTypeSlots = motherBoardTypeSlots;
+    }
+
+    getBoardTypePort() {
+        return this._boardTypePort;
+    }
+
+    setBoardTypePort(boardTypePort) {
+        this._boardTypePort = boardTypePort;
     }
 
     getPorts() {

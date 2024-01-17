@@ -13,5 +13,6 @@ let myDiagram = new go.Diagram("myDiagramDiv",
     //"fixedBounds": new go.Rect(10, 10, 100, 100), // Set fixedBounds to a specific rectangular area
   });
 
+  myDiagram.scale = 1.490455443789063;
 
   export { $ , myDiagram } ;
