@@ -474,18 +474,22 @@ function init() {
         let width = node.data.width;
         let height = node.data.height;
         let locaPrt = loc.split(' ');
-        let x = locaPrt[0];
-        let y = locaPrt[1];
+        let x = parseFloat(locaPrt[0]);
+        let y = parseFloat(locaPrt[1]);
 
-        let bacKslotChecked = node.data.rear;
 
+
+        let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
+        let yPercentage = ((parseFloat(y * 100) / diagramHeight));
+        let widthPercentage = ((parseFloat(width * 100) / diagramWidth));
+        let heightPercentage = ((parseFloat(height * 100) / diagramHeight));
 
         document.getElementById('slotIndex').value = slotIndex;
         document.getElementById('indexOnSlot').value = indexOnSlot;
-        document.getElementById('X').value = X;
-        document.getElementById('Y').value = y;
-        document.getElementById('width').value = width;
-        document.getElementById('height').value = height;
+        document.getElementById('X').value = xPercentage;
+        document.getElementById('Y').value = yPercentage;
+        document.getElementById('width').value = widthPercentage;
+        document.getElementById('height').value = heightPercentage;
 
    
 
