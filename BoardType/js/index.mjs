@@ -262,11 +262,6 @@ function init() {
 
     })
 
-
-
-
-
-
   }
 
 
@@ -299,8 +294,6 @@ function init() {
 
 
   function updateAttributesFromFields() {
-
-
     let nodeText = slotIndex + ":" + indexOnSlot;
 
     // Iterate over all nodes
@@ -334,6 +327,15 @@ function init() {
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
     myDiagram.model.setDataProperty(data, "location", location);
+
+    for(let comper of compPerList){
+      if(comper.caption === data.text){
+        comper.widthPercentage = width;
+        comper.heightPercentage = height;
+        comper.xPercentage = location.split(' ')[0];
+        comper.yPercentage = location.split(' ')[1];
+      }
+    }
   }
 
   function autoResizePorts() {
@@ -365,16 +367,7 @@ function init() {
   document.getElementById("scale").addEventListener("click", function (e) {
     let zoomFactor = myDiagram.scale;
     console.log("Current Zoom Factor: " + zoomFactor);
-    let count = 0;
-    let allNodeWidth = 0;
-    let allNodeHeight = 0;
 
-    myDiagram.nodes.each(function (node) {
-      console.log(node.data);
-      count++;
-      allNodeWidth += node.data.width;
-      allNodeHeight += node.data.height;
-    });
 
     if (flag) {
       myDiagram.scale = 1.490455443789063;
@@ -417,6 +410,15 @@ function init() {
     myDiagram.model.setDataProperty(data, "width", widthPercentage);
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
+
+    for(let comper of compPerList){
+      if(comper.caption === data.text){
+        comper.widthPercentage = widthPercentage;
+        comper.heightPercentage = heightPercentage;
+        comper.xPercentage = xPercentage;
+        comper.yPercentage = heightPercentage;
+      }
+    }
 
 
   }
@@ -509,6 +511,15 @@ function init() {
         document.getElementById('width').value = widthPercentage;
         document.getElementById('height').value = heightPercentage;
 
+
+        for(let comper of compPerList){
+          if(comper.caption === node.data.text){
+            comper.widthPercentage = widthPercentage;
+            comper.heightPercentage = heightPercentage;
+            comper.xPercentage = xPercentage;
+            comper.yPercentage = heightPercentage;
+          }
+        }
 
 
 
