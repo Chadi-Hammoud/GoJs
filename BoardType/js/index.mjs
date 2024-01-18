@@ -225,7 +225,7 @@ function init() {
   let dis = 1.0;
 
   let length = (compPerList.length - 1);
-  let comWidth = (100.0 - length) / (length === 0 ? 1 : length);
+  let comWidth = 5 * ((100.0 - length) / (length === 0 ? 1 : length));
 
   for (let compPer of compPerList) {
     if (compPer.xPercentage === undefined || compPer.yPercentage === undefined) {
@@ -233,21 +233,13 @@ function init() {
       compPer.widthPercentage = comWidth;
       compPer.xPercentage = x;
       compPer.yPercentage = 10.0;
-      compPer.heightPercentage = 80.0;
-      compPer.caption = `${startIndex}:${0}` ;
+      compPer.heightPercentage = 208;
+      compPer.caption = `${startIndex}:${0}`;
       x += comWidth;
       startIndex++;
     }
     addBoardTypePort(compPer);
-    myDiagram.nodes.each(function (node) {
-      let key = node.key;
-      let data = myDiagram.model.findNodeDataForKey(key);
 
-      myDiagram.model.setDataProperty(data, "width", boardTypePort.widthPercentage);
-      myDiagram.model.setDataProperty(data, "height", boardTypePort.heightPercentage);
-
-
-    });
   }
 
 
@@ -266,9 +258,11 @@ function init() {
       text: `${boardTypePort.caption}`,
       location: `${boardTypePort.xPercentage} ${boardTypePort.yPercentage}`,
       visible: true,
-      source: "http://127.0.0.1:5500/BoardType/images/port.svg",
+      source: "http://127.0.0.1:5500/BoardType/images/port00.svg",
 
     })
+
+
 
 
 
@@ -320,8 +314,6 @@ function init() {
         let key = node.key;
         let data = myDiagram.model.findNodeDataForKey(key);
 
-
-
         updateBoardTypePortFromModel(data, width, height, X, Y)
 
         node.updateTargetBindings();
@@ -367,22 +359,57 @@ function init() {
 
   }
 
+
+
+  let flag = false;
   document.getElementById("scale").addEventListener("click", function (e) {
-    var zoomFactor = myDiagram.scale;
+    let zoomFactor = myDiagram.scale;
     console.log("Current Zoom Factor: " + zoomFactor);
+    let count = 0;
+    let allNodeWidth = 0;
+    let allNodeHeight = 0;
+
+    myDiagram.nodes.each(function (node) {
+      console.log(node.data);
+      count++;
+      allNodeWidth += node.data.width;
+      allNodeHeight += node.data.height;
+    });
+
+    if (flag) {
+      myDiagram.scale = 1.490455443789063;
+      flag = false;
+    } else {
+
+      let totalBounds = myDiagram.computePartsBounds(myDiagram.nodes);
+      let targetBounds = myDiagram.viewportBounds;
+      // Step 2: Get the dimensions of the target bounds
+      let targetWidth = targetBounds.width;
+      let targetHeight = targetBounds.height;
+    
+      // Step 3: Calculate scale factors for x and y directions
+      let xScale = targetWidth / totalBounds.width;
+      let yScale = targetHeight / totalBounds.height;
+    
+      // Use the minimum of the two scale factors to maintain aspect ratio
+      let scale = Math.max(xScale, yScale);
+
+      myDiagram.scale = scale;
+
+      flag = true;
+    }
   });
+
+
 
 
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
 
-
-
-    let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
-    let yPercentage = ((parseFloat(y * 100) / diagramHeight));
-    let widthPercentage = ((parseFloat(portWidth * 100) / diagramWidth));
-    let heightPercentage = ((parseFloat(portHeight * 100) / diagramHeight));
-
+    let xPercentage = 5 * ((parseFloat((x * 100) / diagramWidth)));
+    let yPercentage = 2.5 * ((parseFloat(y * 100) / diagramHeight));
+    let widthPercentage = 5 * ((parseFloat(portWidth * 100) / diagramWidth));
+    let heightPercentage = 2.5 * ((parseFloat(portHeight * 100) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
 
@@ -390,15 +417,7 @@ function init() {
     myDiagram.model.setDataProperty(data, "width", widthPercentage);
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
-    // for (let compPer of compPerList) {
-    //   if (compPer.caption === data.text ) {
-    //     compPer.xPercentage = xPercentage
-    //     compPer.yPercentage = yPercentage
-    //     compPer.widthPercentage = widthPercentage
-    //     compPer.heightPercentage = heightPercentage;
-         
-    //   }
-    // }
+
 
   }
 
@@ -478,7 +497,6 @@ function init() {
         let y = parseFloat(locaPrt[1]);
 
 
-
         let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
         let yPercentage = ((parseFloat(y * 100) / diagramHeight));
         let widthPercentage = ((parseFloat(width * 100) / diagramWidth));
@@ -491,9 +509,8 @@ function init() {
         document.getElementById('width').value = widthPercentage;
         document.getElementById('height').value = heightPercentage;
 
-   
 
-    
+
 
       }
     }
@@ -501,7 +518,7 @@ function init() {
 
 
 
- 
+
   // Add a listener for the ChangedSelection event
   myDiagram.addDiagramListener("ChangedSelection", function (e) {
     nodeMoved(e);
@@ -512,6 +529,7 @@ function init() {
   myDiagram.addDiagramListener("SelectionMoved", function (e) {
     nodeMoved(e);
   });
+
 
 
 
@@ -905,14 +923,16 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   function updateBoardTypePortFromModel(data, x, y) {
 
+    let xPercentage = ((parseInt((x * diagramWidth) / 100)));
+    let yPercentage = ((parseInt(y * diagramHeight) / 100));
+    let widthPercentage = ((parseInt(data.width * diagramWidth) / 100));
+    let heightPercentage = ((parseInt(data.height * diagramHeight) / 100));
 
-    let location = `${parseInt(x * diagramWidth / divWidth)} ${parseInt(y * diagramHeight / 100)}`;
-    let width = parseInt(data.width * diagramHeight / divWidth);
-    let height = parseInt(data.height * diagramHeight / 100);
-    myDiagram.model.setDataProperty(data, "width", width);
-    myDiagram.model.setDataProperty(data, "height", height);
-
+    let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
+    myDiagram.model.setDataProperty(data, "width", widthPercentage);
+    myDiagram.model.setDataProperty(data, "height", heightPercentage);
+
   }
 
 

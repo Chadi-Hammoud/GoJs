@@ -15,4 +15,5 @@ let myDiagram = new go.Diagram("myDiagramDiv",
 
   myDiagram.scale = 1.490455443789063;
 
+  // myDiagram.scale = 4.3;
   export { $ , myDiagram } ;

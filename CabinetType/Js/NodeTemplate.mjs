@@ -208,6 +208,7 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
       resizeObjectName: "PANEL",
       layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
       selectionAdorned: false,
+
       resizeAdornmentTemplate: $(go.Adornment, "Spot",
         $(go.Placeholder),
         $(go.Shape, // the handle
@@ -243,10 +244,11 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
 
       {
         name: "PANEL",
+
       },
       $(go.Panel, "Horizontal",
         new go.Binding("width", "width", null, null),
-        { height: 16 },
+        { height: 14 },
         $(go.Shape, "Rectangle",
           {
             fill: "black",
@@ -262,12 +264,13 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
             }
           ),
           $(go.TextBlock, "",
-         // new go.Binding("height", "height", null, null),
+            // new go.Binding("height", "height", null, null),
             {
               name: "boardTextblock",
               margin: 2,
               alignment: go.Spot.Left,
-              height: 16,
+              height: 14,
+              font: "bold 9px Arial, sans-serif",
             },
             new go.Binding("text", "text").makeTwoWay()
           )
@@ -280,17 +283,27 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
         )
       ),
 
-      $(go.Picture,
-        new go.Binding("height", "height", null, null),
-        //new go.Binding("width", "width", null, null),
-        {
-          background: "white",
-          name: "PANEL",
-          stretch: go.GraphObject.Fill
-        },
-        new go.Binding("source", "source"),
 
+      $(go.Panel, "Auto",
+        {
+          name: "PANEL",
+          position: new go.Binding("position", "height", function (h, panel) {
+            return new go.Point(0, computeClippingTop(h, panel));
+          }).ofObject("PANEL"),
+        },
+        $(go.Picture,
+          new go.Binding("height", "height", null, null),
+          new go.Binding("width", "width", null, null),
+          {
+            background: "white",
+            name: "PANEL",
+            alignment: new go.Spot(0.5, 0, 0.5, 0), // Align the center horizontally and the top vertically
+            stretch: go.GraphObject.Uniform,
+          },
+          new go.Binding("source", "source")
+        ),
       ),
+
     ),
   ),
 
