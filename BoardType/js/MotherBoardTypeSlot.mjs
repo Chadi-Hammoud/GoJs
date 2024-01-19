@@ -4,10 +4,11 @@ class MotherBoardTypeSlot {
     constructor() {
         this._boardKey;
         this._indexOnSlot;
-        this._XPercentage;
-        this._YPercentage;
-        this._WidthPercentage;
-        this._HeightPercentage;
+        this._xPercentage;
+        this._yPercentage;
+        this._widthPercentage;
+        this._heightPercentage;
+
 
         // Increment the static property using the class name
         MotherBoardTypeSlot.MotherBoardTypeSlotId++;
@@ -21,6 +22,7 @@ class MotherBoardTypeSlot {
         this._boardKey = value;
     }
 
+
     get indexOnSlot() {
         return this._indexOnSlot;
     }
@@ -29,36 +31,36 @@ class MotherBoardTypeSlot {
         this._indexOnSlot = value;
     }
 
-    get XPercentage() {
-        return this._XPercentage;
+    get xPercentage() {
+        return this._xPercentage;
     }
 
-    set XPercentage(value) {
-        this._XPercentage = value;
+    set xPercentage(value) {
+        this._xPercentage = value;
     }
 
-    get YPercentage() {
-        return this._YPercentage;
+    get yPercentage() {
+        return this._yPercentage;
     }
 
-    set YPercentage(value) {
-        this._YPercentage = value;
+    set yPercentage(value) {
+        this._yPercentage = value;
     }
 
-    get WidthPercentage() {
-        return this._WidthPercentage;
+    get widthPercentage() {
+        return this._widthPercentage;
     }
 
-    set WidthPercentage(value) {
-        this._WidthPercentage = value;
+    set widthPercentage(value) {
+        this._widthPercentage = value;
     }
 
-    get HeightPercentage() {
-        return this._HeightPercentage;
+    get heightPercentage() {
+        return this._heightPercentage;
     }
 
-    set HeightPercentage(value) {
-        this._HeightPercentage = value;
+    set heightPercentage(value) {
+        this._heightPercentage = value;
     }
 
     get BoardTypeId() {

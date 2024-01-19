@@ -9,9 +9,11 @@ import { slotDesigner, portDesigner } from "../../CabinetType/Js/NodeTemplate.mj
 
 
 let boardType = new BoardType();
-let motherBoard = new MotherBoardTypeSlot();
+
 let boardTypePort;
 
+let XSCALE = 5.0;
+let YSCALE = 2.5;
 
 
 
@@ -89,7 +91,7 @@ function modifyPart(src, backWidth, backHeight) {
   let part = $(go.Part, {
     locationSpot: go.Spot.Center,
     layerName: "Background",
-    position: new go.Point(-10, -10),
+    position: new go.Point(-5, 0),
     selectable: false,
     pickable: false,
     movable: false,
@@ -223,7 +225,8 @@ function init() {
 
   let x = 0.0;
   let dis = 1.0;
-
+  let backWidth = 0;
+  let backHeight = 0;
   let length = (compPerList.length - 1);
   let comWidth = 5 * ((100.0 - length) / (length === 0 ? 1 : length));
 
@@ -237,6 +240,11 @@ function init() {
       compPer.caption = `${startIndex}:${0}`;
       x += comWidth;
       startIndex++;
+      if (backHeight < compPer.heightPercentage) {
+        backHeight = compPer.heightPercentage;
+      }
+
+      backWidth += compPer.widthPercentage;
     }
     addBoardTypePort(compPer);
 
@@ -260,7 +268,42 @@ function init() {
       visible: true,
       source: "http://127.0.0.1:5500/BoardType/images/port00.svg",
 
-    })
+    });
+
+    let src;
+
+    let back = document.getElementById("back1");
+    let back1 = document.getElementById("back2");
+    let back2 = document.getElementById("back3");
+
+    back.addEventListener("click", event => {
+
+      src = back.currentSrc;
+
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.redraw(part);
+    });
+
+    back1.addEventListener("click", event => {
+
+      src = back1.currentSrc;
+
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.redraw(part);
+    });
+
+    back2.addEventListener("click", event => {
+
+      let part = modifyPart(src, backWidth, backHeight);
+      myDiagram.remove(part);
+    });
+
+
+
+
+
+    let part = modifyPart(src, backWidth, backHeight);
+    myDiagram.redraw(part);
 
   }
 
@@ -320,16 +363,16 @@ function init() {
 
   function updateBoardTypePortFromModel(data, newWidth, newHeight, x, y) {
 
-    let location = `${parseInt(x * diagramWidth / 100)} ${parseInt(y * diagramHeight / 100)}`;
-    let width = parseInt(newWidth * diagramWidth / 100);
-    let height = parseInt(newHeight * diagramHeight / 100);
+    let location = `${ parseInt(x * diagramWidth / 100)} ${ parseInt(y * diagramHeight / 100)}`;
+    let width =  parseInt(newWidth * diagramWidth / 100);
+    let height =  parseInt(newHeight * diagramWidth / 100);
 
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
     myDiagram.model.setDataProperty(data, "location", location);
 
-    for(let comper of compPerList){
-      if(comper.caption === data.text){
+    for (let comper of compPerList) {
+      if (comper.caption === data.text) {
         comper.widthPercentage = width;
         comper.heightPercentage = height;
         comper.xPercentage = location.split(' ')[0];
@@ -379,11 +422,11 @@ function init() {
       // Step 2: Get the dimensions of the target bounds
       let targetWidth = targetBounds.width;
       let targetHeight = targetBounds.height;
-    
+
       // Step 3: Calculate scale factors for x and y directions
       let xScale = targetWidth / totalBounds.width;
       let yScale = targetHeight / totalBounds.height;
-    
+
       // Use the minimum of the two scale factors to maintain aspect ratio
       let scale = Math.max(xScale, yScale);
 
@@ -399,10 +442,10 @@ function init() {
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
 
-    let xPercentage = 5 * ((parseFloat((x * 100) / diagramWidth)));
-    let yPercentage = 2.5 * ((parseFloat(y * 100) / diagramHeight));
-    let widthPercentage = 5 * ((parseFloat(portWidth * 100) / diagramWidth));
-    let heightPercentage = 2.5 * ((parseFloat(portHeight * 100) / diagramHeight));
+    let xPercentage = XSCALE * ((parseFloat((x * 100) / diagramWidth)));
+    let yPercentage = YSCALE * ((parseFloat(y * 100) / diagramHeight));
+    let widthPercentage = XSCALE * ((parseFloat(portWidth * 100) / diagramWidth));
+    let heightPercentage = YSCALE * ((parseFloat(portHeight * 100) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
 
@@ -411,12 +454,13 @@ function init() {
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
 
-    for(let comper of compPerList){
-      if(comper.caption === data.text){
+    for (let comper of compPerList) {
+      if (comper.caption === data.text) {
         comper.widthPercentage = widthPercentage;
         comper.heightPercentage = heightPercentage;
         comper.xPercentage = xPercentage;
         comper.yPercentage = heightPercentage;
+        break;
       }
     }
 
@@ -426,7 +470,7 @@ function init() {
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
     if (compPerList.length - 1 > 0) {
-      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length - 1) / nbRows));
+      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length) / nbRows));
       let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
       let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
@@ -504,6 +548,11 @@ function init() {
         let widthPercentage = ((parseFloat(width * 100) / diagramWidth));
         let heightPercentage = ((parseFloat(height * 100) / diagramHeight));
 
+        document.getElementById("slotIndex").style.display = 'block';
+        document.getElementById("indexOnSlot").style.display = 'block';
+        document.getElementById("forSlotIndex").style.display = 'block';
+        document.getElementById("forIndexOnSlot").style.display = 'block';
+
         document.getElementById('slotIndex').value = slotIndex;
         document.getElementById('indexOnSlot').value = indexOnSlot;
         document.getElementById('X').value = xPercentage;
@@ -512,9 +561,9 @@ function init() {
         document.getElementById('height').value = heightPercentage;
 
 
-      
-        for(let comper of compPerList){
-          if(comper.caption === node.data.text){
+
+        for (let comper of compPerList) {
+          if (comper.caption === node.data.text) {
             comper.widthPercentage = widthPercentage;
             comper.heightPercentage = heightPercentage;
             comper.xPercentage = xPercentage;
@@ -564,11 +613,6 @@ document.getElementById("putPortOnBoard").addEventListener("click", function (ev
 });
 
 
-
-
-
-
-
 let id;
 let ports;
 document.getElementById("putSlotOnMotherBoard").addEventListener("click", function (event) {
@@ -578,21 +622,17 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
   if (!document.getElementById('addSlotLink') || !document.getElementById('removeSlotLink')) {
     let addSlot = document.createElement('a');
     let removeSlot = document.createElement('a');
-
-
     addSlot.textContent = 'Add Slot';
-    addSlot.id = 'addSlotLink'; // Set a unique id for identification
+    addSlot.id = 'addSlotLink';
 
 
     removeSlot.textContent = 'Remove Slot';
-    removeSlot.id = 'removeSlotLink'; // Set a unique id for identification
+    removeSlot.id = 'removeSlotLink';
 
     let sideBarDiv = document.getElementById('sidebar');
 
     sideBarDiv.appendChild(addSlot);
     sideBarDiv.appendChild(removeSlot);
-
-
 
     id = boardType.boardKey;
     ports = boardType.getPorts();
@@ -724,8 +764,9 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   // Function to handle form submission\
   let slots = new Set();
+  let compPerList = [];
   function addMotherBoardSlot() {
-
+    let motherBoard = new MotherBoardTypeSlot();
     let retVal = document.getElementById("indexOnSlott").value;
     let indexOnSlot = null;
 
@@ -751,12 +792,14 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
 
     motherBoard.BoardTypeId = (boardType.boardKey != null ? boardType.boardKey : null);
-    motherBoard.indexOnSlot = (indexOnSlot);
-    motherBoard.XPercentage = (5.0);
-    motherBoard.YPercentage = (5.0);
-    motherBoard.WidthPercentage = (100.0);
-    motherBoard.HeightPercentage = (100.0);
+    motherBoard.indexOnSlot = `${indexOnSlot}`;
+    motherBoard.xPercentage = (5.0);
+    motherBoard.yPercentage = (5.0);
+    motherBoard.widthPercentage = (100.0);
+    motherBoard.heightPercentage = (100.0);
 
+
+    compPerList.push(motherBoard);
 
     slots.add(motherBoard);
     boardType.motherBoardTypeSlots = (slots);
@@ -771,11 +814,11 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
     myDiagram.model.addNodeData({
       key: `slot${motherBoard.BoardTypeId}`,
       category: "slot",
-      width: motherBoard.WidthPercentage,
-      height: motherBoard.HeightPercentage,
+      width: motherBoard.widthPercentage,
+      height: motherBoard.heightPercentage,
       text: `${indexOnSlot}`,
-      location: `${motherBoard.XPercentage} ${motherBoard.YPercentage}`,
-      Fsible: true,
+      location: `${motherBoard.xPercentage} ${motherBoard.yPercentage}`,
+      vsible: true,
       rear: null || 0,
     });
     closeForm();
@@ -842,12 +885,42 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
     nodeMoved(e);
   });
 
+  let flag = false;
+  document.getElementById("scale").addEventListener("click", function (e) {
+    let zoomFactor = myDiagram.scale;
+    console.log("Current Zoom Factor: " + zoomFactor);
+
+
+    if (flag) {
+      myDiagram.scale = 1.490455443789063;
+      flag = false;
+    } else {
+
+      let totalBounds = myDiagram.computePartsBounds(myDiagram.nodes);
+      let targetBounds = myDiagram.viewportBounds;
+      // Step 2: Get the dimensions of the target bounds
+      let targetWidth = targetBounds.width;
+      let targetHeight = targetBounds.height;
+
+      // Step 3: Calculate scale factors for x and y directions
+      let xScale = targetWidth / totalBounds.width;
+      let yScale = targetHeight / totalBounds.height;
+
+      // Use the minimum of the two scale factors to maintain aspect ratio
+      let scale = Math.min(xScale, yScale);
+
+      myDiagram.scale = scale;
+
+      flag = true;
+    }
+  });
+
 
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
 
-    if (window.motherSlots > 0) {
-      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(window.motherSlots) / nbRows));
+    if (compPerList.length - 1 > 0) {
+      let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length) / nbRows));
       let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
       let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
@@ -895,16 +968,28 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
   }
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-    let xPercentage = ((parseFloat((x * diagramWidth) / 100)));
-    let yPercentage = ((parseFloat(y * diagramHeight) / 100));
-    let widthPercentage = ((parseFloat(portWidth * diagramWidth) / 100));
-    let heightPercentage = ((parseFloat(portHeight * diagramHeight) / 100));
+    let xPercentage = XSCALE * ((parseFloat((x * 100) / diagramWidth)));
+    let yPercentage = YSCALE * ((parseFloat(y * 100) / diagramHeight));
+    let widthPercentage = XSCALE * ((parseFloat(portWidth * 100) / diagramWidth));
+    let heightPercentage = YSCALE * ((parseFloat(portHeight * 100) / diagramHeight));
 
     let location = `${xPercentage} ${yPercentage}`;
     myDiagram.model.setDataProperty(data, "location", location);
     myDiagram.model.setDataProperty(data, "width", widthPercentage);
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
+
+    for (let comper of compPerList) {
+      if (comper.indexOnSlot === data.text) {
+        comper.widthPercentage = widthPercentage;
+        comper.heightPercentage = heightPercentage;
+        comper.xPercentage = xPercentage;
+        comper.yPercentage = heightPercentage;
+        break;
+      }
+    }
+
+    console.log(compPerList);
   }
 
 
@@ -922,7 +1007,7 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
       myDiagram.model.setDataProperty(data, "width", width1);
       myDiagram.model.setDataProperty(data, "height", height1);
 
-      updateBoardTypePortFromModel(data, x, y);
+      updateBoardTypePortFromModel(data, width1, height1, x, y);
 
       console.log(data);
       node.updateTargetBindings();
@@ -933,17 +1018,29 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   }
 
-  function updateBoardTypePortFromModel(data, x, y) {
+  function updateBoardTypePortFromModel(data, newWidth, newHeight, x, y) {
 
-    let xPercentage = ((parseInt((x * diagramWidth) / 100)));
-    let yPercentage = ((parseInt(y * diagramHeight) / 100));
-    let widthPercentage = ((parseInt(data.width * diagramWidth) / 100));
-    let heightPercentage = ((parseInt(data.height * diagramHeight) / 100));
+    let location = `${ parseInt(x * diagramWidth / 100)} ${ parseInt(y * diagramHeight / 100)}`;
+    let width =  parseInt(newWidth * diagramWidth / 100);
+    let height =  parseInt(newHeight * diagramWidth / 100);
 
-    let location = `${xPercentage} ${yPercentage}`;
+    myDiagram.model.setDataProperty(data, "width", width);
+    myDiagram.model.setDataProperty(data, "height", height);
     myDiagram.model.setDataProperty(data, "location", location);
-    myDiagram.model.setDataProperty(data, "width", widthPercentage);
-    myDiagram.model.setDataProperty(data, "height", heightPercentage);
+
+    for (let comper of compPerList) {
+      if (comper.indexOnSlot === data.text) {
+        comper.widthPercentage = width;
+        comper.heightPercentage = height;
+        comper.xPercentage = location.split(' ')[0];
+        comper.yPercentage = location.split(' ')[1];
+        break;
+      }
+    }
+
+    // document.getElementById("height1").value = height;
+    // document.getElementById("width1").value = width;
+    console.log(compPerList);
 
   }
 
@@ -956,22 +1053,39 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
       let type = node.data.category;
       if (type === "slot") {
 
-        let loc = node.location;
+        let loc = node.data.location;
         let width = node.data.width;
         let height = node.data.height;
-        let x = loc.x;
-        let y = loc.y;
+        let locaPrt = loc.split(' ');
+        let x = parseFloat(locaPrt[0]);
+        let y = parseFloat(locaPrt[1]);
 
-        document.getElementById('slotIndex').style.display = "none";
-        document.getElementById('indexOnSlot').style.display = "none";
+        let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
+        let yPercentage = ((parseFloat(y * 100) / diagramHeight));
+        let widthPercentage = ((parseFloat(width * 100) / diagramWidth));
+        let heightPercentage = ((parseFloat(height * 100) / diagramHeight));
 
-        document.getElementById('forSlotIndex').style.display = "none";
-        document.getElementById('forIndexOnSlot').style.display = "none";
 
-        document.getElementById('X').value = x;
-        document.getElementById('Y').value = y;
-        document.getElementById('width').value = width;
-        document.getElementById('height').value = height;
+        document.getElementById("slotIndex").style.display = 'none';
+        document.getElementById("indexOnSlot").style.display = 'none';
+        document.getElementById("forSlotIndex").style.display = 'none';
+        document.getElementById("forIndexOnSlot").style.display = 'none';
+        document.getElementById('X').value = xPercentage;
+        document.getElementById('Y').value = yPercentage;
+        document.getElementById('width').value = widthPercentage;
+        document.getElementById('height').value = heightPercentage;
+
+
+
+        for (let comper of boardType.motherBoardTypeSlots) {
+          if (comper.caption === node.data.text) {
+            comper.widthPercentage = widthPercentage;
+            comper.heightPercentage = heightPercentage;
+            comper.xPercentage = xPercentage;
+            comper.yPercentage = heightPercentage;
+          }
+        }
+
 
       }
     }

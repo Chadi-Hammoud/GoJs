@@ -233,7 +233,15 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
 
     },
 
-    $(go.Panel, "Vertical",
+    $(go.Panel, "auto",
+      {
+        name: "PANEL",
+        position: new go.Binding("position", "height", function (h, panel) {
+          return new go.Point(0, computeClippingTop(h, panel));
+        }).ofObject("PANEL"),
+        // padding: { top: 10, right: 0, bottom: 20, left: 0 }
+        
+      },
       new go.Binding("marginLeft", "marginLeft").makeTwoWay(),
       new go.Binding("marginTop", "marginTop").makeTwoWay(),
       new go.Binding("marginRight", "marginRight").makeTwoWay(),
@@ -256,6 +264,7 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
           }
         ),
         $(go.Panel, "Auto",
+        
           $(go.Shape, "Rectangle",
             new go.Binding("width", "width", v => v - 18),
             {
@@ -282,27 +291,21 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
           }
         )
       ),
-
-
-      $(go.Panel, "Auto",
+      $(go.Picture,
+        new go.Binding("height", "height", null, null),
+        new go.Binding("width", "width", null, null),
+        
         {
+          background: "white",
           name: "PANEL",
-          position: new go.Binding("position", "height", function (h, panel) {
-            return new go.Point(0, computeClippingTop(h, panel));
-          }).ofObject("PANEL"),
+          alignment: new go.Spot(0.5, 0, 0.5, 0), // Align the center horizontally and the top vertically
+          stretch: go.GraphObject.UniformToFill,
+          margin: new go.Margin(10, 0, 0, 0) 
+        
         },
-        $(go.Picture,
-          new go.Binding("height", "height", null, null),
-          new go.Binding("width", "width", null, null),
-          {
-            background: "white",
-            name: "PANEL",
-            alignment: new go.Spot(0.5, 0, 0.5, 0), // Align the center horizontally and the top vertically
-            stretch: go.GraphObject.Uniform,
-          },
-          new go.Binding("source", "source")
-        ),
+        new go.Binding("source", "source")
       ),
+
 
     ),
   ),
