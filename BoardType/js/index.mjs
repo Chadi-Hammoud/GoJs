@@ -512,6 +512,7 @@ function init() {
         document.getElementById('height').value = heightPercentage;
 
 
+      
         for(let comper of compPerList){
           if(comper.caption === node.data.text){
             comper.widthPercentage = widthPercentage;
