@@ -363,9 +363,9 @@ function init() {
 
   function updateBoardTypePortFromModel(data, newWidth, newHeight, x, y) {
 
-    let location = `${ parseInt(x * diagramWidth / 100)} ${ parseInt(y * diagramHeight / 100)}`;
-    let width =  parseInt(newWidth * diagramWidth / 100);
-    let height =  parseInt(newHeight * diagramWidth / 100);
+    let location = `${parseInt(x * diagramWidth / 100)} ${parseInt(y * diagramHeight / 100)}`;
+    let width = parseInt(newWidth * diagramWidth / 100);
+    let height = parseInt(newHeight * diagramWidth / 100);
 
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);
@@ -393,7 +393,10 @@ function init() {
       x = parts[0];
       y = parts[1];
 
-      updateBoardTypePortFromModel(data, width1, height1, x, y);
+      let width = parseFloat(document.getElementById("width1").value, 10);
+      let height = parseFloat(document.getElementById("height1").value, 10);
+
+      updateBoardTypePortFromModel(data, width, height, x, y);
 
       console.log(data);
       node.updateTargetBindings();
@@ -442,6 +445,7 @@ function init() {
 
   function updateBoardTypePort(x, y, portWidth, portHeight, data) {
 
+    
     let xPercentage = XSCALE * ((parseFloat((x * 100) / diagramWidth)));
     let yPercentage = YSCALE * ((parseFloat(y * 100) / diagramHeight));
     let widthPercentage = XSCALE * ((parseFloat(portWidth * 100) / diagramWidth));
@@ -465,15 +469,24 @@ function init() {
     }
 
 
+
   }
 
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
+    let diagramWidthH = myDiagram.div.offsetWidth;
+    let diagramHeightH = myDiagram.div.offsetHeight;
+
     if (compPerList.length - 1 > 0) {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length) / nbRows));
-      let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
-      let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
+      let portWidth =  parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
+      let portHeight =  parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
+      let scaleX = ((diagramWidthH - (left + right)) ) / (nbColumns * (portWidth + horizontal));
+      let scaleY = ((diagramHeightH - (top + bottom)) ) / (nbRows * (portHeight + vertical));
+
+      // Choose the smaller scale to fit the entire diagram within specified spaces
+      let scale = Math.min(scaleX, scaleY);
       // Iterate over all nodes
       myDiagram.nodes.each(function (node) {
 
@@ -506,6 +519,13 @@ function init() {
 
         i++;
         node.updateTargetBindings();
+        myDiagram.scale = scale;
+
+        // let diagramWidth = myDiagram.div.offsetWidth;
+        // let diagramHeight = myDiagram.div.offsetHeight;
+
+        // console.log("Diagram Width:", diagramWidth);
+        // console.log("Diagram Height:", diagramHeight);
 
       });
     }
@@ -1007,7 +1027,10 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
       myDiagram.model.setDataProperty(data, "width", width1);
       myDiagram.model.setDataProperty(data, "height", height1);
 
-      updateBoardTypePortFromModel(data, width1, height1, x, y);
+      let width = parseFloat(document.getElementById("width1").value, 10);
+      let height = parseFloat(document.getElementById("height1").value, 10);
+
+      updateBoardTypePortFromModel(data, width, height, x, y);
 
       console.log(data);
       node.updateTargetBindings();
@@ -1020,9 +1043,9 @@ document.getElementById("putSlotOnMotherBoard").addEventListener("click", functi
 
   function updateBoardTypePortFromModel(data, newWidth, newHeight, x, y) {
 
-    let location = `${ parseInt(x * diagramWidth / 100)} ${ parseInt(y * diagramHeight / 100)}`;
-    let width =  parseInt(newWidth * diagramWidth / 100);
-    let height =  parseInt(newHeight * diagramWidth / 100);
+    let location = `${parseInt(x * diagramWidth / 100)} ${parseInt(y * diagramHeight / 100)}`;
+    let width = parseInt(newWidth * diagramWidth / 100);
+    let height = parseInt(newHeight * diagramWidth / 100);
 
     myDiagram.model.setDataProperty(data, "width", width);
     myDiagram.model.setDataProperty(data, "height", height);

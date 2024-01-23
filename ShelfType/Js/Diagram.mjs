@@ -10,7 +10,7 @@ let myDiagram = new go.Diagram("myDiagramDiv",
     "undoManager.isEnabled": true,
     "allowZoom": true,
     "allowResize": true,
-    //"fixedBounds": new go.Rect(10, 10, 100, 100), // Set fixedBounds to a specific rectangular area
+    "fixedBounds": new go.Rect(10, 10, 100, 100), // Set fixedBounds to a specific rectangular area
   });
 
   myDiagram.scale = 1.490455443789063;
