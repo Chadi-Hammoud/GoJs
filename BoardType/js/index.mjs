@@ -1,5 +1,6 @@
 
 import { $, myDiagram } from "../../ShelfType/Js/Diagram.mjs";
+import * as go from "../../node_modules/gojs/release/go.mjs";
 
 import { BoardType } from "./BoardType.mjs";
 import { MotherBoardTypeSlot } from "./MotherBoardTypeSlot.mjs";
@@ -464,19 +465,29 @@ function init() {
 
     updatedObject.add(data);
 
-    myDiagram.div.style.width = `${((left + right + (widthPercentage * nbColumns) + ((horizontal) * nbColumns - 1)) * scale) }px`;
-    myDiagram.div.style.height = `${((top + bottom + (heightPercentage * nbRows) + ((vertical) * nbRows - 1)) * scale) }px`;
+    let numberOfColumn = nbColumns - 1;
+    let numberOfrow = nbRows - 1;
+
+    if (numberOfColumn === 0) {
+      numberOfColumn = 1;
+    }
+    if (numberOfrow === 0) {
+      numberOfrow = 1;
+    }
+
+    myDiagram.div.style.width = `${((left + right + (widthPercentage * nbColumns) + ((horizontal) * (numberOfColumn))) * scale)+ (0.8 * ((horizontal) * (numberOfColumn)))}px`;
+    myDiagram.div.style.height = `${((top + bottom + (heightPercentage * nbRows) + ((vertical) * (numberOfrow))) * scale)}px`;
 
 
-    let dialogWidth = document.getElementById("dialog").style.width;
-    let dialogheight = document.getElementById("dialog").style.height;
+    if (myDiagram.div.style.width >= document.getElementById("dialog").style.width) {
+      document.getElementById("dialog").style.width = `${(parseFloat(myDiagram.div.style.width.replace("px", "")) + 40)}px`;
+    }
 
+    if (myDiagram.div.style.height >= document.getElementById("dialog").style.height || document.getElementById("dialog").style.height === "auto") {
+      document.getElementById("dialog").style.height = `${(parseFloat(myDiagram.div.style.height.replace("px", "")) + 40)}px`;
+    }
 
-    dialogWidth = `${(parseFloat(myDiagram.div.style.width.replace("px", "")) + 20)}px`;
-
-    dialogheight = `${(parseFloat(myDiagram.div.style.height.replace("px", "")) + 20)}px`;
-
-
+    myDiagram.initialContentAlignment = go.Spot.TopLeft;
 
     myDiagram.requestUpdate();
 
@@ -517,7 +528,7 @@ function init() {
         (undefined !== newStartPoint && startPoint === newStartPoint) &&
         (undefined !== newHorizantal && horizontal === newHorizantal) &&
         (undefined !== newVertical && vertical === newVertical) &&
-        (undefined !== newDirection && distribution === newDirection) 
+        (undefined !== newDirection && distribution === newDirection)
         && (top !== undefined && top === newTop)
       ) {
         if (isUpdatedNode()) {
@@ -535,18 +546,18 @@ function init() {
       loopToDistribute(nbRows, nbColumns, portWidth, portHeight, i, left, right, bottom, top, vertical, horizontal, previousScale, scale);
 
       if ((previousScale !== undefined && previousScale !== scale)) {
-        // if (
-        //   // (undefined !== newLeft && left !== newLeft) ||
-        //   // (undefined !== bottom && newBottom !== bottom) ||
-        //   // (undefined !== newRight && right !== newRight) ||
-        //   (undefined !== newRow && nbRows !== newRow) ||
-        //   (undefined !== newHorizantal && horizontal !== newHorizantal) ||
-        //   (undefined !== newVertical && vertical !== newVertical) 
-        //   // ||(top !== undefined && top !== newTop)
-        // ) {
-        //   myDiagram.scale = scale;
-        //   return;
-        // }
+        if (
+          // (undefined !== newLeft && left !== newLeft) ||
+          // (undefined !== bottom && newBottom !== bottom) ||
+          // (undefined !== newRight && right !== newRight) ||
+          (undefined !== newRow && nbRows !== newRow) ||
+          (undefined !== newHorizantal && horizontal !== newHorizantal) ||
+          (undefined !== newVertical && vertical !== newVertical) 
+          // ||(top !== undefined && top !== newTop)
+        ) {
+          myDiagram.scale = scale;
+          return;
+        }
         myDiagram.scale = previousScale;
       } else {
         myDiagram.scale = scale;
@@ -607,16 +618,16 @@ function init() {
         for (let objKey of objectKey)
           // for (let objHeight of objectHeight) {
           //   for (let objWidth of objectWidth) {
-              if (objKey.data.key === updatedObj.key) {
-                if (obj === updatedObj.location ) {
-                  continue;
-                }
-                else {
-                  return true;
-                }
-              }
-          //   }
-          // }
+          if (objKey.data.key === updatedObj.key) {
+            if (obj === updatedObj.location) {
+              continue;
+            }
+            else {
+              return true;
+            }
+          }
+        //   }
+        // }
       }
     }
     //7.963643313725074

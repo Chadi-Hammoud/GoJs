@@ -11,7 +11,7 @@ let myDiagram = new go.Diagram("myDiagramDiv",
     "allowZoom": true,
     "allowResize": true,
     "fixedBounds": new go.Rect(5, 5, 100, 100), // Set fixedBounds to a specific rectangular area
-    // "initialContentAlignment": go.Spot.TopLeft,
+    "initialContentAlignment": go.Spot.TopLeft,
     // "autoScale": go.Diagram.Uniform,
   });
 
