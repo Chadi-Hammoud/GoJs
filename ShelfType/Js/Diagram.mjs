@@ -10,10 +10,13 @@ let myDiagram = new go.Diagram("myDiagramDiv",
     "undoManager.isEnabled": true,
     "allowZoom": true,
     "allowResize": true,
-    "fixedBounds": new go.Rect(10, 10, 100, 100), // Set fixedBounds to a specific rectangular area
+    "fixedBounds": new go.Rect(5, 5, 100, 100), // Set fixedBounds to a specific rectangular area
+    // "initialContentAlignment": go.Spot.TopLeft,
+    // "autoScale": go.Diagram.Uniform,
   });
 
-  myDiagram.scale = 1.490455443789063;
+myDiagram.scale = 1.490455443789063;
 
-  // myDiagram.scale = 4.3;
-  export { $ , myDiagram } ;
+
+// myDiagram.scale = 4.3;
+export { $, myDiagram };

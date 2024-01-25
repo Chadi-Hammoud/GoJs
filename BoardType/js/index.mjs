@@ -441,22 +441,44 @@ function init() {
 
 
 
-
-
-  function updateBoardTypePort(x, y, portWidth, portHeight, data) {
-
-    
+  let object = new Set();
+  let updatedObject = new Set();
+  let objectKey = new Set();
+  let objectHeight = new Set();
+  let objectWidth = new Set();
+  let location;
+  let newTop, newBottom, newRight, newLeft, newRow, newStartPoint, newHorizantal, newVertical, newDirection, previousScale;
+  function updateBoardTypePort(x, y, portWidth, portHeight, data, left, right, bottom, top, nbColumns, nbRows, vertical, horizontal, scale) {
     let xPercentage = XSCALE * ((parseFloat((x * 100) / diagramWidth)));
     let yPercentage = YSCALE * ((parseFloat(y * 100) / diagramHeight));
     let widthPercentage = XSCALE * ((parseFloat(portWidth * 100) / diagramWidth));
     let heightPercentage = YSCALE * ((parseFloat(portHeight * 100) / diagramHeight));
 
-    let location = `${xPercentage} ${yPercentage}`;
+
+    location = `${xPercentage} ${yPercentage}`;
+
 
     myDiagram.model.setDataProperty(data, "location", location);
     myDiagram.model.setDataProperty(data, "width", widthPercentage);
     myDiagram.model.setDataProperty(data, "height", heightPercentage);
 
+    updatedObject.add(data);
+
+    myDiagram.div.style.width = `${((left + right + (widthPercentage * nbColumns) + ((horizontal) * nbColumns - 1)) * scale) }px`;
+    myDiagram.div.style.height = `${((top + bottom + (heightPercentage * nbRows) + ((vertical) * nbRows - 1)) * scale) }px`;
+
+
+    let dialogWidth = document.getElementById("dialog").style.width;
+    let dialogheight = document.getElementById("dialog").style.height;
+
+
+    dialogWidth = `${(parseFloat(myDiagram.div.style.width.replace("px", "")) + 20)}px`;
+
+    dialogheight = `${(parseFloat(myDiagram.div.style.height.replace("px", "")) + 20)}px`;
+
+
+
+    myDiagram.requestUpdate();
 
     for (let comper of compPerList) {
       if (comper.caption === data.text) {
@@ -469,65 +491,70 @@ function init() {
     }
 
 
-
   }
 
   function applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom) {
 
     let diagramWidthH = myDiagram.div.offsetWidth;
     let diagramHeightH = myDiagram.div.offsetHeight;
-
     if (compPerList.length - 1 > 0) {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length) / nbRows));
-      let portWidth =  parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
-      let portHeight =  parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
+      let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
+      let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
       let i = 0;
-      let scaleX = ((diagramWidthH - (left + right)) ) / (nbColumns * (portWidth + horizontal));
-      let scaleY = ((diagramHeightH - (top + bottom)) ) / (nbRows * (portHeight + vertical));
+      let scaleX = ((diagramWidthH - (left + right))) / (nbColumns * (portWidth + horizontal));
+      let scaleY = ((diagramHeightH - (top + bottom))) / (nbRows * (portHeight + vertical));
+
 
       // Choose the smaller scale to fit the entire diagram within specified spaces
       let scale = Math.min(scaleX, scaleY);
-      // Iterate over all nodes
-      myDiagram.nodes.each(function (node) {
-
-        let key = node.key;
-        let data = myDiagram.model.findNodeDataForKey(key);
-
-        let x = 0, y = 0;
-
-        // default calculation for top left
-        let columnIndex = distribution === "horizontal" ? parseInt(((i % nbColumns) + 1)) : parseInt(((i / nbRows) + 1));
-        let rowIndex = distribution === "horizontal" ? parseInt(((i / nbColumns) + 1)) : parseInt(((i % nbRows) + 1));
-
-        if ("top-right" === startPoint) {
-          columnIndex = nbColumns - columnIndex + 1;
+      if (
+        (previousScale !== undefined && previousScale !== scale) &&
+        (undefined !== newLeft && left === newLeft) &&
+        (undefined !== bottom && newBottom === bottom) &&
+        (undefined !== newRight && right === newRight) &&
+        (undefined !== newRow && nbRows === newRow) &&
+        (undefined !== newStartPoint && startPoint === newStartPoint) &&
+        (undefined !== newHorizantal && horizontal === newHorizantal) &&
+        (undefined !== newVertical && vertical === newVertical) &&
+        (undefined !== newDirection && distribution === newDirection) 
+        && (top !== undefined && top === newTop)
+      ) {
+        if (isUpdatedNode()) {
+          loopToDistribute(nbRows, nbColumns, portWidth, portHeight, i, left, right, bottom, top, vertical, horizontal, previousScale, scale);
+          myDiagram.scale = previousScale;
         }
-        else if ("bottom-left" === startPoint) {
-          rowIndex = nbRows - rowIndex + 1;
-        }
-        else if ("bottom-right" === startPoint) {
-          columnIndex = nbColumns - columnIndex + 1;
-          rowIndex = nbRows - rowIndex + 1;
-        }
+        return;
+      }
 
-        x = left + (columnIndex - 1) * (portWidth + horizontal);
-        y = top + (rowIndex - 1) * (portHeight + vertical);
+      newRow = rows, newLeft = left, newBottom = bottom, newStartPoint = startPoint,
+        newDirection = distribution, newTop = top, newRight = right, newHorizantal = horizontal,
+        newVertical = vertical;
 
 
+      loopToDistribute(nbRows, nbColumns, portWidth, portHeight, i, left, right, bottom, top, vertical, horizontal, previousScale, scale);
 
-        updateBoardTypePort(x, y, portWidth, portHeight, data);
-
-        i++;
-        node.updateTargetBindings();
+      if ((previousScale !== undefined && previousScale !== scale)) {
+        // if (
+        //   // (undefined !== newLeft && left !== newLeft) ||
+        //   // (undefined !== bottom && newBottom !== bottom) ||
+        //   // (undefined !== newRight && right !== newRight) ||
+        //   (undefined !== newRow && nbRows !== newRow) ||
+        //   (undefined !== newHorizantal && horizontal !== newHorizantal) ||
+        //   (undefined !== newVertical && vertical !== newVertical) 
+        //   // ||(top !== undefined && top !== newTop)
+        // ) {
+        //   myDiagram.scale = scale;
+        //   return;
+        // }
+        myDiagram.scale = previousScale;
+      } else {
         myDiagram.scale = scale;
+      }
 
-        // let diagramWidth = myDiagram.div.offsetWidth;
-        // let diagramHeight = myDiagram.div.offsetHeight;
 
-        // console.log("Diagram Width:", diagramWidth);
-        // console.log("Diagram Height:", diagramHeight);
+      previousScale = scale;
 
-      });
     }
 
   }
@@ -535,6 +562,65 @@ function init() {
 
     applyChanges(rows, left, right, horizontal, vertical, distribution, startPoint, top, bottom);
 
+  }
+
+  function loopToDistribute(nbRows, nbColumns, portWidth, portHeight, i, left, right, bottom, top, vertical, horizontal, previousScale, scale) {
+    // Iterate over all nodes
+    myDiagram.nodes.each(function (node) {
+
+      let key = node.key;
+      let data = myDiagram.model.findNodeDataForKey(key);
+      let x = 0, y = 0;
+      // default calculation for top left
+      let columnIndex = distribution === "horizontal" ? parseInt(((i % nbColumns) + 1)) : parseInt(((i / nbRows) + 1));
+      let rowIndex = distribution === "horizontal" ? parseInt(((i / nbColumns) + 1)) : parseInt(((i % nbRows) + 1));
+
+      if ("top-right" === startPoint) {
+        columnIndex = nbColumns - columnIndex + 1;
+      }
+      else if ("bottom-left" === startPoint) {
+        rowIndex = nbRows - rowIndex + 1;
+      }
+      else if ("bottom-right" === startPoint) {
+        columnIndex = nbColumns - columnIndex + 1;
+        rowIndex = nbRows - rowIndex + 1;
+      }
+
+      x = left + (columnIndex - 1) * (portWidth + horizontal);
+      y = top + (rowIndex - 1) * (portHeight + vertical);
+
+
+      if ((previousScale !== undefined && previousScale !== scale)) {
+        updateBoardTypePort(x, y, portWidth, portHeight, data, left, right, bottom, top, nbColumns, nbRows, vertical, horizontal, previousScale);
+      } else {
+        updateBoardTypePort(x, y, portWidth, portHeight, data, left, right, bottom, top, nbColumns, nbRows, vertical, horizontal, scale);
+      }
+      i++;
+      node.updateTargetBindings();
+
+    })
+  }
+
+  function isUpdatedNode() {
+    for (let updatedObj of updatedObject) {
+      for (let obj of object) {
+        for (let objKey of objectKey)
+          // for (let objHeight of objectHeight) {
+          //   for (let objWidth of objectWidth) {
+              if (objKey.data.key === updatedObj.key) {
+                if (obj === updatedObj.location ) {
+                  continue;
+                }
+                else {
+                  return true;
+                }
+              }
+          //   }
+          // }
+      }
+    }
+    //7.963643313725074
+    //11.009820760118025
   }
 
 
@@ -548,6 +634,10 @@ function init() {
     if (node instanceof go.Node) {
       let type = node.data.category;
       if (type === "port") {
+        object.add(node.data.location);
+        objectHeight.add(node.data.height);
+        objectWidth.add(node.data.width);
+        objectKey.add(node);
         // Get the node's location, width, and height
         //let key = node.data.key;
         let text = node.data.text;
@@ -556,6 +646,7 @@ function init() {
         let indexOnSlot = parts[1];
 
         let loc = node.data.location;
+
         let width = node.data.width;
         let height = node.data.height;
         let locaPrt = loc.split(' ');
