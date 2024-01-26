@@ -233,7 +233,7 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
 
     },
 
-    $(go.Panel, "auto",
+    $(go.Panel, "Vertical",
       {
         name: "PANEL",
         position: new go.Binding("position", "height", function (h, panel) {
@@ -256,19 +256,19 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
       },
       $(go.Panel, "Horizontal",
         new go.Binding("width", "width", null, null),
-        { height: 14 },
+        { height: 16 },
         $(go.Shape, "Rectangle",
           {
             fill: "black",
-            width: 8,
+            width: 10,
           }
         ),
         $(go.Panel, "Auto",
         
           $(go.Shape, "Rectangle",
-            new go.Binding("width", "width", v => v - 18),
+            new go.Binding("width", "width", v => v - 23),
             {
-              fill: "white",
+              fill: "#F0f0f0",
               //stretch: go.GraphObject.Fill,
             }
           ),
@@ -278,8 +278,8 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
               name: "boardTextblock",
               margin: 2,
               alignment: go.Spot.Left,
-              height: 14,
-              font: "bold 9px Arial, sans-serif",
+              height: 16,
+              font: "bold 14px Arial, sans-serif",
             },
             new go.Binding("text", "text").makeTwoWay()
           )
@@ -287,7 +287,7 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
         $(go.Shape, "Rectangle",
           {
             fill: "black",
-            width: 10,
+            width: 12,
           }
         )
       ),
@@ -300,7 +300,7 @@ let portDesigner = myDiagram.nodeTemplateMap.add("port",
           name: "PANEL",
           alignment: new go.Spot(0.5, 0, 0.5, 0), // Align the center horizontally and the top vertically
           stretch: go.GraphObject.UniformToFill,
-          margin: new go.Margin(10, 0, 0, 0) 
+          // margin: new go.Margin(10, 0, 0, 0) 
         
         },
         new go.Binding("source", "source")

@@ -417,7 +417,8 @@ function init() {
 
 
     if (flag) {
-      myDiagram.scale = 1.490455443789063;
+      // myDiagram.scale = 1.490455443789063;
+      myDiagram.scale = 1;
       flag = false;
     } else {
 
@@ -450,33 +451,26 @@ function init() {
   let location;
   let newTop, newBottom, newRight, newLeft, newRow, newStartPoint, newHorizantal, newVertical, newDirection, previousScale;
   function updateBoardTypePort(x, y, portWidth, portHeight, data, left, right, bottom, top, nbColumns, nbRows, vertical, horizontal, scale) {
-    let xPercentage = XSCALE * ((parseFloat((x * 100) / diagramWidth)));
-    let yPercentage = YSCALE * ((parseFloat(y * 100) / diagramHeight));
-    let widthPercentage = XSCALE * ((parseFloat(portWidth * 100) / diagramWidth));
-    let heightPercentage = YSCALE * ((parseFloat(portHeight * 100) / diagramHeight));
 
-
-    location = `${xPercentage} ${yPercentage}`;
-
-
-    myDiagram.model.setDataProperty(data, "location", location);
-    myDiagram.model.setDataProperty(data, "width", widthPercentage);
-    myDiagram.model.setDataProperty(data, "height", heightPercentage);
+    let xPercentage = ((parseFloat((x * 100) / diagramWidth)));
+    let yPercentage = ((parseFloat(y * 100) / diagramHeight));
+    let widthPercentage = ((parseFloat(portWidth * 100) / diagramWidth));
+    let heightPercentage = ((parseFloat(portHeight * 100) / diagramHeight));
 
     updatedObject.add(data);
 
-    let numberOfColumn = nbColumns - 1;
-    let numberOfrow = nbRows - 1;
+    // let numberOfColumn = nbColumns ;
+    // let numberOfrow = nbRows ;
 
-    if (numberOfColumn === 0) {
-      numberOfColumn = 1;
-    }
-    if (numberOfrow === 0) {
-      numberOfrow = 1;
-    }
+    // if (numberOfColumn === 1) {
+    //   numberOfColumn = 0;
+    // }
+    // if (numberOfrow === 1) {
+    //   numberOfrow = 0;
+    // }
 
-    myDiagram.div.style.width = `${((left + right + (widthPercentage * nbColumns) + ((horizontal) * (numberOfColumn))) * scale)+ (0.8 * ((horizontal) * (numberOfColumn)))}px`;
-    myDiagram.div.style.height = `${((top + bottom + (heightPercentage * nbRows) + ((vertical) * (numberOfrow))) * scale)}px`;
+    myDiagram.div.style.width = `${((left + right + (portWidth * nbColumns) + ((horizontal) * (nbColumns-1))) * scale) }px`;
+    myDiagram.div.style.height = `${((top + bottom + (portHeight * nbRows) + ((vertical) * (nbRows-1))) * scale)}px`;
 
 
     if (myDiagram.div.style.width >= document.getElementById("dialog").style.width) {
@@ -487,7 +481,7 @@ function init() {
       document.getElementById("dialog").style.height = `${(parseFloat(myDiagram.div.style.height.replace("px", "")) + 40)}px`;
     }
 
-    myDiagram.initialContentAlignment = go.Spot.TopLeft;
+
 
     myDiagram.requestUpdate();
 
@@ -496,7 +490,7 @@ function init() {
         comper.widthPercentage = widthPercentage;
         comper.heightPercentage = heightPercentage;
         comper.xPercentage = xPercentage;
-        comper.yPercentage = heightPercentage;
+        comper.yPercentage = yPercentage;
         break;
       }
     }
@@ -508,7 +502,7 @@ function init() {
 
     let diagramWidthH = myDiagram.div.offsetWidth;
     let diagramHeightH = myDiagram.div.offsetHeight;
-    if (compPerList.length - 1 > 0) {
+    if (compPerList.length > 0) {
       let nbRows = parseInt(rows), nbColumns = parseInt(Math.ceil(parseFloat(compPerList.length) / nbRows));
       let portWidth = parseInt((diagramWidth - (left + right + (horizontal * (nbColumns - 1)))) / nbColumns);
       let portHeight = parseInt((diagramHeight - (top + bottom + (vertical * (nbRows - 1)))) / nbRows);
@@ -520,7 +514,7 @@ function init() {
       // Choose the smaller scale to fit the entire diagram within specified spaces
       let scale = Math.min(scaleX, scaleY);
       if (
-        (previousScale !== undefined && previousScale !== scale) &&
+        (previousScale !== undefined ) &&
         (undefined !== newLeft && left === newLeft) &&
         (undefined !== bottom && newBottom === bottom) &&
         (undefined !== newRight && right === newRight) &&
@@ -545,25 +539,31 @@ function init() {
 
       loopToDistribute(nbRows, nbColumns, portWidth, portHeight, i, left, right, bottom, top, vertical, horizontal, previousScale, scale);
 
+      // if ((previousScale !== undefined && previousScale !== scale)) {
+      //   if (
+      //     // (undefined !== newLeft && left !== newLeft) ||
+      //     // (undefined !== bottom && newBottom !== bottom) ||
+      //     // (undefined !== newRight && right !== newRight) ||
+      //     (undefined !== newRow && nbRows !== newRow) ||
+      //     (undefined !== newHorizantal && horizontal !== newHorizantal) ||
+      //     (undefined !== newVertical && vertical !== newVertical)
+      //     // ||(top !== undefined && top !== newTop)
+      //   ) {
+      //     myDiagram.scale = scale;
+      //     return;
+      //   }
+      //   myDiagram.scale = previousScale;
+      // } else {
+      //   myDiagram.scale = scale;
+      // }
+
       if ((previousScale !== undefined && previousScale !== scale)) {
-        if (
-          // (undefined !== newLeft && left !== newLeft) ||
-          // (undefined !== bottom && newBottom !== bottom) ||
-          // (undefined !== newRight && right !== newRight) ||
-          (undefined !== newRow && nbRows !== newRow) ||
-          (undefined !== newHorizantal && horizontal !== newHorizantal) ||
-          (undefined !== newVertical && vertical !== newVertical) 
-          // ||(top !== undefined && top !== newTop)
-        ) {
-          myDiagram.scale = scale;
-          return;
-        }
         myDiagram.scale = previousScale;
-      } else {
+      }else{
         myDiagram.scale = scale;
       }
-
-
+      
+ 
       previousScale = scale;
 
     }
@@ -600,6 +600,11 @@ function init() {
       x = left + (columnIndex - 1) * (portWidth + horizontal);
       y = top + (rowIndex - 1) * (portHeight + vertical);
 
+      myDiagram.initialPosition = new go.Point(0, 0);
+
+      myDiagram.model.setDataProperty(data, "location", `${x} ${y}`);
+      myDiagram.model.setDataProperty(data, "width", portWidth);
+      myDiagram.model.setDataProperty(data, "height", portHeight);
 
       if ((previousScale !== undefined && previousScale !== scale)) {
         updateBoardTypePort(x, y, portWidth, portHeight, data, left, right, bottom, top, nbColumns, nbRows, vertical, horizontal, previousScale);
